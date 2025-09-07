@@ -1,0 +1,237 @@
+# Slime Game — Repository Index (v0.2.0)
+
+**Updated:** 2025-09-07 (AEST)  
+This document summarises the structure and contents of the Slime Game repository at version **0.2.0**. It includes a grouped index for quick navigation and a full recursive file listing (sourced from `filelist.txt`).
+
+---
+
+## Top‑level Structure
+- `.gitattributes`
+- `.gitignore`
+- `README.md`
+- `Slime Game.yyp`
+- `fonts/`
+- `objects/`
+- `options/`
+- `rooms/`
+- `scripts/`
+- `sprites/`
+- `tilesets/`
+
+---
+
+## Scripts (GML)
+- `scripts/scr_boot/scr_boot.gml` — boot/initialisation hooks  
+- `scripts/scr_globals/scr_globals.gml` — globals, constants, enums  
+- `scripts/scr_utils/scr_utils.gml` — helpers/utilities  
+- `scripts/scr_input/scr_input.gml` — input abstraction  
+- `scripts/scr_pmove/scr_pmove.gml` — player movement core  
+- `scripts/scr_dash/scr_dash.gml` — dash logic (separate from pmove)  
+- `scripts/scr_weapon/scr_weapon.gml` — weapon fire/bullets  
+- `scripts/scr_items/scr_items.gml` — item database & accessors  
+- `scripts/scr_inventory/scr_inventory.gml` — inventory model/ops  
+- `scripts/scr_draw_inventory/scr_draw_inventory.gml` — inventory UI drawing  
+- `scripts/scr_room_generation/scr_room_generation.gml` — procedural room/floor generation
+
+---
+
+## Objects (with discovered events)
+- **Bullets**
+  - `objects/obj_bullet/obj_bullet.yy`
+  - Events: `Create_0.gml`, `Step_0.gml`, `Collision_obj_enemy.gml`, `Collision_obj_enemy_parent.gml`
+- **Enemies**
+  - `objects/obj_enemy/obj_enemy.yy` — Events: `Create_0.gml`, `Step_0.gml`
+  - `objects/obj_enemy_1/obj_enemy_1.yy` — Events: `Create_0.gml`
+  - `objects/obj_enemy_2/obj_enemy_2.yy` — Events: `Create_0.gml`
+- **Player**
+  - `objects/obj_player/obj_player.yy`
+  - Events: `Create_0.gml`, `Step_0.gml`, `Draw_0.gml`, `Collision_obj_slime_1.gml`, `Collision_obj_slime_2.gml`
+- **Inventory UI**
+  - `objects/obj_inventory/obj_inventory.yy`
+  - Events: `Create_0.gml`, `Step_0.gml`, `Draw_64.gml`
+- **Controllers / Systems**
+  - `objects/obj_game_controller/obj_game_controller.yy` — Event: `Create_0.gml`
+  - `objects/obj_menu_controller/obj_menu_controller.yy` — Events: `Create_0.gml`, `Step_0.gml`, `Draw_64.gml`
+  - `objects/obj_floor_gen/obj_floor_gen.yy` — Event: `Create_0.gml`
+  - `objects/obj_spawner/obj_spawner.yy` — Events: `Create_0.gml`, `Step_0.gml`
+- **Pickups**
+  - `objects/obj_slime_1/obj_slime_1.yy` — Event: `Create_0.gml`
+  - `objects/obj_slime_2/obj_slime_2.yy` — Event: `Create_0.gml`
+  - `objects/obj_slime_3/obj_slime_3.yy` — Event: `Create_0.gml`
+
+---
+
+## Rooms
+- `rooms/rm_start/rm_start.yy`
+- `rooms/rm_game/rm_game.yy`
+- `rooms/rm_level_1/rm_level_1.yy`
+
+---
+
+## Sprites (grouped)
+- **UI / Menu**  
+  - `sprites/spr_bg_title/*`  
+  - `sprites/spr_btn_play/*`, `sprites/spr_btn_settings/*`, `sprites/spr_btn_exit/*`
+- **Player & Enemies**  
+  - `sprites/spr_jimothy/*` (player)  
+  - `sprites/spr_enemy_1/*`, `sprites/spr_enemy_2/*`
+- **Projectiles & Items**  
+  - `sprites/spr_bullet/*`  
+  - `sprites/spr_slime_1/*`, `sprites/spr_slime_2/*`, `sprites/spr_slime_3/*`
+- **Inventory UI**  
+  - `sprites/spr_inventory_slot/*`, `sprites/spr_slot/*`
+- **Environment / Tiles**  
+  - `sprites/spr_tileset/*`, `sprites/spr_lava/*`
+
+---
+
+## Tilesets
+- `tilesets/ts_basic/ts_basic.yy` (+ `output_tileset.png`)
+- `tilesets/ts_ground/ts_ground.yy` (+ `output_tileset.png`)
+- `tilesets/ts_walls/ts_walls.yy` (+ `output_tileset.png`)
+
+---
+
+## Fonts
+- `fonts/fnt_menu/fnt_menu.yy` (+ `fnt_menu.png`)
+- `fonts/fnt_ui/fnt_ui.yy` (+ `fnt_ui.png`)
+
+---
+
+## Options
+- `options/main/options_main.yy`
+- `options/windows/options_windows.yy`
+- `options/operagx/options_operagx.yy`
+
+---
+
+## Full recursive file listing (from `filelist.txt`)
+
+```
+.gitattributes
+.gitignore
+README.md
+Slime Game.yyp
+fonts/fnt_menu/fnt_menu.png
+fonts/fnt_menu/fnt_menu.yy
+fonts/fnt_ui/fnt_ui.png
+fonts/fnt_ui/fnt_ui.yy
+objects/obj_bullet/Collision_obj_enemy.gml
+objects/obj_bullet/Collision_obj_enemy_parent.gml
+objects/obj_bullet/Create_0.gml
+objects/obj_bullet/Step_0.gml
+objects/obj_bullet/obj_bullet.yy
+objects/obj_enemy/Create_0.gml
+objects/obj_enemy/Step_0.gml
+objects/obj_enemy/obj_enemy.yy
+objects/obj_enemy_1/Create_0.gml
+objects/obj_enemy_1/obj_enemy_1.yy
+objects/obj_enemy_2/Create_0.gml
+objects/obj_enemy_2/obj_enemy_2.yy
+objects/obj_floor_gen/Create_0.gml
+objects/obj_floor_gen/obj_floor_gen.yy
+objects/obj_game_controller/Create_0.gml
+objects/obj_game_controller/obj_game_controller.yy
+objects/obj_inventory/Create_0.gml
+objects/obj_inventory/Draw_64.gml
+objects/obj_inventory/Step_0.gml
+objects/obj_inventory/obj_inventory.yy
+objects/obj_menu_controller/Create_0.gml
+objects/obj_menu_controller/Draw_64.gml
+objects/obj_menu_controller/Step_0.gml
+objects/obj_menu_controller/obj_menu_controller.yy
+objects/obj_player/Collision_obj_slime_1.gml
+objects/obj_player/Collision_obj_slime_2.gml
+objects/obj_player/Create_0.gml
+objects/obj_player/Draw_0.gml
+objects/obj_player/Step_0.gml
+objects/obj_player/obj_player.yy
+objects/obj_slime_1/Create_0.gml
+objects/obj_slime_1/obj_slime_1.yy
+objects/obj_slime_2/Create_0.gml
+objects/obj_slime_2/obj_slime_2.yy
+objects/obj_slime_3/Create_0.gml
+objects/obj_slime_3/obj_slime_3.yy
+objects/obj_spawner/Create_0.gml
+objects/obj_spawner/Step_0.gml
+objects/obj_spawner/obj_spawner.yy
+options/main/options_main.yy
+options/operagx/options_operagx.yy
+options/windows/options_windows.yy
+rooms/rm_game/rm_game.yy
+rooms/rm_level_1/rm_level_1.yy
+rooms/rm_start/rm_start.yy
+scripts/scr_boot/scr_boot.gml
+scripts/scr_boot/scr_boot.yy
+scripts/scr_dash/scr_dash.gml
+scripts/scr_dash/scr_dash.yy
+scripts/scr_draw_inventory/scr_draw_inventory.gml
+scripts/scr_draw_inventory/scr_draw_inventory.yy
+scripts/scr_globals/scr_globals.gml
+scripts/scr_globals/scr_globals.yy
+scripts/scr_input/scr_input.gml
+scripts/scr_input/scr_input.yy
+scripts/scr_inventory/scr_inventory.gml
+scripts/scr_inventory/scr_inventory.yy
+scripts/scr_items/scr_items.gml
+scripts/scr_items/scr_items.yy
+scripts/scr_pmove/scr_pmove.gml
+scripts/scr_pmove/scr_pmove.yy
+scripts/scr_room_generation/scr_room_generation.gml
+scripts/scr_room_generation/scr_room_generation.yy
+scripts/scr_utils/scr_utils.gml
+scripts/scr_utils/scr_utils.yy
+scripts/scr_weapon/scr_weapon.gml
+scripts/scr_weapon/scr_weapon.yy
+sprites/spr_bg_title/d924d8f7-1a4a-478c-bddf-6cd533a0e07a.png
+sprites/spr_bg_title/layers/d924d8f7-1a4a-478c-bddf-6cd533a0e07a/82800808-53bf-46d2-94a9-a91173185fd4.png
+sprites/spr_bg_title/spr_bg_title.yy
+sprites/spr_btn_exit/54e4aebc-90da-4c17-8730-c12ee2a5c2fb.png
+sprites/spr_btn_exit/layers/54e4aebc-90da-4c17-8730-c12ee2a5c2fb/404880dd-df27-4c8f-b63d-96a6b8a3959c.png
+sprites/spr_btn_exit/spr_btn_exit.yy
+sprites/spr_btn_play/f5675f8c-aaff-46be-ab23-f5089c4a394f.png
+sprites/spr_btn_play/layers/f5675f8c-aaff-46be-ab23-f5089c4a394f/8e7e4e7d-ec46-4212-b8ff-16b61247c4bc.png
+sprites/spr_btn_play/spr_btn_play.yy
+sprites/spr_btn_settings/b49f2c60-9713-47f1-a556-3b5e7141ff3e.png
+sprites/spr_btn_settings/layers/b49f2c60-9713-47f1-a556-3b5e7141ff3e/db89b295-34b6-4c50-9a9e-f181e6609e48.png
+sprites/spr_btn_settings/spr_btn_settings.yy
+sprites/spr_bullet/beb642bb-feb7-4633-80f4-1a34155bcab3.png
+sprites/spr_bullet/layers/beb642bb-feb7-4633-80f4-1a34155bcab3/2d30e65f-f9de-401d-86be-f03467e2d931.png
+sprites/spr_bullet/spr_bullet.yy
+sprites/spr_enemy_1/7f315b4e-3e73-4689-865c-0202cfb905ee.png
+sprites/spr_enemy_1/layers/7f315b4e-3e73-4689-865c-0202cfb905ee/589c4ab5-3f19-4ce6-90f3-22efa99d9d88.png
+sprites/spr_enemy_1/spr_enemy_1.yy
+sprites/spr_enemy_2/3079c54d-2f74-479e-a6c4-239259b28a67.png
+sprites/spr_enemy_2/layers/3079c54d-2f74-479e-a6c4-239259b28a67/5ca868a9-8c60-4514-970c-91604717b2ea.png
+sprites/spr_enemy_2/spr_enemy_2.yy
+sprites/spr_inventory_slot/a79b2c42-79a4-4ff6-9c6f-7175388b5a7b.png
+sprites/spr_inventory_slot/layers/a79b2c42-79a4-4ff6-9c6f-7175388b5a7b/d8dbdf11-235e-41e4-bfb6-6cd2fa472735.png
+sprites/spr_inventory_slot/spr_inventory_slot.yy
+sprites/spr_jimothy/4d0c27c2-5d47-4fd7-83cf-bbc35b461fda.png
+sprites/spr_jimothy/layers/4d0c27c2-5d47-4fd7-83cf-bbc35b461fda/3edd478b-4ec7-48b3-90cf-32b186cc30d3.png
+sprites/spr_jimothy/spr_jimothy.yy
+sprites/spr_lava/149c90da-143f-4586-959d-ac9b79933615.png
+sprites/spr_lava/layers/149c90da-143f-4586-959d-ac9b79933615/00cb54c8-875b-4aec-a8c3-a74b2fdf049c.png
+sprites/spr_lava/spr_lava.yy
+sprites/spr_slime_1/cf1de76b-ada0-4124-a0a1-87cd77a2a566.png
+sprites/spr_slime_1/layers/cf1de76b-ada0-4124-a0a1-87cd77a2a566/5e49f586-2646-4af4-9ade-e20e78f220b1.png
+sprites/spr_slime_1/spr_slime_1.yy
+sprites/spr_slime_2/cf1de76b-ada0-4124-a0a1-87cd77a2a566.png
+sprites/spr_slime_2/layers/cf1de76b-ada0-4124-a0a1-87cd77a2a566/5e49f586-2646-4af4-9ade-e20e78f220b1.png
+sprites/spr_slime_2/spr_slime_2.yy
+sprites/spr_slime_3/cf1de76b-ada0-4124-a0a1-87cd77a2a566.png
+sprites/spr_slime_3/layers/cf1de76b-ada0-4124-a0a1-87cd77a2a566/5e49f586-2646-4af4-9ade-e20e78f220b1.png
+sprites/spr_slime_3/spr_slime_3.yy
+sprites/spr_slot/a7b1d5a6-86a9-4c04-8417-e6245c361a62.png
+sprites/spr_slot/layers/a7b1d5a6-86a9-4c04-8417-e6245c361a62/94d853a9-7a31-4e80-9b15-c68c86d8c160.png
+sprites/spr_slot/spr_slot.yy
+sprites/spr_tileset/36869dbf-ae9d-4b36-9a9a-08e0ab74d417.png
+sprites/spr_tileset/layers/36869dbf-ae9d-4b36-9a9a-08e0ab74d417/1269f670-6c49-48e1-8ce2-cc28ad394ae7.png
+sprites/spr_tileset/spr_tileset.yy
+tilesets/ts_basic/output_tileset.png
+tilesets/ts_basic/ts_basic.yy
+tilesets/ts_ground/output_tileset.png
+tilesets/ts_ground/ts_ground.yy
+tilesets/ts_walls/output_tileset.png
+tilesets/ts_walls/ts_walls.yy
+```
