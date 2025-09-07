@@ -57,3 +57,50 @@ Temporary Items
 # GameMaker temporary files
 *.resource_order
 *.old
+
+# ================================
+# GameMaker Studio 2 Git Ignore
+# ================================
+
+# Build artifacts
+*.yyz
+*.zip
+*.apk
+*.xcodeproj
+*.app
+*.ipa
+*.exe
+*.dll
+*.dmg
+
+# Compiled cache and build folders
+build/
+cache/
+temp/
+output/
+
+# Visual Studio files (if using extensions)
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Backup files
+*.log
+*.tmp
+*.bak
+*.old
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# User-specific GameMaker IDE settings
+*.yyp.user
+*.yyp.backup
+
+# GitHub / Editor junk
+*.orig
+*.rej
