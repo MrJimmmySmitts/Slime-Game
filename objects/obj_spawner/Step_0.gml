@@ -2,7 +2,7 @@
  *   Input: none
  *   Output: none
  */
-if (global.game_paused) exit;
+if (global.is_paused) exit;
 spawn_timer--;
 if (spawn_timer <= 0) {
     var child = choose(obj_enemy_1, obj_enemy_2);

@@ -76,12 +76,12 @@ function game_is_paused()
 
 /*
 * Name: on_pause_exit
-* Description: Pause gate used by Step events; exit Step when paused.
+* Description: Return true when the game is paused so callers can early-exit Step.
 */
-function on_pause_exit()
-{
-    return game_is_paused();
+function on_pause_exit() {
+    return variable_global_exists("is_paused") && global.is_paused;
 }
+
 /*
 * Name: inventory_is_open
 * Description: Returns true if the global game state is Inventory.
@@ -89,4 +89,38 @@ function on_pause_exit()
 function inventory_is_open()
 {
     return (game_get_state() == GameState.Inventory);
+}
+
+/*
+* Name: recompute_pause_state
+* Description: Recompute global pause from inventory/menu visibility.
+*/
+function recompute_pause_state() {
+    global.is_paused = (global.inv_visible || global.menu_visible);
+}
+
+/*
+* Name: menu_show
+* Description: Show pause menu and recompute pause.
+*/
+function menu_show() {
+    global.menu_visible = true;
+    recompute_pause_state();
+}
+
+/*
+* Name: menu_hide
+* Description: Hide pause menu and recompute pause.
+*/
+function menu_hide() {
+    global.menu_visible = false;
+    recompute_pause_state();
+}
+
+/*
+* Name: menu_toggle
+* Description: Toggle pause menu and recompute pause.
+*/
+function menu_toggle() {
+    if (global.menu_visible) menu_hide(); else menu_show();
 }

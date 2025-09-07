@@ -1,4 +1,10 @@
 /*
+* Name: obj_inventory.Draw (visibility gate)
+* Description: Draw only when inventory is visible.
+*/
+if (!global.inv_visible) exit;
+
+/*
 * Name: obj_inventory.DrawGUI
 * Description: Draw inventory UI only when the global state is Inventory.
 */

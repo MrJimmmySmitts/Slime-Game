@@ -1,3 +1,9 @@
+/*
+* Name: obj_menu_controller.Draw (visibility gate)
+* Description: Draw pause menu only when visible.
+*/
+if (!global.menu_visible) exit;
+
 // Centered menu in GUI space
 var W = display_get_gui_width();
 var H = display_get_gui_height();

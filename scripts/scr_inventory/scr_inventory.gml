@@ -216,3 +216,31 @@ function inv_drag_stack_set(_stack)
     global.Inventory.drag = _stack;
 }
 
+/*
+* Name: inv_show
+* Description: Show inventory and recompute pause.
+*/
+function inv_show() {
+    global.inv_visible = true;
+    recompute_pause_state();
+}
+
+/*
+* Name: inv_hide
+* Description: Hide inventory and recompute pause.
+*/
+function inv_hide() {
+    global.inv_visible = false;
+    recompute_pause_state();
+}
+
+
+/*
+* Name: inv_toggle
+* Description: Toggle inventory UI and pause state.
+*/
+function inv_toggle() {
+    if (global.inv_visible) inv_hide(); else inv_show();
+}
+
+

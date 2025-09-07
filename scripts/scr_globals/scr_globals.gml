@@ -65,3 +65,5 @@ enum GameState
 */
 #macro INVENTORY_SLOTS  global.Inventory.slots
 #macro INV_DRAG_STACK   global.Inventory.drag
+
+

@@ -6,6 +6,11 @@ function game_init()
 {
     if (!variable_global_exists("game_state")) global.game_state = GameState.Playing;
         
+    global.is_paused   = false; // start Paused
+    global.inv_visible = false; // inventory hidden by default
+    global.menu_visible = true; // Start Menu 
+    recompute_pause_state(); 
+        
     // Create a single global namespace for the project
     if (!variable_global_exists("Game")) global.Game = {};
     var G = global.Game;
