@@ -1,0 +1,34 @@
+# GameMaker temporary and build files
+*.yyz
+*.yyp~
+*.yy~
+*.gmez
+*.gmz
+*.gml~
+*.log
+*.tmp
+*.bak
+*.db
+*.ldb
+*.user
+*.swp
+*.sublime-workspace
+*.sublime-project
+
+# Build output folders
+/build/
+bin/
+obj/
+output/
+*.exe
+*.dll
+*.app
+*.so
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VSCode settings
+.vscode/
