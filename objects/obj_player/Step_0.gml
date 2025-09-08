@@ -19,7 +19,7 @@ var fire_pressed = input_fire_pressed();
 var fire_held    = input_fire_held();
 
 // Ensure required instance fields exist
-if (!variable_instance_exists(id, "tilemap_id"))      tilemap_id      = layer_tilemap_get_id("Terrain_Collide");
+if (!variable_instance_exists(id, "tilemap_id"))      tilemap_id      = layer_tilemap_get_id("tm_collision");
 if (!variable_instance_exists(id, "dash_active"))     dash_active     = false;
 if (!variable_instance_exists(id, "dash_time"))       dash_time       = 0;
 if (!variable_instance_exists(id, "dash_cooldown"))   dash_cooldown   = 0;

@@ -51,7 +51,6 @@
     {"id":{"name":"obj_slime_3","path":"objects/obj_slime_3/obj_slime_3.yy",},},
     {"id":{"name":"obj_spawner","path":"objects/obj_spawner/obj_spawner.yy",},},
     {"id":{"name":"rm_game","path":"rooms/rm_game/rm_game.yy",},},
-    {"id":{"name":"rm_level_1","path":"rooms/rm_level_1/rm_level_1.yy",},},
     {"id":{"name":"rm_start","path":"rooms/rm_start/rm_start.yy",},},
     {"id":{"name":"scr_boot","path":"scripts/scr_boot/scr_boot.yy",},},
     {"id":{"name":"scr_dash","path":"scripts/scr_dash/scr_dash.yy",},},
@@ -61,6 +60,7 @@
     {"id":{"name":"scr_input","path":"scripts/scr_input/scr_input.yy",},},
     {"id":{"name":"scr_inventory","path":"scripts/scr_inventory/scr_inventory.yy",},},
     {"id":{"name":"scr_items","path":"scripts/scr_items/scr_items.yy",},},
+    {"id":{"name":"scr_menu","path":"scripts/scr_menu/scr_menu.yy",},},
     {"id":{"name":"scr_pmove","path":"scripts/scr_pmove/scr_pmove.yy",},},
     {"id":{"name":"scr_room_generation","path":"scripts/scr_room_generation/scr_room_generation.yy",},},
     {"id":{"name":"scr_utils","path":"scripts/scr_utils/scr_utils.yy",},},
@@ -89,7 +89,6 @@
   "RoomOrderNodes":[
     {"roomId":{"name":"rm_start","path":"rooms/rm_start/rm_start.yy",},},
     {"roomId":{"name":"rm_game","path":"rooms/rm_game/rm_game.yy",},},
-    {"roomId":{"name":"rm_level_1","path":"rooms/rm_level_1/rm_level_1.yy",},},
   ],
   "templateType":"game",
   "TextureGroups":[

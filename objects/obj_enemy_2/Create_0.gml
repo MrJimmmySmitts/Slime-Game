@@ -9,3 +9,10 @@ is_dead = false;
 
 // Which pickup object to drop (1–3 will spawn)
 drop_pickup_obj = obj_slime_2;
+/*
+* Name: obj_enemy_2.Create (overrides)
+* Description: Faster, longer-range chaser.
+*/
+enemy_speed = 2;
+enemy_range = 200;
+

@@ -1,4 +1,11 @@
 if (on_pause_exit()) exit;
+    
+/*
+* Name: obj_enemy.Step (pursuit)
+* Description: Pursue the player when within range, using tilemap collision.
+*/
+enemy_seek_player_step();
+
 
 if (!instance_exists(target)) {
     target = instance_nearest(x, y, obj_player);

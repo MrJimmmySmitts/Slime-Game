@@ -18,15 +18,11 @@ function enemy_base_init() {
 
 /*
 * Name: enemy_resolve_tilemap
-* Description: Resolve the collision tilemap (global.collision_tilemap or layer named "Collision") and cache as enemy_tm.
+* Description: Resolve the collision tilemap from the layer named "tm_collision".
 */
 function enemy_resolve_tilemap() {
-    if (variable_global_exists("collision_tilemap") && global.collision_tilemap != noone) {
-        enemy_tm = global.collision_tilemap;
-        return;
-    }
-    var layer_id = layer_get_id("Collision");
-    enemy_tm = (layer_id != -1) ? layer_tilemap_get_id(layer_id) : noone;
+    var _lid = layer_get_id("tm_collision");
+    enemy_tm = (_lid != -1) ? layer_tilemap_get_id(_lid) : noone;
 }
 
 /*
