@@ -1,11 +1,8 @@
-// ====================================================================
-// Example: obj_player Step event (drop-in)
-// ====================================================================
-
 /*
-* Name: obj_player.Step
-* Description: Pause gate, input, dash, movement vs. tilemap, facing, firing.
+* Name: obj_player.Create
 */
+input_locked = true;      // checked by input helpers
+alarm[0]     = 12;    
 
 // ----- Early pause gate (safe no-op hook) -----
 if (on_pause_exit()) exit;

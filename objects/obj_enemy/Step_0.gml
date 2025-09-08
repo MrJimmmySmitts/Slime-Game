@@ -1,4 +1,7 @@
-if (on_pause_exit()) exit;
+if (on_pause_exit()) {
+    hspeed = 0; vspeed = 0; speed = 0;
+    exit;
+}
     
 /*
 * Name: obj_enemy.Step (pursuit)

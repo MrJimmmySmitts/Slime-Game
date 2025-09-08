@@ -8,7 +8,13 @@
 hp_max           = 30;
 hp               = hp_max;
 is_dead          = false;
-speed            = 1.5;
+enemy_speed      = 1.5;
+
+// Safety: ensure engine motion is not active by default
+hspeed           = 0;
+vspeed           = 0;
+speed            = 0;
+direction        = 0;
 target           = noone;
 // Default drop (child overrides this)
 drop_pickup_obj = obj_slime_1;

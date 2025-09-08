@@ -43,25 +43,6 @@ function input_get_aim_pressed()
     if (keyboard_check_pressed(ord("L"))) return { dx:  1, dy:  0 };
     return { dx: 0, dy: 0 };
 }
-
-/*
-* Name: input_fire_pressed
-* Description: Returns true if a fire trigger was pressed this step. Supports mouse or Ctrl as alternates.
-*/
-function input_fire_pressed()
-{
-    return keyboard_check_pressed(vk_control) || mouse_check_button_pressed(mb_left);
-}
-
-/*
-* Name: input_fire_held
-* Description: Returns true if a fire trigger is held down. Supports mouse or Ctrl as alternates.
-*/
-function input_fire_held()
-{
-    return keyboard_check(vk_control) || mouse_check_button(mb_left);
-}
-
 /*
 * Name: input_dash_pressed
 * Description: Returns true if Space is pressed this step.
@@ -86,4 +67,23 @@ function input_get_aim_axis()
 
     // Final fallback: aim right
     return [1, 0];
+}
+/*
+* Name: input_fire_pressed
+* Description: True on the frame primary fire is pressed AND input isn't locked.
+*/
+function input_fire_pressed() {
+    var _locked = variable_instance_exists(id, "input_locked") && input_locked;
+    if (_locked) return false;
+    return mouse_check_button_pressed(mb_left);
+}
+
+/*
+* Name: input_fire_held
+* Description: True while primary fire is held AND input isn't locked.
+*/
+function input_fire_held() {
+    var _locked = variable_instance_exists(id, "input_locked") && input_locked;
+    if (_locked) return false;
+    return mouse_check_button(mb_left);
 }
