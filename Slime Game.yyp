@@ -56,6 +56,7 @@
     {"id":{"name":"scr_boot","path":"scripts/scr_boot/scr_boot.yy",},},
     {"id":{"name":"scr_dash","path":"scripts/scr_dash/scr_dash.yy",},},
     {"id":{"name":"scr_draw_inventory","path":"scripts/scr_draw_inventory/scr_draw_inventory.yy",},},
+    {"id":{"name":"scr_enemy","path":"scripts/scr_enemy/scr_enemy.yy",},},
     {"id":{"name":"scr_globals","path":"scripts/scr_globals/scr_globals.yy",},},
     {"id":{"name":"scr_input","path":"scripts/scr_input/scr_input.yy",},},
     {"id":{"name":"scr_inventory","path":"scripts/scr_inventory/scr_inventory.yy",},},
