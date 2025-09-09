@@ -1,12 +1,3 @@
-// ====================================================================
-// scr_draw_inventory.gml — COMPLETE REPLACEMENT
-// Modernised inventory UI drawing helpers (GUI space)
-// Depends on: INV_COLS/INV_ROWS/INV_SLOT_PAD/INV_PANEL_MARGIN macros,
-//             INVENTORY_SLOTS macro, GameState enum,
-//             global.inv_slot_w / global.inv_slot_h,
-//             global.inv_spr_slot / inv_spr_slot_hover / inv_spr_slot_select (optional),
-//             global.inv_spr_item_missing (optional)
-// ====================================================================
 
 /*
 * Name: inv_gui_mouse
@@ -135,131 +126,6 @@ function inv_hit_test()
 
     return r * INV_COLS + c;
 }
-
-/*
-* Name: inv_draw_slots
-* Description: Draws the inventory slot frames using the current grid layout.
-*/
-function inv_draw_slots()
-{
-    var o    = inv_panel_get_origin();
-    var left = o.x;
-    var top  = o.y;
-
-    var cols = INV_COLS;
-    var rows = INV_ROWS;
-    var pad  = INV_SLOT_PAD;
-    var sw   = global.inv_slot_w;
-    var sh   = global.inv_slot_h;
-
-    var base   = variable_global_exists("inv_spr_slot")        ? global.inv_spr_slot        : -1;
-    var hover  = variable_global_exists("inv_spr_slot_hover")  ? global.inv_spr_slot_hover  : -1;
-    var select = variable_global_exists("inv_spr_slot_select") ? global.inv_spr_slot_select : -1;
-
-    // Determine hovered index for hover frame
-    var hi = inv_hit_test();
-    var total = cols * rows;
-
-    for (var i = 0; i < total; i++)
-    {
-        var r = i div cols;
-        var c = i mod cols;
-
-        var cx = left + c * (sw + pad) + sw * 0.5;
-        var cy = top  + r * (sh + pad) + sh * 0.5;
-
-        if (base != -1) draw_sprite(base, 0, cx, cy);
-        else draw_rectangle(cx - sw*0.5, cy - sh*0.5, cx + sw*0.5, cy + sh*0.5, true);
-
-        // Hover overlay (if any)
-        if (i == hi && hover != -1) draw_sprite(hover, 0, cx, cy);
-
-        // (Optional) Selected overlay placeholder:
-        // if (i == selected_index && select != -1) draw_sprite(select, 0, cx, cy);
-    }
-}
-
-/*
-* Name: inv_draw_items
-* Description: Draws item icons/counts from INVENTORY_SLOTS using the current grid layout.
-*/
-function inv_draw_items()
-{
-    var slots = INVENTORY_SLOTS;
-    var total = array_length(slots);
-
-    var o    = inv_panel_get_origin();
-    var left = o.x;
-    var top  = o.y;
-
-    var cols = INV_COLS;
-    var pad  = INV_SLOT_PAD;
-    var sw   = global.inv_slot_w;
-    var sh   = global.inv_slot_h;
-
-    var fallback_icon = (variable_global_exists("inv_spr_item_missing") ? global.inv_spr_item_missing : -1);
-
-    for (var i = 0; i < total; i++)
-    {
-        var r = i div cols;
-        var c = i mod cols;
-
-        var cx = left + c * (sw + pad) + sw * 0.5;
-        var cy = top  + r * (sh + pad) + sh * 0.5;
-
-        var st = slots[i];
-        if (is_undefined(st) || st.id == ItemId.None || st.count <= 0) continue;
-
-        // TODO: resolve per-item icon sprite based on st.id; fallback used here
-        var spr = fallback_icon;
-
-        if (spr != -1)
-        {
-            draw_sprite_ext(spr, 0, cx, cy, 1, 1, 0, c_white, 1);
-        }
-        else
-        {
-            // Minimal fallback if no icon: a small filled rect
-            draw_set_alpha(1);
-            draw_set_color(c_white);
-            draw_rectangle(cx - sw*0.35, cy - sh*0.35, cx + sw*0.35, cy + sh*0.35, false);
-        }
-
-        // Draw stack count bottom-right
-        draw_set_halign(fa_right);
-        draw_set_valign(fa_bottom);
-        draw_text(cx + sw*0.45, cy + sh*0.45, string(st.count));
-    }
-
-    draw_set_halign(fa_left);
-    draw_set_valign(fa_top);
-}
-
-/*
-* Name: inv_draw_cursor_stack
-* Description: Draws the dragged stack near the cursor if active.
-*/
-function inv_draw_cursor_stack()
-{
-    if (!inv_drag_active_get()) return;
-    var st = inv_drag_stack_get();
-    if (st.id == ItemId.None || st.count <= 0) return;
-
-    var m  = { x: device_mouse_x_to_gui(0), y: device_mouse_y_to_gui(0) };
-    var sw = global.inv_slot_w;
-    var sh = global.inv_slot_h;
-
-    var spr = (variable_global_exists("inv_spr_item_missing") ? global.inv_spr_item_missing : -1);
-
-    if (spr != -1) draw_sprite_ext(spr, 0, m.x, m.y, 1, 1, 0, c_white, 0.85);
-    else draw_rectangle(m.x - sw*0.35, m.y - sh*0.35, m.x + sw*0.35, m.y + sh*0.35, false);
-
-    draw_set_halign(fa_right);
-    draw_set_valign(fa_bottom);
-    draw_text(m.x + sw*0.45, m.y + sh*0.45, string(st.count));
-    draw_set_halign(fa_left);
-    draw_set_valign(fa_top);
-}
 /*
 * Name: inv_draw_tooltip
 * Description: Draws a simple tooltip with item name when hovering a non-empty slot.
@@ -290,16 +156,93 @@ function inv_draw_tooltip()
     draw_set_color(c_white);
     draw_text(m.x + 12 + pad, m.y + 12 + pad, name);
 }
+/* 
+* Name: inv_draw_slots
+* Description: Draw slot frames using global.spr_slot, scaled to slot size.
+*/
+function inv_draw_slots() {
+    var _o = inv_panel_get_origin();
+    var _left = _o[0];
+    var _top  = _o[1];
 
+    var _sp     = global.spr_slot;
+    var _sp_w   = sprite_get_width(_sp);
+    var _sp_h   = sprite_get_height(_sp);
+    var _scaleX = (_sp_w > 0) ? (global.inv_slot_w / _sp_w) : 1;
+    var _scaleY = (_sp_h > 0) ? (global.inv_slot_h / _sp_h) : 1;
+
+    for (var _r = 0; _r < INV_ROWS; _r++) {
+        for (var _c = 0; _c < INV_COLS; _c++) {
+            var _cx = _left + _c * (global.inv_slot_w + INV_SLOT_PAD) + global.inv_slot_w * 0.5;
+            var _cy = _top  + _r * (global.inv_slot_h + INV_SLOT_PAD) + global.inv_slot_h * 0.5;
+            draw_sprite_ext(_sp, 0, _cx, _cy, _scaleX, _scaleY, 0, c_white, 1);
+        }
+    }
+}
+/*
+* Name: inv_draw_items
+* Description: Draw item sprites in each occupied slot, scaled to fit while preserving aspect.
+*/
+function inv_draw_items() {
+    for (var _i = 0; _i < array_length(global.inventory_slots); _i++) {
+        var _s = global.inventory_slots[_i];
+        if (_s.id == ItemId.None || _s.count <= 0) continue;
+
+        var _sp = item_get_sprite(_s.id);
+        if (_sp == -1) continue;
+
+        var _pos = inv_get_slot_center(_i);
+        var _cx  = _pos.xx;
+        var _cy  = _pos.yy;
+
+        var _sw = sprite_get_width(_sp);
+        var _sh = sprite_get_height(_sp);
+        var _sc = min(global.inv_slot_w / _sw, global.inv_slot_h / _sh);
+        draw_sprite_ext(_sp, 0, _cx, _cy, _sc, _sc, 0, c_white, 1);
+
+        if (_s.count > 1) {
+            var _pad = 4;
+            draw_set_halign(fa_right);
+            draw_set_valign(fa_top);
+            draw_text(_cx + global.inv_slot_w * 0.5 - _pad, _cy - global.inv_slot_h * 0.5 + _pad, string(_s.count));
+            draw_set_halign(fa_left);
+            draw_set_valign(fa_top);
+        }
+    }
+}
 /*
 * Name: inv_draw_all
-* Description: High-level orchestrator for inventory UI drawing (call from Draw GUI).
+* Description: Convenience: draw slot frames then items.
 */
-function inv_draw_all()
-{
-    inv_draw_panel_bg();
+function inv_draw_all() {
     inv_draw_slots();
     inv_draw_items();
-    inv_draw_tooltip();
-    inv_draw_cursor_stack();
+}
+/*
+* Name: inv_draw_cursor_stack
+* Description: Draw the sprite for the currently dragged stack at the GUI mouse position.
+*/
+function inv_draw_cursor_stack() {
+    if (!global.inv_drag_active) return;
+    var _stack = global.inv_drag_stack;
+    if (_stack.id == ItemId.None || _stack.count <= 0) return;
+
+    var _sp = item_get_sprite(_stack.id);
+    if (_sp == -1) return;
+
+    var _mx = device_mouse_x_to_gui(0);
+    var _my = device_mouse_y_to_gui(0);
+
+    var _sw = sprite_get_width(_sp);
+    var _sh = sprite_get_height(_sp);
+    var _sc = min(global.inv_slot_w / _sw, global.inv_slot_h / _sh);
+
+    draw_sprite_ext(_sp, 0, _mx, _my, _sc, _sc, 0, c_white, 0.9);
+    if (_stack.count > 1) {
+        draw_set_halign(fa_right);
+        draw_set_valign(fa_top);
+        draw_text(_mx + global.inv_slot_w * 0.5 - 2, _my - global.inv_slot_h * 0.5 + 2, string(_stack.count));
+        draw_set_halign(fa_left);
+        draw_set_valign(fa_top);
+    }
 }

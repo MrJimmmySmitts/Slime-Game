@@ -90,15 +90,13 @@ function inventory_is_open()
 {
     return (game_get_state() == GameState.Inventory);
 }
-
 /*
 * Name: recompute_pause_state
-* Description: Recompute global pause from inventory/menu visibility.
+* Description: Recompute global pause from inventory/menu/dialogue visibility.
 */
 function recompute_pause_state() {
-    global.is_paused = (global.inv_visible || global.menu_visible);
+    global.is_paused = (global.inv_visible || global.menu_visible || global.dialog_visible);
 }
-
 /*
 * Name: menu_show
 * Description: Show pause menu and recompute pause.

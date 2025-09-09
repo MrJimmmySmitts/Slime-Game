@@ -279,3 +279,17 @@ function item_get_max_stack(_id)
     if (is_undefined(def.max_stack)) return 1;
     return def.max_stack;
 }
+
+/*
+* Name: item_get_sprite
+* Description: Map ItemId → sprite resource used in the inventory UI. Returns -1 if unknown.
+*/
+function item_get_sprite(_id) {
+    switch (_id) {
+        case ItemId.Slime1: return global.spr_item_slime1;
+        case ItemId.Slime2: return global.spr_item_slime2;
+        case ItemId.Slime3: return global.spr_item_slime3;
+        default:            return -1;
+    }
+}
+

@@ -43,19 +43,35 @@ function menu_index_at(_mx, _my) {
 
 /*
 * Name: menu_activate_selection
-* Description: Activate current selection (same as pressing Enter).
+* Description: Perform the currently selected action (same as pressing Enter).
 */
 function menu_activate_selection() {
     if (!is_array(menu_items)) return;
     if (sel < 0 || sel >= array_length(menu_items)) return;
 
     var _choice = menu_items[sel];
-    if      (_choice == "New")      { menu_hide(); room_goto(rm_game); }
-    else if (_choice == "Continue") { menu_hide(); room_goto(rm_game); }
-    else if (_choice == "Load")     { /* TODO */ }
-    else if (_choice == "Settings") { /* TODO */ }
-    else if (_choice == "Quit")     { game_end(); }
+
+    if (_choice == "New") {
+        dialog_queue_push("Welcome to the world of slime, there is too much non-slime around, you should fix that.");
+        menu_hide();
+        room_goto(rm_game);
+    }
+    else if (_choice == "Continue") {
+        dialog_queue_push("Welcome back to the world of slime. You know what to do.");
+        menu_hide();
+        room_goto(rm_game);
+    }
+    else if (_choice == "Load")      { 
+            // TODO  
+        }
+    else if (_choice == "Settings")  { 
+         // TODO 
+    }
+    else if (_choice == "Quit")      { 
+        game_end(); 
+    }
 }
+
 
 /*
 * Name: menu_mouse_update

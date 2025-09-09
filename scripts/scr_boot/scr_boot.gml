@@ -49,6 +49,18 @@ function game_init()
     inventory_ui_boot(32,32);// UI layout: each slot 32x32 px
     inventory_skin_boot();
     // e.g., audio_init(), etc.
+    /*
+    * Name: game_init (dialog init)
+    * Description: Initialise dialogue system and ensure a dialog renderer exists.
+    */
+    dialog_init();
+    
+    // Ensure a dialog drawer exists (place in a GUI/UI layer if you have one)
+    if (!instance_exists(obj_dialog)) {
+        var _ui_layer = layer_get_id("UI");
+        if (_ui_layer == -1) _ui_layer = layer_create(100000, "UI"); // create GUI-ish foreground layer
+        instance_create_layer(0, 0, "UI", obj_dialog);
+    }
 }
 
 /*
