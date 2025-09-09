@@ -1,20 +1,85 @@
 /*
+* Name: enemy_unstuck_from_tilemap
+* Description: If the collider overlaps the collision tilemap at the current position,
+*              push out along the smallest displacement up to _max pixels.
+*/
+function enemy_unstuck_from_tilemap(_tm, _max) {
+    if (_tm == noone) return;
+
+    var _max_push = max(1, _max);
+
+    // If not overlapping, nothing to do
+    if (!tm_rect_hits_solid(_tm, x, y, enemy_col_w, enemy_col_h)) return;
+
+    // Try outward pushes in small rings until free
+    for (var _d = 1; _d <= _max_push; _d++) {
+        // cardinal directions first (cheap + likely)
+        if (!tm_rect_hits_solid(_tm, x + _d, y, enemy_col_w, enemy_col_h)) { x += _d; return; }
+        if (!tm_rect_hits_solid(_tm, x - _d, y, enemy_col_w, enemy_col_h)) { x -= _d; return; }
+        if (!tm_rect_hits_solid(_tm, x, y + _d, enemy_col_w, enemy_col_h)) { y += _d; return; }
+        if (!tm_rect_hits_solid(_tm, x, y - _d, enemy_col_w, enemy_col_h)) { y -= _d; return; }
+
+        // simple diagonals as a fallback if still stuck
+        if (!tm_rect_hits_solid(_tm, x + _d, y + _d, enemy_col_w, enemy_col_h)) { x += _d; y += _d; return; }
+        if (!tm_rect_hits_solid(_tm, x - _d, y + _d, enemy_col_w, enemy_col_h)) { x -= _d; y += _d; return; }
+        if (!tm_rect_hits_solid(_tm, x + _d, y - _d, enemy_col_w, enemy_col_h)) { x += _d; y -= _d; return; }
+        if (!tm_rect_hits_solid(_tm, x - _d, y - _d, enemy_col_w, enemy_col_h)) { x -= _d; y -= _d; return; }
+    }
+    // If we get here, still stuck — leave position as-is; movement will remain blocked until level geometry changes.
+}
+
+/*
 * Name: enemy_base_init
-* Description: Initialise default enemy properties and cache collision tilemap + collider size.
+* Description: Initialise defaults, collider, tilemap, and fractional move remainders.
 */
 function enemy_base_init() {
-    if (!variable_instance_exists(id, "enemy_speed")) enemy_speed = 1.25;   // px/step (children override)
-    if (!variable_instance_exists(id, "enemy_range")) enemy_range = 200;    // px (children override)
+    if (!variable_instance_exists(id, "enemy_speed")) enemy_speed = 1.25;
+    if (!variable_instance_exists(id, "enemy_range")) enemy_range = 200;
 
-    // Collider size (fallback to sprite bbox if available)
     var w = sprite_get_width(sprite_index);
     var h = sprite_get_height(sprite_index);
     enemy_col_w = (w > 0) ? clamp(w * 0.50, 8, 24) : 16;
     enemy_col_h = (h > 0) ? clamp(h * 0.50, 8, 24) : 16;
 
-    // Resolve and cache the collision tilemap
     enemy_resolve_tilemap();
+
+    // NEW: subpixel accumulators (so speeds < 1 still move)
+    enemy_move_rx = 0;
+    enemy_move_ry = 0;
+
+    // Optional safety if placed inside tiles:
+    // enemy_unstuck_from_tilemap(enemy_tm, 8);
 }
+
+/*
+* Name: enemy_seek_player_step
+* Description: Avoid tiny oscillations when very close to the player.
+*/
+function enemy_seek_player_step() {
+    if (on_pause_exit()) return;
+    if (!instance_exists(obj_player)) return;
+
+    var p = instance_nearest(x, y, obj_player);
+    if (p == noone) return;
+
+    var dx = p.x - x;
+    var dy = p.y - y;
+    var dist = point_distance(x, y, p.x, p.y);
+
+    // NEW: if we're closer than one "speed" step, don't move this frame
+    if (dist <= enemy_speed) return;
+
+    if (dist <= enemy_range) {
+        var fx = dx / dist;
+        var fy = dy / dist;
+        var vx = fx * enemy_speed;
+        var vy = fy * enemy_speed;
+
+        move_axis_with_tilemap(enemy_tm, 0, vx, enemy_col_w, enemy_col_h);
+        move_axis_with_tilemap(enemy_tm, 1, vy, enemy_col_w, enemy_col_h);
+    }
+}
+
 
 /*
 * Name: enemy_resolve_tilemap
@@ -51,53 +116,40 @@ function tm_rect_hits_solid(_tm, _x, _y, _w, _h) {
 
 /*
 * Name: move_axis_with_tilemap
-* Description: Move along one axis with collision against a tilemap (axis-separated).
+* Description: Axis-separated movement with tilemap collision that supports fractional speeds
+*              via per-instance accumulators (enemy_move_rx / enemy_move_ry). No overshoot.
 */
 function move_axis_with_tilemap(_tm, _axis, _amount, _w, _h) {
-    if (_amount == 0) return;
-    var step = sign(_amount);
-    var remaining = abs(_amount);
+    if (_tm == noone || _amount == 0) return;
 
-    repeat (remaining) {
-        if (_axis == 0) { x += step; } else { y += step; }
+    // Gather remainder + this frame's desired amount
+    var _rem   = (_axis == 0) ? enemy_move_rx : enemy_move_ry;
+    var _total = _rem + _amount;
+
+    // Whole pixels we can attempt this frame (sign says direction)
+    var _dir   = sign(_total);
+    var _steps = floor(abs(_total));
+    var _moved = 0;
+    var _hit   = false;
+
+    // Step pixel-by-pixel; stop if we hit a solid
+    for (var _i = 0; _i < _steps; _i++) {
+        if (_axis == 0) x += _dir; else y += _dir;
+
         if (tm_rect_hits_solid(_tm, x, y, _w, _h)) {
-            if (_axis == 0) { x -= step; } else { y -= step; }
+            // undo the last step; we are blocked
+            if (_axis == 0) x -= _dir; else y -= _dir;
+            _hit = true;
             break;
         }
+        _moved += _dir;
     }
-}
 
-/*
-* Name: enemy_seek_player_step
-* Description: When the player is within enemy_range, move toward them at enemy_speed using tilemap collision.
-*/
-function enemy_seek_player_step() {
-    // early-outs
-    if (on_pause_exit()) return;
-    if (!instance_exists(obj_player)) return;
+    // Remainder = what we wanted minus what we actually moved
+    var _leftover = _total - _moved;
 
-    // get nearest player
-    var p = instance_nearest(x, y, obj_player);
-    if (p == noone) return;
+    // If we hit a wall, kill remainder on that axis so we don't "push" next frame
+    if (_hit) _leftover = 0;
 
-    var dx = p.x - x;
-    var dy = p.y - y;
-    var dist = point_distance(x, y, p.x, p.y);
-    if (dist <= enemy_range && dist > 0) {
-        var fx = dx / dist;
-        var fy = dy / dist;
-
-        var vx = fx * enemy_speed;
-        var vy = fy * enemy_speed;
-
-        // ensure we have a tilemap + collider
-        if (!variable_instance_exists(id, "enemy_tm") || enemy_tm == undefined) enemy_resolve_tilemap();
-        var tm = enemy_tm;
-        var cw = enemy_col_w;
-        var ch = enemy_col_h;
-
-        // axis-separated movement
-        move_axis_with_tilemap(tm, 0, vx, cw, ch);
-        move_axis_with_tilemap(tm, 1, vy, cw, ch);
-    }
+    if (_axis == 0) enemy_move_rx = _leftover; else enemy_move_ry = _leftover;
 }
