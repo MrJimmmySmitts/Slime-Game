@@ -78,7 +78,7 @@ function itemDbInit() {
         name: "Slime 1",
         max_stack: 1,
         merge_rules: [ ruleMake(ItemId.Slime1, ItemId.Slime2, 1, 1, 1) ],
-        icon_sprite: noone,
+        icon_sprite: spr_slime_1,
         color_tint: c_white,
         desc: "Gloopy basics."
     });
@@ -87,7 +87,7 @@ function itemDbInit() {
         name: "Slime 2",
         max_stack: 1,
         merge_rules: [ ruleMake(ItemId.Slime2, ItemId.Slime3, 1, 1, 1) ],
-        icon_sprite: noone,
+        icon_sprite: spr_slime_2,
         color_tint: c_white,
         desc: "Thicker ooze."
     });
@@ -96,7 +96,7 @@ function itemDbInit() {
         name: "Slime 3",
         max_stack: 1,
         merge_rules: [],
-        icon_sprite: noone,
+        icon_sprite: spr_slime_3,
         color_tint: c_white,
         desc: "Potent sludge."
     });
@@ -282,14 +282,12 @@ function itemGetMaxStack(_id)
 
 /*
 * Name: itemGetSprite
-* Description: Map ItemId → sprite resource used in the inventory UI. Returns -1 if unknown.
+* Description: Returns the icon sprite for the given item id from the DB, or `noone` if unknown.
 */
 function itemGetSprite(_id) {
-    switch (_id) {
-        case ItemId.Slime1: return global.sprItemSlime1;
-        case ItemId.Slime2: return global.sprItemSlime2;
-        case ItemId.Slime3: return global.sprItemSlime3;
-        default:            return -1;
-    }
+    var _def = itemGetDef(_id);
+    if (is_undefined(_def)) return noone;
+    if (is_undefined(_def.icon_sprite) || _def.icon_sprite == noone) return noone;
+    return _def.icon_sprite;
 }
 
