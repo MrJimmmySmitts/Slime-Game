@@ -189,8 +189,8 @@ function inv_draw_slots() {
 * Description: Draw item sprites in each occupied slot, scaled to fit while preserving aspect.
 */
 function inv_draw_items() {
-    for (var _i = 0; _i < array_length(global.inventory_slots); _i++) {
-        var _s = global.inventory_slots[_i];
+    for (var _i = 0; _i < array_length(INVENTORY_SLOTS); _i++) {
+        var _s = INVENTORY_SLOTS[_i];
         if (_s.id == ItemId.None || _s.count <= 0) continue;
 
         var _sp = item_get_sprite(_s.id);
@@ -228,8 +228,8 @@ function inv_draw_all() {
 * Description: Draw the sprite for the currently dragged stack at the GUI mouse position.
 */
 function inv_draw_cursor_stack() {
-    if (!global.inv_drag_active) return;
-    var _stack = global.inv_drag_stack;
+    if (!inv_drag_active_get()) return;
+    var _stack = inv_drag_stack_get();
     if (_stack.id == ItemId.None || _stack.count <= 0) return;
 
     var _sp = item_get_sprite(_stack.id);
