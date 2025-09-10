@@ -6,10 +6,17 @@
 * Name: Inventory UI constants
 * Description: Grid layout and padding used by inventory panel & hit testing.
 */
-#macro INV_COLS         4        // number of columns in the grid
-#macro INV_ROWS         4        // number of rows in the grid
+#macro INV_COLS         8        // number of columns in the grid
+#macro INV_ROWS         8        // number of rows in the grid
 #macro INV_SLOT_PAD     4        // pixels between slots
 #macro INV_PANEL_MARGIN 12       // padding from screen edges
+
+// Default key bindings for inventory navigation (can be remapped)
+#macro INV_KEY_UP       ord("W")
+#macro INV_KEY_DOWN     ord("S")
+#macro INV_KEY_LEFT     ord("A")
+#macro INV_KEY_RIGHT    ord("D")
+#macro INV_KEY_SELECT   vk_enter
 
 /*
 * Name: InvAnchor

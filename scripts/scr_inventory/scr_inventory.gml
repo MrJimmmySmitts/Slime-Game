@@ -60,6 +60,16 @@ function inventoryBoot(_slot_count)
     {
         global.invDragFrom = -1;
     }
+
+    // Active slot and selection tracker
+    if (!variable_global_exists("invActiveSlot"))
+    {
+        global.invActiveSlot = 0;
+    }
+    if (!variable_global_exists("invSelectSlot"))
+    {
+        global.invSelectSlot = -1;
+    }
 }
 
 /*
