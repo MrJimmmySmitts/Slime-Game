@@ -47,10 +47,18 @@ function inventory_boot(_slot_count)
         }
     }
 
-    // Drag stack
+    // Drag helpers
     if (!variable_struct_exists(global.Inventory, "drag"))
     {
         global.Inventory.drag = inv_empty();
+    }
+    if (!variable_struct_exists(global.Inventory, "drag_active"))
+    {
+        global.Inventory.drag_active = false;
+    }
+    if (!variable_global_exists("inv_drag_from"))
+    {
+        global.inv_drag_from = -1;
     }
 }
 

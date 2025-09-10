@@ -254,8 +254,8 @@ function inv_apply_merge(_src_stack, _dst_stack, _rule) {
 * Description: Attempts to merge the globally dragged stack into a given slot index.
 */
 function inv_try_merge_drag_into_slot(_slot_index) {
-    var dst = global.inventory_slots[_slot_index];
-    var src = global.inv_drag_stack;
+    var dst = INVENTORY_SLOTS[_slot_index];
+    var src = inv_drag_stack_get();
 
     var rule = inv_can_merge(src, dst);
     if (is_undefined(rule)) return false;
@@ -263,8 +263,8 @@ function inv_try_merge_drag_into_slot(_slot_index) {
     var outcome = inv_apply_merge(src, dst, rule);
     if (is_undefined(outcome)) return false;
 
-    global.inventory_slots[_slot_index] = outcome.dst_after;
-    global.inv_drag_stack = outcome.src_after;
+    INVENTORY_SLOTS[_slot_index] = outcome.dst_after;
+    inv_drag_stack_set(outcome.src_after);
     return true;
 }
 
