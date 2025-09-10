@@ -165,22 +165,34 @@ function invDrawSlots() {
     var _left = _o.x;
     var _top  = _o.y;
 
-    var _sp = global.invSprSlot;
-    if (_sp == -1) {
+    var _base = global.invSprSlot;
+    if (_base == -1) {
         // No slot sprite available; nothing to draw
         return;
     }
 
-    var _sp_w   = sprite_get_width(_sp);
-    var _sp_h   = sprite_get_height(_sp);
+    var _sp_w   = sprite_get_width(_base);
+    var _sp_h   = sprite_get_height(_base);
     var _scaleX = (_sp_w > 0) ? (global.invSlotW / _sp_w) : 1;
     var _scaleY = (_sp_h > 0) ? (global.invSlotH / _sp_h) : 1;
 
+    var _hover  = invHitTest();
+    var _active = (variable_global_exists("invActiveSlot") ? global.invActiveSlot : -1);
+    var _sel    = (variable_global_exists("invSelectSlot") ? global.invSelectSlot : -1);
+
     for (var _r = 0; _r < INV_ROWS; _r++) {
         for (var _c = 0; _c < INV_COLS; _c++) {
+            var _idx = _r * INV_COLS + _c;
             var _cx = _left + _c * (global.invSlotW + INV_SLOT_PAD) + global.invSlotW * 0.5;
             var _cy = _top  + _r * (global.invSlotH + INV_SLOT_PAD) + global.invSlotH * 0.5;
-            draw_sprite_ext(_sp, 0, _cx, _cy, _scaleX, _scaleY, 0, c_white, 1);
+
+            var _spr = _base;
+            if (_idx == _active || _idx == _sel) {
+                if (global.invSprSlotSelect != -1) _spr = global.invSprSlotSelect;
+            } else if (_idx == _hover) {
+                if (global.invSprSlotHover != -1) _spr = global.invSprSlotHover;
+            }
+            draw_sprite_ext(_spr, 0, _cx, _cy, _scaleX, _scaleY, 0, c_white, 1);
         }
     }
 }

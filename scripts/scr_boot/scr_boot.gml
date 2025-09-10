@@ -45,7 +45,8 @@ function gameInit()
 
     // (Optional) Initialise subsystems if/when you add them; keep calls here:
     itemDbInit();
-    inventoryBoot(16);
+    // Allocate slots based on grid dimensions
+    inventoryBoot(INV_COLS * INV_ROWS);
     inventoryUiBoot(32,32);// UI layout: each slot 32x32 px
     inventorySkinBoot();
     // e.g., audio_init(), etc.
