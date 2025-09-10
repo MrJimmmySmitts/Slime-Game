@@ -1,4 +1,4 @@
-if (on_pause_exit()) exit;
+if (onPauseExit()) exit;
 
 x += dirx * spd;
 y += diry * spd;

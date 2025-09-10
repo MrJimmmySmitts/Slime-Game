@@ -1,8 +1,8 @@
 /*
-* Name: dash_init
+* Name: dashInit
 * Description: Initialise dash state on the instance.
 */
-function dash_init() {
+function dashInit() {
     dash_active        = false;
     dash_time_left     = 0;
     dash_cooldown_left = 0;
@@ -11,10 +11,10 @@ function dash_init() {
 }
 
 /*
-* Name: dash_try_start
+* Name: dashTryStart
 * Description: Starts a dash in direction [fx, fy] if available.
 */
-function dash_try_start(fx, fy) {
+function dashTryStart(fx, fy) {
     if (!dash_active && dash_cooldown_left <= 0) {
         var n = vec2_normalize(fx, fy);
         var nx = n[0], ny = n[1];
@@ -27,10 +27,10 @@ function dash_try_start(fx, fy) {
 }
 
 /*
-* Name: dash_step
+* Name: dashStep
 * Description: Advances dash motion/timers. Returns true if dashing this step.
 */
-function dash_step(col_w, col_h, tilemap) {
+function dashStep(col_w, col_h, tilemap) {
     if (dash_active) {
         pmove_step_axis(dash_vx, dash_vy, col_w, col_h, tilemap);
         dash_time_left -= 1;

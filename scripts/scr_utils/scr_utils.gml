@@ -3,35 +3,35 @@
 // ====================================================================
 
 /*
-* Name: approx_zero
+* Name: approxZero
 * Description: Returns true if |v| <= eps.
 */
-function approx_zero(v, eps) { return abs(v) <= eps; }
+function approxZero(v, eps) { return abs(v) <= eps; }
 
 /*
-* Name: vec2_len
+* Name: vec2Len
 * Description: Returns Euclidean length of (vx, vy).
 */
-function vec2_len(vx, vy) { return sqrt(vx*vx + vy*vy); }
+function vec2Len(vx, vy) { return sqrt(vx*vx + vy*vy); }
 
 /*
-* Name: vec2_norm
+* Name: vec2Norm
 * Description: Normalises (vx, vy); returns (nx, ny). If zero, returns (0,0).
 */
-function vec2_norm(vx, vy)
+function vec2Norm(vx, vy)
 {
-    var mag = vec2_len(vx, vy);
+    var mag = vec2Len(vx, vy);
     if (mag <= 0.00001) return [0, 0];
     return [vx / mag, vy / mag];
 }
 
 /*
-* Name: keep_last_nonzero_vec
+* Name: keepLastNonzeroVec
 * Description: If (vx,vy) != (0,0) returns it; otherwise returns last stored pair.
 */
-function keep_last_nonzero_vec(vx, vy, last_x, last_y)
+function keepLastNonzeroVec(vx, vy, last_x, last_y)
 {
-    if (!approx_zero(vx, 0.00001) || !approx_zero(vy, 0.00001)) return [vx, vy];
+    if (!approxZero(vx, 0.00001) || !approxZero(vy, 0.00001)) return [vx, vy];
     return [last_x, last_y];
 }
 
@@ -42,83 +42,83 @@ function keep_last_nonzero_vec(vx, vy, last_x, last_y)
 function clampf(v, a, b) { return max(a, min(b, v)); }
 
 /*
-* Name: sign_nonzero
+* Name: signNonzero
 * Description: Returns sign(v) but treats 0 as 0.
 */
-function sign_nonzero(v) { return (v > 0) - (v < 0); }
+function signNonzero(v) { return (v > 0) - (v < 0); }
 /*
-* Name: game_get_state
+* Name: gameGetState
 * Description: Returns current game state; defaults safely to Playing.
 */
-function game_get_state()
+function gameGetState()
 {
-    return variable_global_exists("game_state") ? global.game_state : GameState.Playing;
+    return variable_global_exists("gameState") ? global.gameState : GameState.Playing;
 }
 
 /*
-* Name: game_set_state
+* Name: gameSetState
 * Description: Sets the current game state.
 */
-function game_set_state(_state)
+function gameSetState(_state)
 {
-    global.game_state = _state;
+    global.gameState = _state;
 }
 
 /*
-* Name: game_is_paused
+* Name: gameIsPaused
 * Description: True if gameplay should halt (Paused or Inventory).
 */
-function game_is_paused()
+function gameIsPaused()
 {
-    var s = game_get_state();
+    var s = gameGetState();
     return (s == GameState.Paused) || (s == GameState.Inventory);
 }
 
 /*
-* Name: on_pause_exit
+* Name: onPauseExit
 * Description: Return true when the game is paused so callers can early-exit Step.
 */
-function on_pause_exit() {
-    return variable_global_exists("is_paused") && global.is_paused;
+function onPauseExit() {
+    return variable_global_exists("isPaused") && global.isPaused;
 }
 
 /*
-* Name: inventory_is_open
+* Name: inventoryIsOpen
 * Description: Returns true if the global game state is Inventory.
 */
-function inventory_is_open()
+function inventoryIsOpen()
 {
-    return (game_get_state() == GameState.Inventory);
+    return (gameGetState() == GameState.Inventory);
 }
 /*
-* Name: recompute_pause_state
+* Name: recomputePauseState
 * Description: Recompute global pause from inventory/menu/dialogue visibility.
 */
-function recompute_pause_state() {
-    global.is_paused = (global.inv_visible || global.menu_visible || global.dialog_visible);
+function recomputePauseState() {
+    global.isPaused = (global.invVisible || global.menuVisible || global.dialogVisible);
 }
 /*
-* Name: menu_show
+* Name: menuShow
 * Description: Show pause menu and recompute pause.
 */
-function menu_show() {
-    global.menu_visible = true;
-    recompute_pause_state();
+function menuShow() {
+    global.menuVisible = true;
+    recomputePauseState();
 }
 
 /*
-* Name: menu_hide
+* Name: menuHide
 * Description: Hide pause menu and recompute pause.
 */
-function menu_hide() {
-    global.menu_visible = false;
-    recompute_pause_state();
+function menuHide() {
+    global.menuVisible = false;
+    recomputePauseState();
 }
 
 /*
-* Name: menu_toggle
+* Name: menuToggle
 * Description: Toggle pause menu and recompute pause.
 */
-function menu_toggle() {
-    if (global.menu_visible) menu_hide(); else menu_show();
+function menuToggle() {
+    if (global.menuVisible) menuHide(); else menuShow();
 }

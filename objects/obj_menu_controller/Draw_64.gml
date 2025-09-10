@@ -1,8 +1,8 @@
 /*
 * Name: obj_menu_controller.Draw
-* Description: Draw title/pause menu only when visible, aligned with menu_get_layout().
+* Description: Draw title/pause menu only when visible, aligned with menuGetLayout().
 */
-if (!global.menu_visible) exit;
+if (!global.menuVisible) exit;
 
 var _W = display_get_gui_width();
 var _H = display_get_gui_height();
@@ -12,7 +12,7 @@ draw_set_valign(fa_middle);
 draw_text(_W * 0.5, _H * 0.25, "PLOP");
 
 // Use the same layout as hit-testing so clicks line up exactly
-var _L = menu_get_layout();
+var _L = menuGetLayout();
 var _n = is_array(menu_items) ? array_length(menu_items) : 0;
 
 for (var _i = 0; _i < _n; _i++) {

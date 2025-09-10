@@ -1,8 +1,8 @@
 /*
-* Name: dg_config_default
+* Name: dgConfigDefault
 * Description: Returns a struct with default generator settings.
 */
-function dg_config_default() {
+function dgConfigDefault() {
     return {
         room_count_min: 8,
         room_count_max: 12,
@@ -23,18 +23,18 @@ function dg_config_default() {
 }
 
 /*
-* Name: dg_rng_init
+* Name: dgRngInit
 * Description: Initializes RNG based on config seed.
 */
-function dg_rng_init(_cfg) {
+function dgRngInit(_cfg) {
     if (_cfg.seed != -1) random_set_seed(_cfg.seed);
     else randomize();
 }
 /*
-* Name: dg_room_template_new
+* Name: dgRoomTemplateNew
 * Description: Creates a room template with exits + tile arrays.
 */
-function dg_room_template_new(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_grid) {
+function dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_grid) {
     return {
         name: _name,
         exitN: _exN, exitE: _exE, exitS: _exS, exitW: _exW,
@@ -43,10 +43,10 @@ function dg_room_template_new(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_g
     };
 }
 /*
-* Name: dg_roomdb_build_examples
+* Name: dgRoomdbBuildExamples
 * Description: Returns a small set of example room templates.
 */
-function dg_roomdb_build_examples(_cfg) {
+function dgRoomdbBuildExamples(_cfg) {
     var w = _cfg.room_cell_w;
     var h = _cfg.room_cell_h;
 
@@ -70,7 +70,7 @@ function dg_roomdb_build_examples(_cfg) {
         if (_exW) coll[midy][0] = 0;
         if (_exE) coll[midy][w-1] = 0;
 
-        return dg_room_template_new(_name, _exN, _exE, _exS, _exW, walk, coll);
+        return dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, walk, coll);
     }
 
     return [
@@ -88,19 +88,19 @@ function dg_roomdb_build_examples(_cfg) {
     ];
 }
 /*
-* Name: dg_graph_key
+* Name: dgGraphKey
 * Description: Converts grid coords to a unique key.
 */
-function dg_graph_key(_gx, _gy) {
+function dgGraphKey(_gx, _gy) {
     return string(_gx) + ":" + string(_gy);
 }
 
 /*
-* Name: dg_graph_add_node
+* Name: dgGraphAddNode
 * Description: Adds node to graph.
 */
-function dg_graph_add_node(_map, _gx, _gy) {
-    var key = dg_graph_key(_gx, _gy);
+function dgGraphAddNode(_map, _gx, _gy) {
+    var key = dgGraphKey(_gx, _gy);
     if (!ds_map_exists(_map, key)) {
         var node = {
             gx: _gx, gy: _gy,
@@ -113,10 +113,10 @@ function dg_graph_add_node(_map, _gx, _gy) {
 }
 
 /*
-* Name: dg_graph_neighbors4
+* Name: dgGraphNeighbors4
 * Description: NESW neighbor offsets.
 */
-function dg_graph_neighbors4() {
+function dgGraphNeighbors4() {
     return [
         { dx: 0, dy: -1, side: "N", opp: "S" },
         { dx: 1, dy:  0, side: "E", opp: "W" },
@@ -125,20 +125,20 @@ function dg_graph_neighbors4() {
     ];
 }
 /*
-* Name: dg_layout_build
+* Name: dgLayoutBuild
 * Description: Builds a connected layout graph.
 */
-function dg_layout_build(_cfg) {
+function dgLayoutBuild(_cfg) {
     var target = irandom_range(_cfg.room_count_min, _cfg.room_count_max);
     var graph = ds_map_create();
 
     var cur_gx = 0, cur_gy = 0;
-    dg_graph_add_node(graph, cur_gx, cur_gy);
+    dgGraphAddNode(graph, cur_gx, cur_gy);
 
     var stack = ds_list_create();
     ds_list_add(stack, { gx: cur_gx, gy: cur_gy });
 
-    var dirs = dg_graph_neighbors4();
+    var dirs = dgGraphNeighbors4();
 
     while (ds_map_size(graph) < target && ds_list_size(stack) > 0) {
         var idx = irandom(ds_list_size(stack)-1);
@@ -153,12 +153,12 @@ function dg_layout_build(_cfg) {
             var d = dirs[order[i]];
             var nx = cur_gx + d.dx;
             var ny = cur_gy + d.dy;
-            var k = dg_graph_key(nx, ny);
+            var k = dgGraphKey(nx, ny);
 
             if (!ds_map_exists(graph, k) && abs(nx) <= _cfg.grid_radius && abs(ny) <= _cfg.grid_radius) {
-                dg_graph_add_node(graph, nx, ny);
+                dgGraphAddNode(graph, nx, ny);
 
-                var cur_key = dg_graph_key(cur_gx, cur_gy);
+                var cur_key = dgGraphKey(cur_gx, cur_gy);
                 var node_cur = ds_map_find_value(graph, cur_key);
                 var node_new = ds_map_find_value(graph, k);
 
@@ -177,20 +177,20 @@ function dg_layout_build(_cfg) {
     return graph;
 }
 /*
-* Name: dg_template_matches
+* Name: dgTemplateMatches
 * Description: Checks if template exits match needs.
 */
-function dg_template_matches(_tmpl, _n, _e, _s, _w) {
+function dgTemplateMatches(_tmpl, _n, _e, _s, _w) {
     return (_tmpl.exitN == _n)
         && (_tmpl.exitE == _e)
         && (_tmpl.exitS == _s)
         && (_tmpl.exitW == _w);
 }
 /*
-* Name: dg_assign_templates
+* Name: dgAssignTemplates
 * Description: Assigns templates to nodes based on exits.
 */
-function dg_assign_templates(_cfg, _graph, _roomdb) {
+function dgAssignTemplates(_cfg, _graph, _roomdb) {
     var keys = ds_map_keys(_graph);
     for (var i = 0; i < array_length(keys); i++) {
         var key = keys[i];
@@ -203,7 +203,7 @@ function dg_assign_templates(_cfg, _graph, _roomdb) {
 
         var options = [];
         for (var t = 0; t < array_length(_roomdb); t++) {
-            if (dg_template_matches(_roomdb[t], needN, needE, needS, needW)) {
+            if (dgTemplateMatches(_roomdb[t], needN, needE, needS, needW)) {
                 array_push(options, t);
             }
         }
@@ -213,10 +213,10 @@ function dg_assign_templates(_cfg, _graph, _roomdb) {
     }
 }
 /*
-* Name: dg_layer_require
+* Name: dgLayerRequire
 * Description: Ensures tile layer exists.
 */
-function dg_layer_require(_name, _tileset) {
+function dgLayerRequire(_name, _tileset) {
     var lid = layer_get_id(_name);
     if (lid == -1) {
         lid = layer_create(-100);
@@ -231,10 +231,10 @@ function dg_layer_require(_name, _tileset) {
     return tid;
 }
 /*
-* Name: dg_tile_paint_room
+* Name: dgTilePaintRoom
 * Description: Paints a template into tilemaps.
 */
-function dg_tile_paint_room(_cfg, _node, _tmpl, _walk_tm, _coll_tm) {
+function dgTilePaintRoom(_cfg, _node, _tmpl, _walk_tm, _coll_tm) {
     var w = _cfg.room_cell_w;
     var h = _cfg.room_cell_h;
     var base_c = _node.gx * w;
@@ -248,26 +248,26 @@ function dg_tile_paint_room(_cfg, _node, _tmpl, _walk_tm, _coll_tm) {
     }
 }
 /*
-* Name: dg_build_floor_into_room
+* Name: dgBuildFloorIntoRoom
 * Description: Clears + paints all rooms into layers.
 */
-function dg_build_floor_into_room(_cfg, _graph, _roomdb) {
-    var walk_tm = dg_layer_require(_cfg.walk_layer_name, _cfg.walk_tileset);
-    var coll_tm = dg_layer_require(_cfg.coll_layer_name, _cfg.coll_tileset);
+function dgBuildFloorIntoRoom(_cfg, _graph, _roomdb) {
+    var walk_tm = dgLayerRequire(_cfg.walk_layer_name, _cfg.walk_tileset);
+    var coll_tm = dgLayerRequire(_cfg.coll_layer_name, _cfg.coll_tileset);
 
     var keys = ds_map_keys(_graph);
     for (var i = 0; i < array_length(keys); i++) {
         var node = ds_map_find_value(_graph, keys[i]);
         var tmpl = _roomdb[node.tmpl_index];
-        dg_tile_paint_room(_cfg, node, tmpl, walk_tm, coll_tm);
+        dgTilePaintRoom(_cfg, node, tmpl, walk_tm, coll_tm);
     }
 }
 /*
-* Name: dg_generate_floor
+* Name: dgGenerateFloor
 * Description: Master function to build a floor.
 */
-function dg_generate_floor(_cfg_override) {
-    var cfg = dg_config_default();
+function dgGenerateFloor(_cfg_override) {
+    var cfg = dgConfigDefault();
     if (is_struct(_cfg_override)) {
         var keys = variable_struct_get_names(_cfg_override);
         for (var i = 0; i < array_length(keys); i++) {
@@ -276,12 +276,12 @@ function dg_generate_floor(_cfg_override) {
         }
     }
 
-    dg_rng_init(cfg);
+    dgRngInit(cfg);
 
-    var graph = dg_layout_build(cfg);
-    var roomdb = dg_roomdb_build_examples(cfg);
-    dg_assign_templates(cfg, graph, roomdb);
-    dg_build_floor_into_room(cfg, graph, roomdb);
+    var graph = dgLayoutBuild(cfg);
+    var roomdb = dgRoomdbBuildExamples(cfg);
+    dgAssignTemplates(cfg, graph, roomdb);
+    dgBuildFloorIntoRoom(cfg, graph, roomdb);
 
     return graph;
 }

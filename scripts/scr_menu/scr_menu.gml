@@ -1,8 +1,8 @@
 /*
-* Name: menu_get_layout
+* Name: menuGetLayout
 * Description: Return menu layout in GUI space for hit-testing and drawing.
 */
-function menu_get_layout() {
+function menuGetLayout() {
     var _gui_w = display_get_gui_width();
     var _gui_h = display_get_gui_height();
     return {
@@ -15,11 +15,11 @@ function menu_get_layout() {
 }
 
 /*
-* Name: menu_item_bounds
+* Name: menuItemBounds
 * Description: Clickable rect for item index (GUI space) → [left, top, right, bottom].
 */
-function menu_item_bounds(_index) {
-    var _L      = menu_get_layout();
+function menuItemBounds(_index) {
+    var _L      = menuGetLayout();
     var _cx     = _L.cx;
     var _base_y = _L.start_y + _index * _L.gap;
     var _iw     = _L.item_w;
@@ -28,37 +28,37 @@ function menu_item_bounds(_index) {
 }
 
 /*
-* Name: menu_index_at
+* Name: menuIndexAt
 * Description: Menu index under the GUI-space point, or -1 if none.
 */
-function menu_index_at(_mx, _my) {
+function menuIndexAt(_mx, _my) {
     if (!is_array(menu_items)) return -1;
     var _n = array_length(menu_items);
     for (var _i = 0; _i < _n; _i++) {
-        var _b = menu_item_bounds(_i);
+        var _b = menuItemBounds(_i);
         if (_mx >= _b[0] && _mx <= _b[2] && _my >= _b[1] && _my <= _b[3]) return _i;
     }
     return -1;
 }
 
 /*
-* Name: menu_activate_selection
+* Name: menuActivateSelection
 * Description: Perform the currently selected action (same as pressing Enter).
 */
-function menu_activate_selection() {
+function menuActivateSelection() {
     if (!is_array(menu_items)) return;
     if (sel < 0 || sel >= array_length(menu_items)) return;
 
     var _choice = menu_items[sel];
 
     if (_choice == "New") {
-        dialog_queue_push("Welcome to the world of slime, there is too much non-slime around, you should fix that.");
-        menu_hide();
+        dialogQueuePush("Welcome to the world of slime, there is too much non-slime around, you should fix that.");
+        menuHide();
         room_goto(rm_game);
     }
     else if (_choice == "Continue") {
-        dialog_queue_push("Welcome back to the world of slime. You know what to do.");
-        menu_hide();
+        dialogQueuePush("Welcome back to the world of slime. You know what to do.");
+        menuHide();
         room_goto(rm_game);
     }
     else if (_choice == "Load")      { 
@@ -74,19 +74,19 @@ function menu_activate_selection() {
 
 
 /*
-* Name: menu_mouse_update
+* Name: menuMouseUpdate
 * Description: When menu is visible, hover to select and click (LMB) to activate.
 */
-function menu_mouse_update() {
-    if (!global.menu_visible) return;
+function menuMouseUpdate() {
+    if (!global.menuVisible) return;
 
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
-    var _idx = menu_index_at(_mx, _my);
+    var _idx = menuIndexAt(_mx, _my);
     if (_idx != -1) sel = _idx;
 
     if (mouse_check_button_pressed(mb_left) && _idx != -1) {
-        menu_activate_selection();
+        menuActivateSelection();
     }
 }

@@ -1,4 +1,4 @@
-if (on_pause_exit()) {
+if (onPauseExit()) {
     hspeed = 0; vspeed = 0; speed = 0;
     exit;
 }
@@ -7,7 +7,7 @@ if (on_pause_exit()) {
 * Name: obj_enemy.Step (pursuit)
 * Description: Pursue the player when within range, using tilemap collision.
 */
-enemy_seek_player_step();
+enemySeekPlayerStep();
 
 
 if (!instance_exists(target)) {

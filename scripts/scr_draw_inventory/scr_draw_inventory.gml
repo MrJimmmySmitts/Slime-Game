@@ -1,9 +1,9 @@
 
 /*
-* Name: inv_gui_mouse
+* Name: invGuiMouse
 * Description: Returns { x, y } mouse position in GUI coordinates (for Draw GUI).
 */
-function inv_gui_mouse()
+function invGuiMouse()
 {
     var mx = device_mouse_x_to_gui(0);
     var my = device_mouse_y_to_gui(0);
@@ -11,16 +11,16 @@ function inv_gui_mouse()
 }
 
 /*
-* Name: inv_panel_get_origin
+* Name: invPanelGetOrigin
 * Description: Returns { x, y } for the top-left of the inventory grid panel.
 */
-function inv_panel_get_origin()
+function invPanelGetOrigin()
 {
     var cols   = INV_COLS;
     var rows   = INV_ROWS;
     var pad    = INV_SLOT_PAD;
-    var sw     = global.inv_slot_w;
-    var sh     = global.inv_slot_h;
+    var sw     = global.invSlotW;
+    var sh     = global.invSlotH;
 
     var grid_w = cols * sw + (cols - 1) * pad;
     var grid_h = rows * sh + (rows - 1) * pad;
@@ -30,7 +30,7 @@ function inv_panel_get_origin()
     var ox = (display_get_gui_width()  - grid_w) * 0.5;
     var oy = (display_get_gui_height() - grid_h) * 0.5;
 
-    var anchor = variable_global_exists("inv_panel_anchor") ? global.inv_panel_anchor : INV_PANEL_ANCHOR;
+    var anchor = variable_global_exists("invPanelAnchor") ? global.invPanelAnchor : INV_PANEL_ANCHOR;
 
     switch (anchor)
     {
@@ -50,21 +50,21 @@ function inv_panel_get_origin()
         default: /* Center */ ;
     }
 
-    if (variable_global_exists("inv_panel_off_x")) ox += global.inv_panel_off_x;
-    if (variable_global_exists("inv_panel_off_y")) oy += global.inv_panel_off_y;
+    if (variable_global_exists("invPanelOffX")) ox += global.invPanelOffX;
+    if (variable_global_exists("invPanelOffY")) oy += global.invPanelOffY;
 
     return { x: ox, y: oy };
 }
 
 /*
-* Name: inv_panel_get_rect
+* Name: invPanelGetRect
 * Description: Returns { l, t, r, b } rectangle of the grid in GUI space.
 */
-function inv_panel_get_rect()
+function invPanelGetRect()
 {
-    var o  = inv_panel_get_origin();
-    var sw = global.inv_slot_w;
-    var sh = global.inv_slot_h;
+    var o  = invPanelGetOrigin();
+    var sw = global.invSlotW;
+    var sh = global.invSlotH;
     var pad= INV_SLOT_PAD;
 
     var w = INV_COLS * sw + (INV_COLS - 1) * pad;
@@ -74,14 +74,14 @@ function inv_panel_get_rect()
 }
 
 /*
-* Name: inv_draw_panel_bg
+* Name: invDrawPanelBg
 * Description: Draws a translucent backdrop behind the grid.
 */
-function inv_draw_panel_bg()
+function invDrawPanelBg()
 {
-    var rc = inv_panel_get_rect();
-    var pad = (variable_global_exists("inv_bg_padding") ? global.inv_bg_padding : 8);
-    var a   = (variable_global_exists("inv_bg_alpha") ? global.inv_bg_alpha : 0.6);
+    var rc = invPanelGetRect();
+    var pad = (variable_global_exists("invBgPadding") ? global.invBgPadding : 8);
+    var a   = (variable_global_exists("invBgAlpha") ? global.invBgAlpha : 0.6);
 
     draw_set_alpha(a);
     draw_set_color(c_black);
@@ -90,21 +90,21 @@ function inv_draw_panel_bg()
 }
 
 /*
-* Name: inv_hit_test
+* Name: invHitTest
 * Description: Returns slot index under the GUI mouse, or -1 if none.
 */
-function inv_hit_test()
+function invHitTest()
 {
-    var o   = inv_panel_get_origin();
-    var sw  = global.inv_slot_w;
-    var sh  = global.inv_slot_h;
+    var o   = invPanelGetOrigin();
+    var sw  = global.invSlotW;
+    var sh  = global.invSlotH;
     var pad = INV_SLOT_PAD;
 
-    var m   = inv_gui_mouse();
+    var m   = invGuiMouse();
     var mx  = m.x, my = m.y;
 
     // Quick reject outside panel bounds
-    var rc  = inv_panel_get_rect();
+    var rc  = invPanelGetRect();
     if (mx < rc.l || mx > rc.r || my < rc.t || my > rc.b) return -1;
 
     // Convert to grid coords
@@ -127,12 +127,12 @@ function inv_hit_test()
     return r * INV_COLS + c;
 }
 /*
-* Name: inv_draw_tooltip
+* Name: invDrawTooltip
 * Description: Draws a simple tooltip with item name when hovering a non-empty slot.
 */
-function inv_draw_tooltip()
+function invDrawTooltip()
 {
-    var idx = inv_hit_test();
+    var idx = invHitTest();
     if (idx < 0) return;
 
     var slots = INVENTORY_SLOTS;
@@ -141,9 +141,9 @@ function inv_draw_tooltip()
     var st = slots[idx];
     if (is_undefined(st) || st.id == ItemId.None || st.count <= 0) return;
 
-    var name = item_get_name(st.id);
+    var name = itemGetName(st.id);
 
-    var m = inv_gui_mouse();
+    var m = invGuiMouse();
     var pad = 6;
     var tw = string_width(name);
     var th = string_height(name);
@@ -157,15 +157,15 @@ function inv_draw_tooltip()
     draw_text(m.x + 12 + pad, m.y + 12 + pad, name);
 }
 /*
-* Name: inv_draw_slots
-* Description: Draw slot frames using global.inv_spr_slot, scaled to slot size.
+* Name: invDrawSlots
+* Description: Draw slot frames using global.invSprSlot, scaled to slot size.
 */
-function inv_draw_slots() {
-    var _o = inv_panel_get_origin();
+function invDrawSlots() {
+    var _o = invPanelGetOrigin();
     var _left = _o.x;
     var _top  = _o.y;
 
-    var _sp = global.inv_spr_slot;
+    var _sp = global.invSprSlot;
     if (_sp == -1) {
         // No slot sprite available; nothing to draw
         return;
@@ -173,27 +173,27 @@ function inv_draw_slots() {
 
     var _sp_w   = sprite_get_width(_sp);
     var _sp_h   = sprite_get_height(_sp);
-    var _scaleX = (_sp_w > 0) ? (global.inv_slot_w / _sp_w) : 1;
-    var _scaleY = (_sp_h > 0) ? (global.inv_slot_h / _sp_h) : 1;
+    var _scaleX = (_sp_w > 0) ? (global.invSlotW / _sp_w) : 1;
+    var _scaleY = (_sp_h > 0) ? (global.invSlotH / _sp_h) : 1;
 
     for (var _r = 0; _r < INV_ROWS; _r++) {
         for (var _c = 0; _c < INV_COLS; _c++) {
-            var _cx = _left + _c * (global.inv_slot_w + INV_SLOT_PAD) + global.inv_slot_w * 0.5;
-            var _cy = _top  + _r * (global.inv_slot_h + INV_SLOT_PAD) + global.inv_slot_h * 0.5;
+            var _cx = _left + _c * (global.invSlotW + INV_SLOT_PAD) + global.invSlotW * 0.5;
+            var _cy = _top  + _r * (global.invSlotH + INV_SLOT_PAD) + global.invSlotH * 0.5;
             draw_sprite_ext(_sp, 0, _cx, _cy, _scaleX, _scaleY, 0, c_white, 1);
         }
     }
 }
 /*
-* Name: inv_draw_items
+* Name: invDrawItems
 * Description: Draw item sprites in each occupied slot, scaled to fit while preserving aspect.
 */
-function inv_draw_items() {
+function invDrawItems() {
     for (var _i = 0; _i < array_length(INVENTORY_SLOTS); _i++) {
         var _s = INVENTORY_SLOTS[_i];
         if (_s.id == ItemId.None || _s.count <= 0) continue;
 
-        var _sp = item_get_sprite(_s.id);
+        var _sp = itemGetSprite(_s.id);
         if (_sp == -1) continue;
 
         var _pos = inv_get_slot_center(_i);
@@ -202,37 +202,37 @@ function inv_draw_items() {
 
         var _sw = sprite_get_width(_sp);
         var _sh = sprite_get_height(_sp);
-        var _sc = min(global.inv_slot_w / _sw, global.inv_slot_h / _sh);
+        var _sc = min(global.invSlotW / _sw, global.invSlotH / _sh);
         draw_sprite_ext(_sp, 0, _cx, _cy, _sc, _sc, 0, c_white, 1);
 
         if (_s.count > 1) {
             var _pad = 4;
             draw_set_halign(fa_right);
             draw_set_valign(fa_top);
-            draw_text(_cx + global.inv_slot_w * 0.5 - _pad, _cy - global.inv_slot_h * 0.5 + _pad, string(_s.count));
+            draw_text(_cx + global.invSlotW * 0.5 - _pad, _cy - global.invSlotH * 0.5 + _pad, string(_s.count));
             draw_set_halign(fa_left);
             draw_set_valign(fa_top);
         }
     }
 }
 /*
-* Name: inv_draw_all
+* Name: invDrawAll
 * Description: Convenience: draw slot frames then items.
 */
-function inv_draw_all() {
-    inv_draw_slots();
-    inv_draw_items();
+function invDrawAll() {
+    invDrawSlots();
+    invDrawItems();
 }
 /*
-* Name: inv_draw_cursor_stack
+* Name: invDrawCursorStack
 * Description: Draw the sprite for the currently dragged stack at the GUI mouse position.
 */
-function inv_draw_cursor_stack() {
-    if (!inv_drag_active_get()) return;
-    var _stack = inv_drag_stack_get();
+function invDrawCursorStack() {
+    if (!invDragActiveGet()) return;
+    var _stack = invDragStackGet();
     if (_stack.id == ItemId.None || _stack.count <= 0) return;
 
-    var _sp = item_get_sprite(_stack.id);
+    var _sp = itemGetSprite(_stack.id);
     if (_sp == -1) return;
 
     var _mx = device_mouse_x_to_gui(0);
@@ -240,13 +240,13 @@ function inv_draw_cursor_stack() {
 
     var _sw = sprite_get_width(_sp);
     var _sh = sprite_get_height(_sp);
-    var _sc = min(global.inv_slot_w / _sw, global.inv_slot_h / _sh);
+    var _sc = min(global.invSlotW / _sw, global.invSlotH / _sh);
 
     draw_sprite_ext(_sp, 0, _mx, _my, _sc, _sc, 0, c_white, 0.9);
     if (_stack.count > 1) {
         draw_set_halign(fa_right);
         draw_set_valign(fa_top);
-        draw_text(_mx + global.inv_slot_w * 0.5 - 2, _my - global.inv_slot_h * 0.5 + 2, string(_stack.count));
+        draw_text(_mx + global.invSlotW * 0.5 - 2, _my - global.invSlotH * 0.5 + 2, string(_stack.count));
         draw_set_halign(fa_left);
         draw_set_valign(fa_top);
     }

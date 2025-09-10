@@ -8,4 +8,4 @@ var cfg_override = {
     seed: -1
 };
 
-floor_graph = dg_generate_floor(cfg_override);
+floor_graph = dgGenerateFloor(cfg_override);

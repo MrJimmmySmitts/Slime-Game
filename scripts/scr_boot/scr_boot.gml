@@ -1,15 +1,15 @@
 /*
-* Name: game_init
+* Name: gameInit
 * Description: One-time bootstrap for globals, layers, and runtime knobs. Safe to call once at game start.
 */
-function game_init()
+function gameInit()
 {
-    if (!variable_global_exists("game_state")) global.game_state = GameState.Playing;
+    if (!variable_global_exists("gameState")) global.gameState = GameState.Playing;
         
-    global.is_paused   = false; // start Paused
-    global.inv_visible = false; // inventory hidden by default
-    global.menu_visible = true; // Start Menu 
-    recompute_pause_state(); 
+    global.isPaused   = false; // start Paused
+    global.invVisible = false; // inventory hidden by default
+    global.menuVisible = true; // Start Menu 
+    recomputePauseState(); 
         
     // Create a single global namespace for the project
     if (!variable_global_exists("Game")) global.Game = {};
@@ -44,16 +44,16 @@ function game_init()
     randomize();
 
     // (Optional) Initialise subsystems if/when you add them; keep calls here:
-    item_db_init();
-    inventory_boot(16);
-    inventory_ui_boot(32,32);// UI layout: each slot 32x32 px
-    inventory_skin_boot();
+    itemDbInit();
+    inventoryBoot(16);
+    inventoryUiBoot(32,32);// UI layout: each slot 32x32 px
+    inventorySkinBoot();
     // e.g., audio_init(), etc.
     /*
-    * Name: game_init (dialog init)
+    * Name: gameInit (dialog init)
     * Description: Initialise dialogue system and ensure a dialog renderer exists.
     */
-    dialog_init();
+    dialogInit();
     
     // Ensure a dialog drawer exists (place in a GUI/UI layer if you have one)
     if (!instance_exists(obj_dialog)) {
@@ -64,10 +64,10 @@ function game_init()
 }
 
 /*
-* Name: game_shutdown
-* Description: Cleanup hook for DS resources created during game_init (currently a no-op).
+* Name: gameShutdown
+* Description: Cleanup hook for DS resources created during gameInit (currently a no-op).
 */
-function game_shutdown()
+function gameShutdown()
 {
-    // Add DS map/list destroys here if you allocate them inside game_init later.
+    // Add DS map/list destroys here if you allocate them inside gameInit later.
 }

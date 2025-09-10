@@ -4,5 +4,5 @@
 */
 var qty = (is_undefined(other.amount)) ? 1 : other.amount;
 var lay_name = layer_get_name(other.layer);
-inv_add_or_drop(ItemId.Slime2, qty, other.x, other.y, lay_name);
+invAddOrDrop(ItemId.Slime2, qty, other.x, other.y, lay_name);
 with (other) instance_destroy();

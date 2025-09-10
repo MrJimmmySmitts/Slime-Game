@@ -1,41 +1,41 @@
 /*
-* Name: dialog_init
+* Name: dialogInit
 * Description: Initialise global dialogue state and queue. Call at boot.
 */
-function dialog_init() {
-    if (!variable_global_exists("dialog_queue")) global.dialog_queue = [];
-    global.dialog_visible = false;
-    global.dialog_current = "";
+function dialogInit() {
+    if (!variable_global_exists("dialogQueue")) global.dialogQueue = [];
+    global.dialogVisible = false;
+    global.dialogCurrent = "";
 }
 
 /*
-* Name: dialog_queue_push
+* Name: dialogQueuePush
 * Description: Push a message onto the dialogue queue to be shown later.
 */
-function dialog_queue_push(_text) {
-    array_push(global.dialog_queue, string(_text));
+function dialogQueuePush(_text) {
+    array_push(global.dialogQueue, string(_text));
 }
 
 /*
-* Name: dialog_show_next
+* Name: dialogShowNext
 * Description: Show the next message from the queue, pausing gameplay.
 */
-function dialog_show_next() {
-    if (array_length(global.dialog_queue) <= 0) return;
-    global.dialog_current = global.dialog_queue[0];
-    global.dialog_queue = array_delete(global.dialog_queue, 0, 1);
-    global.dialog_visible = true;
-    recompute_pause_state(); // pause while visible
+function dialogShowNext() {
+    if (array_length(global.dialogQueue) <= 0) return;
+    global.dialogCurrent = global.dialogQueue[0];
+    global.dialogQueue = array_delete(global.dialogQueue, 0, 1);
+    global.dialogVisible = true;
+    recomputePauseState(); // pause while visible
 }
 
 /*
-* Name: dialog_hide
+* Name: dialogHide
 * Description: Hide current dialogue and unpause (recompute). Also locks player input briefly to absorb the click.
 */
-function dialog_hide() {
-    global.dialog_visible = false;
-    global.dialog_current = "";
-    recompute_pause_state(); // unpause if nothing else visible
+function dialogHide() {
+    global.dialogVisible = false;
+    global.dialogCurrent = "";
+    recomputePauseState(); // unpause if nothing else visible
 
     // Absorb the dismiss click so the player doesn’t fire accidentally
     with (obj_player) {
@@ -47,28 +47,28 @@ function dialog_hide() {
 }
 
 /*
-* Name: dialog_is_active
+* Name: dialogIsActive
 * Description: Returns true if a dialogue is currently visible.
 */
-function dialog_is_active() {
-    return global.dialog_visible;
+function dialogIsActive() {
+    return global.dialogVisible;
 }
 
 /*
-* Name: dialog_step
+* Name: dialogStep
 * Description: When a dialogue is visible, accept Enter or mouse click on the OK button to dismiss.
 */
-function dialog_step() {
-    if (!global.dialog_visible) {
+function dialogStep() {
+    if (!global.dialogVisible) {
         // if nothing visible but queued, auto-show next
-        if (array_length(global.dialog_queue) > 0) dialog_show_next();
+        if (array_length(global.dialogQueue) > 0) dialogShowNext();
         return;
     }
 
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
-    // Layout must match dialog_draw()
+    // Layout must match dialogDraw()
     var _W = display_get_gui_width();
     var _H = display_get_gui_height();
 
@@ -85,21 +85,21 @@ function dialog_step() {
     var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
 
     if (keyboard_check_pressed(vk_enter)) {
-        dialog_hide();
+        dialogHide();
         return;
     }
     if (mouse_check_button_pressed(mb_left) && _hover_ok) {
-        dialog_hide();
+        dialogHide();
         return;
     }
 }
 
 /*
-* Name: dialog_draw
+* Name: dialogDraw
 * Description: Draw the dialogue box, text and OK button in GUI space.
 */
-function dialog_draw() {
-    if (!global.dialog_visible) return;
+function dialogDraw() {
+    if (!global.dialogVisible) return;
 
     var _W = display_get_gui_width();
     var _H = display_get_gui_height();
@@ -128,7 +128,7 @@ function dialog_draw() {
 
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
-    draw_text_ext(_tx, _ty, global.dialog_current, 20, _tw);
+    draw_text_ext(_tx, _ty, global.dialogCurrent, 20, _tw);
 
     // OK button
     var _btn_w = 96;
