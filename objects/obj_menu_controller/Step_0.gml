@@ -5,20 +5,20 @@
 {
     var _in_game = (room == rm_game);
 
-    if (!global.menu_visible && keyboard_check_pressed(vk_tab)) {
-        inv_toggle();
+    if (!global.menuVisible && keyboard_check_pressed(vk_tab)) {
+        invToggle();
     }
     if (keyboard_check_pressed(vk_escape)) {
-        if (global.inv_visible) inv_hide();
-        else if (_in_game)      menu_toggle();
+        if (global.invVisible) invHide();
+        else if (_in_game)      menuToggle();
     }
 
-    if (global.menu_visible) {
+    if (global.menuVisible) {
         if (keyboard_check_pressed(vk_up))   sel = (sel - 1 + array_length(menu_items)) mod array_length(menu_items);
         if (keyboard_check_pressed(vk_down)) sel = (sel + 1) mod array_length(menu_items);
-        if (keyboard_check_pressed(vk_enter)) menu_activate_selection();
+        if (keyboard_check_pressed(vk_enter)) menuActivateSelection();
 
         // Mouse support
-        menu_mouse_update();
+        menuMouseUpdate();
     }
 }

@@ -18,14 +18,14 @@ enum ItemId
 }
 
 /*
-* Name: item_db_put
+* Name: itemDbPut
 * Description: Registers an item definition in the global DB (DS map keyed by item id).
 */
-function item_db_put(_id, _def) {
+function itemDbPut(_id, _def) {
     if (!variable_global_exists("ITEM_DB")) {
         global.ITEM_DB = ds_map_create();
         // Keep only the DB alias; DO NOT alias the enum.
-        global.item_db = global.ITEM_DB;
+        global.itemDb = global.ITEM_DB;
     }
     ds_map_set(global.ITEM_DB, _id, _def);
 }
@@ -33,10 +33,10 @@ function item_db_put(_id, _def) {
 
 
 /*
-* Name: rule_make
+* Name: ruleMake
 * Description: Convenience constructor for a single merge rule entry (A + with_id -> result).
 */
-function rule_make(_with_id, _result_id, _src_cost, _dst_cost, _result_count) {
+function ruleMake(_with_id, _result_id, _src_cost, _dst_cost, _result_count) {
     return {
         with_id:      _with_id,       // partner item id
         result_id:    _result_id,     // crafted result id
@@ -47,11 +47,11 @@ function rule_make(_with_id, _result_id, _src_cost, _dst_cost, _result_count) {
 }
 
 /*
-* Name: item_db_init
+* Name: itemDbInit
 * Description: Builds the item database with stack caps and data-driven merge rules.
-*              Calls should happen once at boot (e.g., inside game_init()).
+*              Calls should happen once at boot (e.g., inside gameInit()).
 */
-function item_db_init() {
+function itemDbInit() {
     // Safely destroy previous map if it exists
     if (variable_global_exists("ITEM_DB")) {
         if (ds_exists(global.ITEM_DB, ds_type_map)) {
@@ -61,11 +61,11 @@ function item_db_init() {
 
     // Recreate DB and set compatibility alias for the MAP only
     global.ITEM_DB = ds_map_create();
-    global.item_db = global.ITEM_DB;   // ✅ ok (map alias)
+    global.itemDb = global.ITEM_DB;   // ✅ ok (map alias)
     // ❌ DO NOT: global.ItemId = ItemId;
 
     // ---- Special "None" (empty slot) ----
-    item_db_put(ItemId.None, {
+    itemDbPut(ItemId.None, {
         name: "Empty",
         max_stack: 0,
         icon_sprite: noone,
@@ -74,25 +74,25 @@ function item_db_init() {
     });
 
     // ---- Slimes ----
-    item_db_put(ItemId.Slime1, {
+    itemDbPut(ItemId.Slime1, {
         name: "Slime 1",
         max_stack: 1,
-        merge_rules: [ rule_make(ItemId.Slime1, ItemId.Slime2, 1, 1, 1) ],
+        merge_rules: [ ruleMake(ItemId.Slime1, ItemId.Slime2, 1, 1, 1) ],
         icon_sprite: noone,
         color_tint: c_white,
         desc: "Gloopy basics."
     });
 
-    item_db_put(ItemId.Slime2, {
+    itemDbPut(ItemId.Slime2, {
         name: "Slime 2",
         max_stack: 1,
-        merge_rules: [ rule_make(ItemId.Slime2, ItemId.Slime3, 1, 1, 1) ],
+        merge_rules: [ ruleMake(ItemId.Slime2, ItemId.Slime3, 1, 1, 1) ],
         icon_sprite: noone,
         color_tint: c_white,
         desc: "Thicker ooze."
     });
 
-    item_db_put(ItemId.Slime3, {
+    itemDbPut(ItemId.Slime3, {
         name: "Slime 3",
         max_stack: 1,
         merge_rules: [],
@@ -103,56 +103,56 @@ function item_db_init() {
 }
 
 /*
-* Name: item_get_def
+* Name: itemGetDef
 * Description: Returns the item definition struct for a given id, or undefined.
 */
-function item_get_def(_id) {
+function itemGetDef(_id) {
     if (is_undefined(global.ITEM_DB)) return undefined;
     if (!ds_map_exists(global.ITEM_DB, _id)) return undefined;
     return ds_map_find_value(global.ITEM_DB, _id);
 }
 
 /*
-* Name: item_db_get
-* Description: Alias to item_get_def for compatibility with older naming.
+* Name: itemDbGet
+* Description: Alias to itemGetDef for compatibility with older naming.
 */
-function item_db_get(_id) {
-    return item_get_def(_id);
+function itemDbGet(_id) {
+    return itemGetDef(_id);
 }
 
 /*
-* Name: item_get_name
+* Name: itemGetName
 * Description: Convenience: returns display name for item_id, or "Unknown".
 */
-function item_get_name(_id) {
-    var rec = item_get_def(_id);
+function itemGetName(_id) {
+    var rec = itemGetDef(_id);
     return is_undefined(rec) ? "Unknown" : (is_undefined(rec.name) ? "Unknown" : rec.name);
 }
 
 /*
-* Name: item_is_valid
+* Name: itemIsValid
 * Description: True if the id exists in the DB.
 */
-function item_is_valid(_id) {
+function itemIsValid(_id) {
     if (is_undefined(global.ITEM_DB)) return false;
     return ds_map_exists(global.ITEM_DB, _id);
 }
 
 /*
-* Name: item_coalesce
+* Name: itemCoalesce
 * Description: Returns _id if valid; otherwise ItemId.None.
 */
-function item_coalesce(_id) {
-    return item_is_valid(_id) ? _id : ItemId.None;
+function itemCoalesce(_id) {
+    return itemIsValid(_id) ? _id : ItemId.None;
 }
 
 /*
-* Name: item_merge_rule_lookup
+* Name: itemMergeRuleLookup
 * Description: Finds a merge rule for A+B. Checks A’s rules for B, then B’s rules for A (swapping costs).
 */
-function item_merge_rule_lookup(_a_id, _b_id) {
-    var a_def = item_get_def(_a_id);
-    var b_def = item_get_def(_b_id);
+function itemMergeRuleLookup(_a_id, _b_id) {
+    var a_def = itemGetDef(_a_id);
+    var b_def = itemGetDef(_b_id);
     if (is_undefined(a_def) || is_undefined(b_def)) return undefined;
 
     var scan_rules = function(_rules, _partner_id) {
@@ -192,19 +192,19 @@ function item_merge_rule_lookup(_a_id, _b_id) {
 
 /* ===========================================================
    MERGE HELPERS (drag→drop flow calls these)
-   NOTE: This script intentionally does NOT redefine item_get_max_stack().
+   NOTE: This script intentionally does NOT redefine itemGetMaxStack().
          Your existing function remains the source of truth.
    =========================================================== */
 
 /*
-* Name: inv_can_merge
-* Description: Returns a normalized merge rule (or undefined) for two stacks using item_merge_rule_lookup.
+* Name: invCanMerge
+* Description: Returns a normalized merge rule (or undefined) for two stacks using itemMergeRuleLookup.
 */
-function inv_can_merge(_src_stack, _dst_stack) {
+function invCanMerge(_src_stack, _dst_stack) {
     if (is_undefined(_src_stack) || is_undefined(_dst_stack)) return undefined;
     if (_src_stack.id <= 0 || _dst_stack.id <= 0) return undefined;
 
-    var rule = item_merge_rule_lookup(_src_stack.id, _dst_stack.id);
+    var rule = itemMergeRuleLookup(_src_stack.id, _dst_stack.id);
     if (is_undefined(rule)) return undefined;
 
     // Ensure sufficient counts
@@ -215,10 +215,10 @@ function inv_can_merge(_src_stack, _dst_stack) {
 }
 
 /*
-* Name: inv_apply_merge
+* Name: invApplyMerge
 * Description: Applies a merge using a rule; returns { dst_after, src_after } or undefined if it cannot fit.
 */
-function inv_apply_merge(_src_stack, _dst_stack, _rule) {
+function invApplyMerge(_src_stack, _dst_stack, _rule) {
     if (is_undefined(_rule)) return undefined;
 
     // Consume costs from source & destination
@@ -237,7 +237,7 @@ function inv_apply_merge(_src_stack, _dst_stack, _rule) {
         if (_dst_stack.id != _rule.result_id) {
             return undefined;
         }
-        var cap   = item_get_max_stack(_rule.result_id); // uses your existing function
+        var cap   = itemGetMaxStack(_rule.result_id); // uses your existing function
         var space = cap - dst_remaining;
         if (space < _rule.result_count) {
             return undefined;
@@ -250,45 +250,45 @@ function inv_apply_merge(_src_stack, _dst_stack, _rule) {
 }
 
 /*
-* Name: inv_try_merge_drag_into_slot
+* Name: invTryMergeDragIntoSlot
 * Description: Attempts to merge the globally dragged stack into a given slot index.
 */
-function inv_try_merge_drag_into_slot(_slot_index) {
+function invTryMergeDragIntoSlot(_slot_index) {
     var dst = INVENTORY_SLOTS[_slot_index];
-    var src = inv_drag_stack_get();
+    var src = invDragStackGet();
 
-    var rule = inv_can_merge(src, dst);
+    var rule = invCanMerge(src, dst);
     if (is_undefined(rule)) return false;
 
-    var outcome = inv_apply_merge(src, dst, rule);
+    var outcome = invApplyMerge(src, dst, rule);
     if (is_undefined(outcome)) return false;
 
     INVENTORY_SLOTS[_slot_index] = outcome.dst_after;
-    inv_drag_stack_set(outcome.src_after);
+    invDragStackSet(outcome.src_after);
     return true;
 }
 
 /*
-* Name: item_get_max_stack
+* Name: itemGetMaxStack
 * Description: Returns the stack cap for the given item id from the item DB. Defaults to 1; "None" stays 0.
 */
-function item_get_max_stack(_id)
+function itemGetMaxStack(_id)
 {
-    var def = item_get_def(_id);
+    var def = itemGetDef(_id);
     if (is_undefined(def)) return 1;
     if (is_undefined(def.max_stack)) return 1;
     return def.max_stack;
 }
 
 /*
-* Name: item_get_sprite
+* Name: itemGetSprite
 * Description: Map ItemId → sprite resource used in the inventory UI. Returns -1 if unknown.
 */
-function item_get_sprite(_id) {
+function itemGetSprite(_id) {
     switch (_id) {
-        case ItemId.Slime1: return global.spr_item_slime1;
-        case ItemId.Slime2: return global.spr_item_slime2;
-        case ItemId.Slime3: return global.spr_item_slime3;
+        case ItemId.Slime1: return global.sprItemSlime1;
+        case ItemId.Slime2: return global.sprItemSlime2;
+        case ItemId.Slime3: return global.sprItemSlime3;
         default:            return -1;
     }
 }

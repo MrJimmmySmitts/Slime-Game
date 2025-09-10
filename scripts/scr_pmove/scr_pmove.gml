@@ -3,20 +3,20 @@
 // ====================================================================
 
 /*
-* Name: tilemap_solid_at
+* Name: tilemapSolidAt
 * Description: Returns true if the given tilemap id has a non-empty tile at (px, py).
 */
-function tilemap_solid_at(tilemap_id, px, py)
+function tilemapSolidAt(tilemap_id, px, py)
 {
     // Treat any non-zero tile-id as solid on the collision tilemap.
     return tilemap_get_at_pixel(tilemap_id, px, py) != 0;
 }
 
 /*
-* Name: pmove_place_meeting_tilemap
+* Name: pmovePlaceMeetingTilemap
 * Description: Checks if bbox of the instance at (test_x, test_y) overlaps any solid tiles.
 */
-function pmove_place_meeting_tilemap(inst, tilemap_id, test_x, test_y, inset)
+function pmovePlaceMeetingTilemap(inst, tilemap_id, test_x, test_y, inset)
 {
     var bb_left   = inst.bbox_left   - inst.x + test_x + inset;
     var bb_right  = inst.bbox_right  - inst.x + test_x - inset;
@@ -24,19 +24,19 @@ function pmove_place_meeting_tilemap(inst, tilemap_id, test_x, test_y, inset)
     var bb_bottom = inst.bbox_bottom - inst.y + test_y - inset;
 
     // Sample four corners
-    if (tilemap_solid_at(tilemap_id, bb_left,  bb_top))    return true;
-    if (tilemap_solid_at(tilemap_id, bb_right, bb_top))    return true;
-    if (tilemap_solid_at(tilemap_id, bb_left,  bb_bottom)) return true;
-    if (tilemap_solid_at(tilemap_id, bb_right, bb_bottom)) return true;
+    if (tilemapSolidAt(tilemap_id, bb_left,  bb_top))    return true;
+    if (tilemapSolidAt(tilemap_id, bb_right, bb_top))    return true;
+    if (tilemapSolidAt(tilemap_id, bb_left,  bb_bottom)) return true;
+    if (tilemapSolidAt(tilemap_id, bb_right, bb_bottom)) return true;
 
     return false;
 }
 
 /*
-* Name: pmove_move_axis
+* Name: pmoveMoveAxis
 * Description: Moves instance along one axis with pixel sweep to avoid tunnelling on tiles.
 */
-function pmove_move_axis(inst, tilemap_id, axis_dx, axis_dy, inset)
+function pmoveMoveAxis(inst, tilemap_id, axis_dx, axis_dy, inset)
 {
     var remaining_x = axis_dx;
     var remaining_y = axis_dy;
@@ -44,11 +44,11 @@ function pmove_move_axis(inst, tilemap_id, axis_dx, axis_dy, inset)
     // Move X axis
     if (remaining_x != 0)
     {
-        var step_x = sign_nonzero(remaining_x);
+        var step_x = signNonzero(remaining_x);
         repeat (abs(floor(remaining_x)))
         {
             var next_x = inst.x + step_x;
-            if (!pmove_place_meeting_tilemap(inst, tilemap_id, next_x, inst.y, inset))
+            if (!pmovePlaceMeetingTilemap(inst, tilemap_id, next_x, inst.y, inset))
                 inst.x = next_x;
             else
                 break;
@@ -58,7 +58,7 @@ function pmove_move_axis(inst, tilemap_id, axis_dx, axis_dy, inset)
         if (fract_x != 0)
         {
             var next_fx = inst.x + fract_x;
-            if (!pmove_place_meeting_tilemap(inst, tilemap_id, next_fx, inst.y, inset))
+            if (!pmovePlaceMeetingTilemap(inst, tilemap_id, next_fx, inst.y, inset))
                 inst.x = next_fx;
         }
     }
@@ -66,11 +66,11 @@ function pmove_move_axis(inst, tilemap_id, axis_dx, axis_dy, inset)
     // Move Y axis
     if (remaining_y != 0)
     {
-        var step_y = sign_nonzero(remaining_y);
+        var step_y = signNonzero(remaining_y);
         repeat (abs(floor(remaining_y)))
         {
             var next_y = inst.y + step_y;
-            if (!pmove_place_meeting_tilemap(inst, tilemap_id, inst.x, next_y, inset))
+            if (!pmovePlaceMeetingTilemap(inst, tilemap_id, inst.x, next_y, inset))
                 inst.y = next_y;
             else
                 break;
@@ -79,18 +79,18 @@ function pmove_move_axis(inst, tilemap_id, axis_dx, axis_dy, inset)
         if (fract_y != 0)
         {
             var next_fy = inst.y + fract_y;
-            if (!pmove_place_meeting_tilemap(inst, tilemap_id, inst.x, next_fy, inset))
+            if (!pmovePlaceMeetingTilemap(inst, tilemap_id, inst.x, next_fy, inset))
                 inst.y = next_fy;
         }
     }
 }
 
 /*
-* Name: pmove_apply
+* Name: pmoveApply
 * Description: Applies movement (dx,dy) with collision on a collision tilemap layer.
 */
-function pmove_apply(inst, dx, dy, tilemap_id, inset)
+function pmoveApply(inst, dx, dy, tilemap_id, inset)
 {
-    pmove_move_axis(inst, tilemap_id, dx, 0, inset);
-    pmove_move_axis(inst, tilemap_id, 0, dy, inset);
+    pmoveMoveAxis(inst, tilemap_id, dx, 0, inset);
+    pmoveMoveAxis(inst, tilemap_id, 0, dy, inset);
 }

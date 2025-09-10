@@ -3,7 +3,7 @@
 * Description: Initialise the previous-state tracker for inventory toggling.
 */
 {
-    if (!variable_global_exists("inv_prev_state")) {
-        global.inv_prev_state = GameState.Playing;
+    if (!variable_global_exists("invPrevState")) {
+        global.invPrevState = GameState.Playing;
     }
 }

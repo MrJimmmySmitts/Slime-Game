@@ -26,4 +26,4 @@ slime_drop_max   = 3;   // maximum slime pickups
 * Name: obj_enemy.Create (base init)
 * Description: Initialise enemy defaults and cache collision tilemap.
 */
-enemy_base_init();
+enemyBaseInit();

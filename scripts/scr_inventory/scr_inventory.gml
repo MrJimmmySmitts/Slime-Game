@@ -3,19 +3,19 @@
 // ====================================================================
 
 /*
-* Name: inv_empty
+* Name: invEmpty
 * Description: Canonical empty stack value.
 */
-function inv_empty()
+function invEmpty()
 {
     return { id: ItemId.None, count: 0 };
 }
 
 /*
-* Name: inventory_boot
-* Description: Builds the inventory subsystem once. Must be called from game_init().
+* Name: inventoryBoot
+* Description: Builds the inventory subsystem once. Must be called from gameInit().
 */
-function inventory_boot(_slot_count)
+function inventoryBoot(_slot_count)
 {
     var slots_count = max(1, (_slot_count > 0) ? _slot_count : 16);
 
@@ -25,23 +25,23 @@ function inventory_boot(_slot_count)
     // Slots array
     if (!variable_struct_exists(global.Inventory, "slots"))
     {
-        global.Inventory.slots = array_create(slots_count, inv_empty());
+        global.Inventory.slots = array_create(slots_count, invEmpty());
     }
     else
     {
         var n = array_length(global.Inventory.slots);
         if (n != slots_count) {
-            var new_slots = array_create(slots_count, inv_empty());
+            var new_slots = array_create(slots_count, invEmpty());
             var copy_n    = min(n, slots_count);
             for (var i = 0; i < copy_n; i++) {
-                new_slots[i] = is_undefined(global.Inventory.slots[i]) ? inv_empty() : global.Inventory.slots[i];
+                new_slots[i] = is_undefined(global.Inventory.slots[i]) ? invEmpty() : global.Inventory.slots[i];
             }
             global.Inventory.slots = new_slots;
         } else {
             for (var j = 0; j < n; j++) {
                 var s = global.Inventory.slots[j];
                 if (is_undefined(s) || is_undefined(s.id) || is_undefined(s.count)) {
-                    global.Inventory.slots[j] = inv_empty();
+                    global.Inventory.slots[j] = invEmpty();
                 }
             }
         }
@@ -50,28 +50,28 @@ function inventory_boot(_slot_count)
     // Drag helpers
     if (!variable_struct_exists(global.Inventory, "drag"))
     {
-        global.Inventory.drag = inv_empty();
+        global.Inventory.drag = invEmpty();
     }
     if (!variable_struct_exists(global.Inventory, "drag_active"))
     {
         global.Inventory.drag_active = false;
     }
-    if (!variable_global_exists("inv_drag_from"))
+    if (!variable_global_exists("invDragFrom"))
     {
-        global.inv_drag_from = -1;
+        global.invDragFrom = -1;
     }
 }
 
 /*
-* Name: inv_try_add_simple
+* Name: invTryAddSimple
 * Description: Fill existing stacks, then empty slots. Returns remaining count.
 */
-function inv_try_add_simple(_item_id, _count)
+function invTryAddSimple(_item_id, _count)
 {
     var remaining = max(0, _count);
     if (remaining <= 0) return 0;
 
-    var cap = item_get_max_stack(_item_id);
+    var cap = itemGetMaxStack(_item_id);
     if (cap <= 0) return remaining;
 
     var slots = INVENTORY_SLOTS;
@@ -110,10 +110,10 @@ function inv_try_add_simple(_item_id, _count)
 }
 
 /*
-* Name: inv_world_drop_spawn
+* Name: invWorldDropSpawn
 * Description: Spawn a world pickup for leftovers.
 */
-function inv_world_drop_spawn(_item_id, _count, _wx, _wy, _layer_name)
+function invWorldDropSpawn(_item_id, _count, _wx, _wy, _layer_name)
 {
     var obj_name = "";
     switch (_item_id) {
@@ -133,71 +133,71 @@ function inv_world_drop_spawn(_item_id, _count, _wx, _wy, _layer_name)
 }
 
 /*
-* Name: inv_add_or_drop
-* Description: Add into INVENTORY_SLOTS or drop leftovers. Assumes inventory_boot() already ran.
+* Name: invAddOrDrop
+* Description: Add into INVENTORY_SLOTS or drop leftovers. Assumes inventoryBoot() already ran.
 */
-function inv_add_or_drop(_id, _count, _wx, _wy, _layer_name)
+function invAddOrDrop(_id, _count, _wx, _wy, _layer_name)
 {
-    var remain = inv_try_add_simple(_id, _count);
-    if (remain > 0) inv_world_drop_spawn(_id, remain, _wx, _wy, _layer_name);
+    var remain = invTryAddSimple(_id, _count);
+    if (remain > 0) invWorldDropSpawn(_id, remain, _wx, _wy, _layer_name);
 }
 /*
-* Name: inventory_ui_boot
-* Description: Sets slot size and basic UI flags for the inventory. Call from game_init().
+* Name: inventoryUiBoot
+* Description: Sets slot size and basic UI flags for the inventory. Call from gameInit().
 */
-function inventory_ui_boot(_slot_w, _slot_h)
+function inventoryUiBoot(_slot_w, _slot_h)
 {
-    // Slot pixel size used by layout (read by inv_panel_get_origin, etc.)
-    if (!variable_global_exists("inv_slot_w")) global.inv_slot_w = max(1, _slot_w);
-    if (!variable_global_exists("inv_slot_h")) global.inv_slot_h = max(1, _slot_h);
+    // Slot pixel size used by layout (read by invPanelGetOrigin, etc.)
+    if (!variable_global_exists("invSlotW")) global.invSlotW = max(1, _slot_w);
+    if (!variable_global_exists("invSlotH")) global.invSlotH = max(1, _slot_h);
 
     // Panel anchoring & offsets (optional; used by your panel/origin helpers)
-    if (!variable_global_exists("inv_panel_anchor")) global.inv_panel_anchor = INV_PANEL_ANCHOR;
-    if (!variable_global_exists("inv_panel_off_x")) global.inv_panel_off_x  = 0;
-    if (!variable_global_exists("inv_panel_off_y")) global.inv_panel_off_y  = 0;
+    if (!variable_global_exists("invPanelAnchor")) global.invPanelAnchor = INV_PANEL_ANCHOR;
+    if (!variable_global_exists("invPanelOffX")) global.invPanelOffX  = 0;
+    if (!variable_global_exists("invPanelOffY")) global.invPanelOffY  = 0;
 
     // Optional theme defaults (safe no-ops if you don’t use them)
-    if (!variable_global_exists("inv_bg_alpha"))     global.inv_bg_alpha     = 0.6;
-    if (!variable_global_exists("inv_bg_padding"))   global.inv_bg_padding   = 8;
+    if (!variable_global_exists("invBgAlpha"))     global.invBgAlpha     = 0.6;
+    if (!variable_global_exists("invBgPadding"))   global.invBgPadding   = 8;
 }
 /*
-* Name: inventory_skin_boot
+* Name: inventorySkinBoot
 * Description: Binds UI sprite assets to non-conflicting globals used by inventory drawers.
 */
-function inventory_skin_boot()
+function inventorySkinBoot()
 {
     // Look up sprites by resource name; store in non-conflicting global names
-    global.inv_spr_slot         = asset_get_index("spr_slot");
-    global.inv_spr_slot_hover   = asset_get_index("spr_slot_hover");
-    global.inv_spr_slot_select  = asset_get_index("spr_slot_select");
-    global.inv_spr_item_missing = asset_get_index("spr_item_missing");
+    global.invSprSlot         = asset_get_index("spr_slot");
+    global.invSprSlotHover   = asset_get_index("spr_slot_hover");
+    global.invSprSlotSelect  = asset_get_index("spr_slot_select");
+    global.invSprItemMissing = asset_get_index("spr_item_missing");
 
     // Derive slot size from slot sprite if not already set
-    if (!variable_global_exists("inv_slot_w") || global.inv_slot_w <= 0)
+    if (!variable_global_exists("invSlotW") || global.invSlotW <= 0)
     {
-        global.inv_slot_w = (global.inv_spr_slot != -1) ? sprite_get_width(global.inv_spr_slot) : 32;
+        global.invSlotW = (global.invSprSlot != -1) ? sprite_get_width(global.invSprSlot) : 32;
     }
-    if (!variable_global_exists("inv_slot_h") || global.inv_slot_h <= 0)
+    if (!variable_global_exists("invSlotH") || global.invSlotH <= 0)
     {
-        global.inv_slot_h = (global.inv_spr_slot != -1) ? sprite_get_height(global.inv_spr_slot) : 32;
+        global.invSlotH = (global.invSprSlot != -1) ? sprite_get_height(global.invSprSlot) : 32;
     }
 }
 
 /*
-* Name: inv_drag_active_get
+* Name: invDragActiveGet
 * Description: Returns true if drag is flagged active; false if unset/not active.
 */
-function inv_drag_active_get()
+function invDragActiveGet()
 {
     if (!variable_global_exists("Inventory")) return false;
     return variable_struct_exists(global.Inventory, "drag_active") ? global.Inventory.drag_active : false;
 }
 
 /*
-* Name: inv_drag_stack_get
+* Name: invDragStackGet
 * Description: Returns current dragged stack struct, or {id: ItemId.None, count: 0} if unset.
 */
-function inv_drag_stack_get()
+function invDragStackGet()
 {
     if (variable_global_exists("Inventory") && variable_struct_exists(global.Inventory, "drag"))
         return global.Inventory.drag;
@@ -205,50 +205,50 @@ function inv_drag_stack_get()
 }
 
 /*
-* Name: inv_drag_active_set
+* Name: invDragActiveSet
 * Description: Sets the drag active flag, creating the field on first use.
 */
-function inv_drag_active_set(_on)
+function invDragActiveSet(_on)
 {
     if (!variable_global_exists("Inventory")) global.Inventory = {};
     global.Inventory.drag_active = (_on == true);
 }
 
 /*
-* Name: inv_drag_stack_set
+* Name: invDragStackSet
 * Description: Sets the dragged stack, creating the field on first use.
 */
-function inv_drag_stack_set(_stack)
+function invDragStackSet(_stack)
 {
     if (!variable_global_exists("Inventory")) global.Inventory = {};
     global.Inventory.drag = _stack;
 }
 
 /*
-* Name: inv_show
+* Name: invShow
 * Description: Show inventory and recompute pause.
 */
-function inv_show() {
-    global.inv_visible = true;
-    recompute_pause_state();
+function invShow() {
+    global.invVisible = true;
+    recomputePauseState();
 }
 
 /*
-* Name: inv_hide
+* Name: invHide
 * Description: Hide inventory and recompute pause.
 */
-function inv_hide() {
-    global.inv_visible = false;
-    recompute_pause_state();
+function invHide() {
+    global.invVisible = false;
+    recomputePauseState();
 }
 
 
 /*
-* Name: inv_toggle
+* Name: invToggle
 * Description: Toggle inventory UI and pause state.
 */
-function inv_toggle() {
-    if (global.inv_visible) inv_hide(); else inv_show();
+function invToggle() {
+    if (global.invVisible) invHide(); else invShow();
 }
 
 

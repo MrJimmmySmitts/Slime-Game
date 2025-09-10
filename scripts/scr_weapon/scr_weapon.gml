@@ -3,33 +3,33 @@
 // ====================================================================
 
 /*
-* Name: weapon_tick_cooldown
+* Name: weaponTickCooldown
 * Description: Decrements fire cooldown on an instance if present.
 */
-function weapon_tick_cooldown(inst)
+function weaponTickCooldown(inst)
 {
     if (!variable_instance_exists(inst, "fire_cd")) inst.fire_cd = 0;
     if (inst.fire_cd > 0) inst.fire_cd -= 1;
 }
 
 /*
-* Name: weapon_try_fire
+* Name: weaponTryFire
 * Description: Spawns a bullet if cooldown is ready and aim vector is valid.
 */
-function weapon_try_fire(owner, origin_x, origin_y, aim_dx, aim_dy)
+function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
 {
     if (owner.fire_cd > 0) return false;
 
     // Normalise incoming aim
-    var n = vec2_norm(aim_dx, aim_dy);
+    var n = vec2Norm(aim_dx, aim_dy);
     var dir_x = n[0], dir_y = n[1];
-    if (approx_zero(dir_x, 0.00001) && approx_zero(dir_y, 0.00001)) return false;
+    if (approxZero(dir_x, 0.00001) && approxZero(dir_y, 0.00001)) return false;
 
     // Resolve bullet asset by string (avoids compile break if missing)
     var bullet_obj = asset_get_index(OBJ_BULLET_NAME);
     if (bullet_obj == -1)
     {
-        show_debug_message("weapon_try_fire: Missing asset '" + string(OBJ_BULLET_NAME) + "'.");
+        show_debug_message("weaponTryFire: Missing asset '" + string(OBJ_BULLET_NAME) + "'.");
         return false;
     }
 
