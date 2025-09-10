@@ -162,8 +162,8 @@ function inv_draw_tooltip()
 */
 function inv_draw_slots() {
     var _o = inv_panel_get_origin();
-    var _left = _o[0];
-    var _top  = _o[1];
+    var _left = _o.x;
+    var _top  = _o.y;
 
     var _sp     = global.spr_slot;
     var _sp_w   = sprite_get_width(_sp);
