@@ -194,7 +194,7 @@ function invDrawItems() {
         if (_s.id == ItemId.None || _s.count <= 0) continue;
 
         var _sp = itemGetSprite(_s.id);
-        if (_sp == -1) continue;
+        if (_sp == noone) continue;
 
         var _pos = inv_get_slot_center(_i);
         var _cx  = _pos.xx;
@@ -233,7 +233,7 @@ function invDrawCursorStack() {
     if (_stack.id == ItemId.None || _stack.count <= 0) return;
 
     var _sp = itemGetSprite(_stack.id);
-    if (_sp == -1) return;
+    if (_sp == noone) return;
 
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
