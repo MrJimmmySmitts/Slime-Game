@@ -156,6 +156,25 @@ function invDrawTooltip()
     draw_set_color(c_white);
     draw_text(m.x + 12 + pad, m.y + 12 + pad, name);
 }
+
+/*
+* Name: inv_get_slot_center
+* Description: Returns { xx, yy } center coordinates for a slot index.
+*/
+function inv_get_slot_center(_idx) {
+    var _o   = invPanelGetOrigin();
+    var _sw  = global.invSlotW;
+    var _sh  = global.invSlotH;
+    var _pad = INV_SLOT_PAD;
+
+    var _c = _idx mod INV_COLS;
+    var _r = _idx div INV_COLS;
+
+    var _xx = _o.x + _c * (_sw + _pad) + _sw * 0.5;
+    var _yy = _o.y + _r * (_sh + _pad) + _sh * 0.5;
+
+    return { xx: _xx, yy: _yy };
+}
 /*
 * Name: invDrawSlots
 * Description: Draw slot frames using global.invSprSlot, scaled to slot size.
