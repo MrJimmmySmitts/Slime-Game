@@ -165,7 +165,12 @@ function inv_draw_slots() {
     var _left = _o.x;
     var _top  = _o.y;
 
-    var _sp     = global.inv_spr_slot;
+    var _sp = global.inv_spr_slot;
+    if (_sp == -1) {
+        // No slot sprite available; nothing to draw
+        return;
+    }
+
     var _sp_w   = sprite_get_width(_sp);
     var _sp_h   = sprite_get_height(_sp);
     var _scaleX = (_sp_w > 0) ? (global.inv_slot_w / _sp_w) : 1;
