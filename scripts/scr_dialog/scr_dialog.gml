@@ -6,6 +6,9 @@ function dialogInit() {
     if (!variable_global_exists("dialogQueue")) global.dialogQueue = [];
     global.dialogVisible = false;
     global.dialogCurrent = "";
+    global.dialogType = "";
+    global.dialogCbRetry = undefined;
+    global.dialogCbQuit  = undefined;
 }
 
 /*
@@ -13,7 +16,20 @@ function dialogInit() {
 * Description: Push a message onto the dialogue queue to be shown later.
 */
 function dialogQueuePush(_text) {
-    array_push(global.dialogQueue, string(_text));
+    array_push(global.dialogQueue, { text: string(_text), type: "ok" });
+}
+
+/*
+ * Name: dialogQueuePushQuestion
+ * Description: Queue a question dialog with Retry and Quit callbacks.
+ */
+function dialogQueuePushQuestion(_text, _retry_cb, _quit_cb) {
+    array_push(global.dialogQueue, {
+        text: string(_text),
+        type: "question",
+        retry_cb: _retry_cb,
+        quit_cb: _quit_cb
+    });
 }
 
 /*
@@ -22,8 +38,14 @@ function dialogQueuePush(_text) {
 */
 function dialogShowNext() {
     if (array_length(global.dialogQueue) <= 0) return;
-    global.dialogCurrent = global.dialogQueue[0];
+    var _entry = global.dialogQueue[0];
     global.dialogQueue = array_delete(global.dialogQueue, 0, 1);
+
+    global.dialogCurrent = _entry.text;
+    global.dialogType    = _entry.type;
+    global.dialogCbRetry = _entry.retry_cb;
+    global.dialogCbQuit  = _entry.quit_cb;
+
     global.dialogVisible = true;
     recomputePauseState(); // pause while visible
 }
@@ -35,6 +57,9 @@ function dialogShowNext() {
 function dialogHide() {
     global.dialogVisible = false;
     global.dialogCurrent = "";
+    global.dialogType = "";
+    global.dialogCbRetry = undefined;
+    global.dialogCbQuit  = undefined;
     recomputePauseState(); // unpause if nothing else visible
 
     // Absorb the dismiss click so the player doesn’t fire accidentally
@@ -56,7 +81,7 @@ function dialogIsActive() {
 
 /*
 * Name: dialogStep
-* Description: When a dialogue is visible, accept Enter or mouse click on the OK button to dismiss.
+* Description: Handle input for visible dialogues, including OK or Retry/Quit buttons.
 */
 function dialogStep() {
     if (!global.dialogVisible) {
@@ -77,26 +102,46 @@ function dialogStep() {
     var _box_x = (_W - _box_w) * 0.5;
     var _box_y = _H * 0.70 - _box_h * 0.5;
 
+    var _pad = 16;
     var _btn_w = 96;
     var _btn_h = 28;
-    var _btn_x = _box_x + _box_w - _btn_w - 16;
-    var _btn_y = _box_y + _box_h - _btn_h - 16;
+    var _btn_y = _box_y + _box_h - _btn_h - _pad;
 
-    var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+    if (global.dialogType == "question") {
+        var _btn_x_quit  = _box_x + _box_w - _btn_w - _pad;
+        var _btn_x_retry = _btn_x_quit - _btn_w - _pad;
 
-    if (keyboard_check_pressed(vk_enter)) {
-        dialogHide();
-        return;
-    }
-    if (mouse_check_button_pressed(mb_left) && _hover_ok) {
-        dialogHide();
-        return;
+        var _hover_retry = (_mx >= _btn_x_retry && _mx <= _btn_x_retry + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_quit  = (_mx >= _btn_x_quit  && _mx <= _btn_x_quit  + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        if (keyboard_check_pressed(ord("R")) || (mouse_check_button_pressed(mb_left) && _hover_retry)) {
+            if (!is_undefined(global.dialogCbRetry)) global.dialogCbRetry();
+            dialogHide();
+            return;
+        }
+        if (keyboard_check_pressed(ord("Q")) || (mouse_check_button_pressed(mb_left) && _hover_quit)) {
+            if (!is_undefined(global.dialogCbQuit)) global.dialogCbQuit();
+            dialogHide();
+            return;
+        }
+    } else {
+        var _btn_x = _box_x + _box_w - _btn_w - _pad;
+        var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        if (keyboard_check_pressed(vk_enter)) {
+            dialogHide();
+            return;
+        }
+        if (mouse_check_button_pressed(mb_left) && _hover_ok) {
+            dialogHide();
+            return;
+        }
     }
 }
 
 /*
 * Name: dialogDraw
-* Description: Draw the dialogue box, text and OK button in GUI space.
+* Description: Draw the dialogue box, text and buttons in GUI space.
 */
 function dialogDraw() {
     if (!global.dialogVisible) return;
@@ -130,20 +175,46 @@ function dialogDraw() {
     draw_set_valign(fa_top);
     draw_text_ext(_tx, _ty, global.dialogCurrent, 20, _tw);
 
-    // OK button
-    var _btn_w = 96;
-    var _btn_h = 28;
-    var _btn_x = _box_x + _box_w - _btn_w - _pad;
-    var _btn_y = _box_y + _box_h - _btn_h - _pad;
-
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
-    var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
 
-    draw_set_color(_hover_ok ? make_color_rgb(80, 160, 80) : make_color_rgb(64, 128, 64));
-    draw_rectangle(_btn_x, _btn_y, _btn_x + _btn_w, _btn_y + _btn_h, false);
-    draw_set_color(c_white);
-    draw_set_halign(fa_center);
-    draw_set_valign(fa_middle);
-    draw_text(_btn_x + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "OK");
+    if (global.dialogType == "question") {
+        var _btn_w = 96;
+        var _btn_h = 28;
+        var _btn_y = _box_y + _box_h - _btn_h - _pad;
+        var _btn_x_quit  = _box_x + _box_w - _btn_w - _pad;
+        var _btn_x_retry = _btn_x_quit - _btn_w - _pad;
+
+        var _hover_retry = (_mx >= _btn_x_retry && _mx <= _btn_x_retry + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_quit  = (_mx >= _btn_x_quit  && _mx <= _btn_x_quit  + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        // Retry button
+        draw_set_color(_hover_retry ? make_color_rgb(80, 160, 80) : make_color_rgb(64, 128, 64));
+        draw_rectangle(_btn_x_retry, _btn_y, _btn_x_retry + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_set_halign(fa_center);
+        draw_set_valign(fa_middle);
+        draw_text(_btn_x_retry + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Retry");
+
+        // Quit button
+        draw_set_color(_hover_quit ? make_color_rgb(160, 80, 80) : make_color_rgb(128, 64, 64));
+        draw_rectangle(_btn_x_quit, _btn_y, _btn_x_quit + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_text(_btn_x_quit + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Quit");
+    } else {
+        // OK button
+        var _btn_w = 96;
+        var _btn_h = 28;
+        var _btn_x = _box_x + _box_w - _btn_w - _pad;
+        var _btn_y = _box_y + _box_h - _btn_h - _pad;
+
+        var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        draw_set_color(_hover_ok ? make_color_rgb(80, 160, 80) : make_color_rgb(64, 128, 64));
+        draw_rectangle(_btn_x, _btn_y, _btn_x + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_set_halign(fa_center);
+        draw_set_valign(fa_middle);
+        draw_text(_btn_x + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "OK");
+    }
 }
