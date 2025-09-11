@@ -10,6 +10,14 @@
 // ----- Early pause gate (safe no-op hook) -----
 if (onPauseExit()) exit;
 
+// Update damage cooldowns
+if (damage_cd > 0) damage_cd -= 1;
+if (flash_timer > 0) flash_timer -= 1;
+if (hp <= 0) {
+    instance_destroy();
+    exit;
+}
+
 // ----- Gather input -----
 var mv  = inputGetMove();            // {dx,dy} WASD / arrows
 var aih = inputGetAimHeld();        // {dx,dy} IJKL held

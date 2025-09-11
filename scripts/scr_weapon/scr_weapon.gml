@@ -19,6 +19,8 @@ function weaponTickCooldown(inst)
 function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
 {
     if (owner.fire_cd > 0) return false;
+    if (!variable_instance_exists(owner, "ammo")) owner.ammo = 0;
+    if (owner.ammo <= 0) return false; // no ammo
 
     // Normalise incoming aim
     var n = vec2Norm(aim_dx, aim_dy);
@@ -54,5 +56,6 @@ function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
 
     // Reset cooldown
     owner.fire_cd = FIRE_COOLDOWN_STEPS;
+    owner.ammo -= 1;
     return true;
 }
