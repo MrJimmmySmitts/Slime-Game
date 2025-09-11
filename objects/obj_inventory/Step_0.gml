@@ -69,14 +69,19 @@
                     invDragStackSet(_out.src_after);
                 }
             } else if (is_undefined(_rule)) {
-                // If merge not possible: place into empty or swap with occupant
+                // Merge not possible: move to empty slot or return to origin
                 if (_dst.id == ItemId.None || _dst.count <= 0) {
+                    // Destination empty, place item normally
                     INVENTORY_SLOTS[_drop_idx] = _src_stack;
                     invDragStackSet({ id: ItemId.None, count: 0 });
                 } else {
-                    var _tmp = _dst;
-                    INVENTORY_SLOTS[_drop_idx] = _src_stack;
-                    invDragStackSet(_tmp);
+                    // Occupied slot: restore dragged item to its source
+                    var _src_idx = global.invDragFrom;
+                    if (_src_idx >= 0 && _src_idx < array_length(INVENTORY_SLOTS) && INVENTORY_SLOTS[_src_idx].id == ItemId.None) {
+                        INVENTORY_SLOTS[_src_idx] = _src_stack;
+                    } else {
+                        inv_add(_src_stack.id, _src_stack.count, 0, 0, "", 0);
+                    }
                 }
             } else {
                 // Merge canceled: return to origin
