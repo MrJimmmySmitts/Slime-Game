@@ -14,6 +14,7 @@ if (onPauseExit()) exit;
 if (damage_cd > 0) damage_cd -= 1;
 if (flash_timer > 0) flash_timer -= 1;
 if (hp <= 0) {
+    dialogQueuePushQuestion("You died! Retry or quit?", function() { room_restart(); }, function() { game_end(); });
     instance_destroy();
     exit;
 }
