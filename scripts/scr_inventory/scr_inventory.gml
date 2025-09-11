@@ -177,10 +177,17 @@ function inventoryUiBoot(_slot_w, _slot_h)
 function inventorySkinBoot()
 {
     // Look up sprites by resource name; store in non-conflicting global names
-    global.invSprSlot         = asset_get_index("spr_slot");
-    global.invSprSlotHover   = asset_get_index("spr_slot_hover");
-    global.invSprSlotSelect  = asset_get_index("spr_slot_select");
-    global.invSprItemMissing = asset_get_index("spr_item_missing");
+    // Use asset names that actually exist within the project resources.
+    //
+    // Previously the hover/selection/missing slot sprites were looked up using
+    // incorrect resource names ("spr_slot_select" and "spr_item_missing"),
+    // causing those globals to remain -1.  Additionally, some builds reported
+    // that even the base "spr_slot" lookup returned -1.  To guard against this,
+    // the lookups now reference the known-good sprite constants directly.
+    global.invSprSlot         = spr_slot;
+    global.invSprSlotHover   = spr_slot_hover;
+    global.invSprSlotSelect  = spr_slot_selected;
+    global.invSprItemMissing = spr_slot_item_missing;
 
     // Derive slot size from slot sprite if not already set
     if (!variable_global_exists("invSlotW") || global.invSlotW <= 0)
