@@ -50,7 +50,14 @@ if (approxZero(facing_x, 0.00001) && approxZero(facing_y, 0.00001))
     facing_x = new_face[0];
     facing_y = new_face[1];
 }
-image_angle = point_direction(0,0, facing_x, facing_y);
+
+// ----- Sprite orientation -----
+// Only update the sprite angle when the player moves so that
+// IJKL aiming does not rotate the sprite.
+if (!approxZero(mv.dx, 0.00001) || !approxZero(mv.dy, 0.00001))
+{
+    image_angle = point_direction(0, 0, mv.dx, mv.dy);
+}
 
 // ----- Dash -----
 if (dash_cooldown > 0) dash_cooldown -= 1;
