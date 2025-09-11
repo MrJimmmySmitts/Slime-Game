@@ -2,14 +2,14 @@
   "$GMObject":"",
   "%Name":"obj_ammo",
   "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0"}
   ],
   "managed":true,
   "name":"obj_ammo",
   "overriddenProperties":[],
   "parent":{
     "name":"Objects",
-    "path":"folders/Objects.yy",
+    "path":"folders/Objects.yy"
   },
   "parentObjectId":null,
   "persistent":false,
@@ -31,8 +31,8 @@
   "solid":false,
   "spriteId":{
     "name":"spr_bullet",
-    "path":"sprites/spr_bullet/spr_bullet.yy",
+    "path":"sprites/spr_bullet/spr_bullet.yy"
   },
   "spriteMaskId":null,
-  "visible":true,
+  "visible":true
 }
