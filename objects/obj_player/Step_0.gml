@@ -52,12 +52,9 @@ if (approxZero(facing_x, 0.00001) && approxZero(facing_y, 0.00001))
 }
 
 // ----- Sprite orientation -----
-// Only update the sprite angle when the player moves so that
-// IJKL aiming does not rotate the sprite.
-if (!approxZero(mv.dx, 0.00001) || !approxZero(mv.dy, 0.00001))
-{
-    image_angle = point_direction(0, 0, mv.dx, mv.dy);
-}
+// The player sprite should remain upright regardless of WASD input.
+// Remove rotation based on movement by keeping a constant angle.
+image_angle = 0;
 
 // ----- Dash -----
 if (dash_cooldown > 0) dash_cooldown -= 1;
