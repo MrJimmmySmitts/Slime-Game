@@ -177,10 +177,10 @@ function inventoryUiBoot(_slot_w, _slot_h)
 function inventorySkinBoot()
 {
     // Look up sprites by resource name; store in non-conflicting global names
-    global.invSprSlot         = Asset.GMSprite(asset_get_index("spr_slot"));
-    global.invSprSlotHover   = Asset.GMSprite(asset_get_index("spr_slot_hover"));
-    global.invSprSlotSelect  = Asset.GMSprite(asset_get_index("spr_slot_select"));
-    global.invSprItemMissing = Asset.GMSprite(asset_get_index("spr_item_missing"));
+    global.invSprSlot         = asset_get_index("spr_slot");
+    global.invSprSlotHover   = asset_get_index("spr_slot_hover");
+    global.invSprSlotSelect  = asset_get_index("spr_slot_select");
+    global.invSprItemMissing = asset_get_index("spr_item_missing");
 
     // Derive slot size from slot sprite if not already set
     if (!variable_global_exists("invSlotW") || global.invSlotW <= 0)
