@@ -17,7 +17,12 @@ function dialogInit() {
 */
 function dialogQueuePush(_text) {
     if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) dialogInit();
-    array_push(global.dialogQueue, { text: string(_text), type: "ok" });
+    array_push(global.dialogQueue, {
+        text    : string(_text),
+        type    : "ok",
+        retry_cb: undefined,
+        quit_cb : undefined
+    });
 }
 
 /*
@@ -45,8 +50,8 @@ function dialogShowNext() {
 
     global.dialogCurrent = _entry.text;
     global.dialogType    = _entry.type;
-    global.dialogCbRetry = _entry.retry_cb;
-    global.dialogCbQuit  = _entry.quit_cb;
+    global.dialogCbRetry = variable_struct_exists(_entry, "retry_cb") ? _entry.retry_cb : undefined;
+    global.dialogCbQuit  = variable_struct_exists(_entry, "quit_cb")  ? _entry.quit_cb  : undefined;
 
     global.dialogVisible = true;
     recomputePauseState(); // pause while visible
