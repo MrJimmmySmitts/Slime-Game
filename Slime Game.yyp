@@ -37,8 +37,8 @@
   "resources":[
     {"id":{"name":"fnt_menu","path":"fonts/fnt_menu/fnt_menu.yy",},},
     {"id":{"name":"fnt_ui","path":"fonts/fnt_ui/fnt_ui.yy",},},
-    {"id":{"name":"obj_bullet","path":"objects/obj_bullet/obj_bullet.yy",},},
     {"id":{"name":"obj_ammo","path":"objects/obj_ammo/obj_ammo.yy",},},
+    {"id":{"name":"obj_bullet","path":"objects/obj_bullet/obj_bullet.yy",},},
     {"id":{"name":"obj_dialog","path":"objects/obj_dialog/obj_dialog.yy",},},
     {"id":{"name":"obj_enemy_1","path":"objects/obj_enemy_1/obj_enemy_1.yy",},},
     {"id":{"name":"obj_enemy_2","path":"objects/obj_enemy_2/obj_enemy_2.yy",},},
@@ -68,6 +68,7 @@
     {"id":{"name":"scr_room_generation","path":"scripts/scr_room_generation/scr_room_generation.yy",},},
     {"id":{"name":"scr_utils","path":"scripts/scr_utils/scr_utils.yy",},},
     {"id":{"name":"scr_weapon","path":"scripts/scr_weapon/scr_weapon.yy",},},
+    {"id":{"name":"spr_ammo","path":"sprites/spr_ammo/spr_ammo.yy",},},
     {"id":{"name":"spr_bg_title","path":"sprites/spr_bg_title/spr_bg_title.yy",},},
     {"id":{"name":"spr_btn_exit","path":"sprites/spr_btn_exit/spr_btn_exit.yy",},},
     {"id":{"name":"spr_btn_play","path":"sprites/spr_btn_play/spr_btn_play.yy",},},
