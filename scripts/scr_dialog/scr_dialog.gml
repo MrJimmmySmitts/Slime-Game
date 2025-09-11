@@ -3,7 +3,10 @@
 * Description: Initialise global dialogue state and queue. Call at boot.
 */
 function dialogInit() {
-    if (!variable_global_exists("dialogQueue")) global.dialogQueue = [];
+    // Ensure the queue exists and is a proper array each time we init.
+    if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) {
+        global.dialogQueue = [];
+    }
     global.dialogVisible = false;
     global.dialogCurrent = "";
     global.dialogType = "";
