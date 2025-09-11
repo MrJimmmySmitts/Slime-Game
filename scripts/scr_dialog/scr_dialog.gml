@@ -43,8 +43,18 @@ function dialogShowNext() {
 
     global.dialogCurrent = _entry.text;
     global.dialogType    = _entry.type;
-    global.dialogCbRetry = _entry.retry_cb;
-    global.dialogCbQuit  = _entry.quit_cb;
+
+    if (variable_struct_exists(_entry, "retry_cb")) {
+        global.dialogCbRetry = _entry.retry_cb;
+    } else {
+        global.dialogCbRetry = undefined;
+    }
+
+    if (variable_struct_exists(_entry, "quit_cb")) {
+        global.dialogCbQuit = _entry.quit_cb;
+    } else {
+        global.dialogCbQuit = undefined;
+    }
 
     global.dialogVisible = true;
     recomputePauseState(); // pause while visible
