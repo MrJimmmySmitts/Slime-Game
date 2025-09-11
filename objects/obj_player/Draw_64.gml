@@ -9,19 +9,18 @@ var gui_w = display_get_gui_width();
 
 // Margin from the screen edges
 var margin  = 10;
-var heart_x = margin;
-var heart_y = margin;
+var text_x = margin;
+var text_y = margin;
 
+draw_set_font(fnt_ui);
 draw_set_color(c_white);
 
-// Draw hearts representing current and maximum health
-for (var i = 0; i < hp_max; i++) {
-    var heart_char = (i < hp) ? "\u2665" : "\u2661"; // ♥ or ♡
-    draw_text(heart_x + i * 16, heart_y, heart_char);
-}
+// Draw numeric health so it's visible even without heart glyphs
+var health_text = "Health: " + string(hp) + " / " + string(hp_max);
+draw_text(text_x, text_y, health_text);
 
 // Draw ammo text anchored to the top-right corner
 var ammo_text = "Ammo: " + string(ammo);
 draw_set_halign(fa_right);
-draw_text(gui_w - margin, heart_y + 16, ammo_text);
+draw_text(gui_w - margin, text_y + 16, ammo_text);
 draw_set_halign(fa_left);
