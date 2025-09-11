@@ -16,7 +16,15 @@ function dialogInit() {
 * Description: Push a message onto the dialogue queue to be shown later.
 */
 function dialogQueuePush(_text) {
-    array_push(global.dialogQueue, { text: string(_text), type: "ok" });
+
+    if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) dialogInit();
+    array_push(global.dialogQueue, {
+        text    : string(_text),
+        type    : "ok",
+        retry_cb: undefined,
+        quit_cb : undefined
+    });
+
 }
 
 /*
@@ -24,6 +32,9 @@ function dialogQueuePush(_text) {
  * Description: Queue a question dialog with Retry and Quit callbacks.
  */
 function dialogQueuePushQuestion(_text, _retry_cb, _quit_cb) {
+
+    if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) dialogInit();
+
     array_push(global.dialogQueue, {
         text: string(_text),
         type: "question",
@@ -44,6 +55,7 @@ function dialogShowNext() {
     global.dialogCurrent = _entry.text;
     global.dialogType    = _entry.type;
 
+
     if (variable_struct_exists(_entry, "retry_cb")) {
         global.dialogCbRetry = _entry.retry_cb;
     } else {
@@ -55,6 +67,7 @@ function dialogShowNext() {
     } else {
         global.dialogCbQuit = undefined;
     }
+
 
     global.dialogVisible = true;
     recomputePauseState(); // pause while visible
