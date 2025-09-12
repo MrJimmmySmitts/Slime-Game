@@ -27,6 +27,7 @@ if (instance_exists(target)) {
 
 // Die if hp <= 0 → drop ammo and slime
 if (hp <= 0) {
+
     // Spawn ammo pickups using configured range
     var drops_to_spawn = irandom_range(ammo_drop_min, ammo_drop_max);
     repeat (drops_to_spawn) {
