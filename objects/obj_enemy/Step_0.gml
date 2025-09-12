@@ -25,10 +25,19 @@ if (instance_exists(target)) {
     y += dy * speed;
 }
 
-// Die if hp <= 0 → drop slime
+// Die if hp <= 0 → drop ammo and slime
 if (hp <= 0) {
-    // Create slime pickup with 1–3 items
-    var drop = instance_create_layer(x, y, layer, obj_slime);
-    drop.amount = irandom_range(1, 3);
+    // Spawn ammo pickups using configured range
+    var drops_to_spawn = irandom_range(ammo_drop_min, ammo_drop_max);
+    repeat (drops_to_spawn) {
+        var spawn_x = x + irandom_range(-6, 6);
+        var spawn_y = y + irandom_range(-6, 6);
+        instance_create_layer(spawn_x, spawn_y, layer_get_name(layer), obj_ammo);
+    }
+
+    // Spawn configured slime pickup
+    var drop = instance_create_layer(x, y, layer_get_name(layer), slime_drop_object);
+    drop.amount = irandom_range(slime_drop_min, slime_drop_max);
+
     instance_destroy();
 }

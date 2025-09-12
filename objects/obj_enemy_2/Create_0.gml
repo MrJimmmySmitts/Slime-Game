@@ -13,3 +13,10 @@ is_dead = false;
 enemy_speed = 2;
 enemy_range = 200;
 
+// Override drop configuration
+ammo_drop_min   = 3;
+ammo_drop_max   = 4;
+slime_drop_object = obj_slime_2;
+slime_drop_min    = 1;
+slime_drop_max    = 1;
+
