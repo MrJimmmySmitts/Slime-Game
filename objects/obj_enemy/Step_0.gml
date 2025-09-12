@@ -27,8 +27,8 @@ if (instance_exists(target)) {
 
 // Die if hp <= 0 → drop slime
 if (hp <= 0) {
-    // Create slime pickup with 1–3 items
-    var drop = instance_create_layer(x, y, layer, obj_slime);
-    drop.amount = irandom_range(1, 3);
+    // Create slime pickup with configured amount
+    var drop = instance_create_layer(x, y, layer, slime_drop_object);
+    drop.amount = irandom_range(slime_drop_min, slime_drop_max);
     instance_destroy();
 }
