@@ -1,95 +1,30 @@
-# Node modules
+# GameMaker Studio 2
+
+# Dependency directories
 node_modules/
-
-# Windows
- 
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
- 
-# Dump file
-*.stackdump
- 
-# Folder config file
-[Dd]esktop.ini
- 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
- 
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
- 
-# Windows shortcuts
-*.lnk
- 
-# Mac
- 
-## General
-.DS_Store
-.AppleDouble
-.LSOverride
- 
-## Icon must end with two \r
-Icon
- 
-## Thumbnails
-._*
- 
-## Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
- 
-## Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
- 
-# GameMaker temporary files
-*.resource_order
-*.old
-
-# ================================
-# GameMaker Studio 2 Git Ignore
-# ================================
 
 # Build artifacts
 *.yyz
 *.zip
-*.apk
-*.xcodeproj
+*.gmez
+*.win
 *.app
-*.ipa
+*.dmg
 *.exe
 *.dll
-*.dmg
+*.apk
+*.ipa
+*.xcodeproj
 
 # Compiled cache and build folders
 build/
 cache/
-temp/
 output/
+temp/
 
-# Visual Studio files (if using extensions)
-.vs/
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-
-# Backup files
+# User-specific GameMaker files
+*.yyp.user
+*.yyp.backup
 *.log
 *.tmp
 *.bak
@@ -100,14 +35,6 @@ output/
 Thumbs.db
 desktop.ini
 
-# User-specific GameMaker IDE settings
-*.yyp.user
-*.yyp.backup
-
-# GitHub / Editor junk
+# Editor merge leftovers
 *.orig
 *.rej
-objects/obj_enemy/obj_enemy.yy
-objects/obj_player/obj_player.yy
-objects/obj_slime_2/obj_slime_2.yy
-Slime Game.yyp
