@@ -30,8 +30,8 @@
   "physicsShapePoints":[],
   "physicsStartAwake":true,
   "properties":[
-    {"$GMObjectProperty":"v1","%Name":"level_message","filters":[],"listItems":[],"multiselect":false,"name":"level_message","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"Exit reached! Prepare for the next area.","varType":1,},
-    {"$GMObjectProperty":"v1","%Name":"level_final_message","filters":[],"listItems":[],"multiselect":false,"name":"level_final_message","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"You win! What would you like to do?","varType":1,}
+    {"$GMObjectProperty":"v1","%Name":"level_message","filters":[],"listItems":[],"multiselect":false,"name":"level_message","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"\"Exit reached! Prepare for the next area.\"","varType":1,},
+    {"$GMObjectProperty":"v1","%Name":"level_final_message","filters":[],"listItems":[],"multiselect":false,"name":"level_final_message","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"\"You win! What would you like to do?\"","varType":1,}
   ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
