@@ -34,7 +34,8 @@
     {"$GMObjectProperty":"v1","%Name":"spawn_interval_min","filters":[],"listItems":[],"multiselect":false,"name":"spawn_interval_min","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"60","varType":0,},
     {"$GMObjectProperty":"v1","%Name":"spawn_interval_max","filters":[],"listItems":[],"multiselect":false,"name":"spawn_interval_max","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"180","varType":0,},
     {"$GMObjectProperty":"v1","%Name":"spawn_radius","filters":[],"listItems":[],"multiselect":false,"name":"spawn_radius","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"200","varType":0,},
-    {"$GMObjectProperty":"v1","%Name":"spawn_attempts","filters":[],"listItems":[],"multiselect":false,"name":"spawn_attempts","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0","resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"10","varType":0,}
+    {"$GMObjectProperty":"v1","%Name":"spawn_attempts","filters":[],"listItems":[],"multiselect":false,"name":"spawn_attempts","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"10","varType":0,}
+
   ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
