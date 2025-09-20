@@ -30,6 +30,7 @@
   "physicsShapePoints":[],
   "physicsStartAwake":true,
   "properties":[],
+
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
