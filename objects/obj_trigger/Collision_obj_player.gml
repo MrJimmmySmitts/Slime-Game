@@ -1,14 +1,8 @@
 /*
 * Name: obj_trigger.Collision[obj_player]
-* Description: Load the next room when the player touches the trigger.
+* Description: Delegate collision handling to the configured behaviour.
 */
-var next_room = room_next(room);
-if (next_room != -1)
+if (is_struct(trigger_behaviour))
 {
-    room_goto(next_room);
-}
-else
-{
-    show_debug_message("obj_trigger: no next room available; restarting current room.");
-    room_restart();
+    trigger_behaviour.onPlayerEnter(other);
 }
