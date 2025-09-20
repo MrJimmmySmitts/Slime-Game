@@ -1,9 +1,5 @@
 /*
 * Name: obj_trigger.Destroy
-* Description: Forward destroy event to the behaviour struct.
+* Description: Clean up shared trigger state.
 */
-if (is_struct(trigger_behaviour))
-{
-    trigger_behaviour.onDestroy();
-    trigger_behaviour = undefined;
-}
+triggerBaseOnDestroy();
