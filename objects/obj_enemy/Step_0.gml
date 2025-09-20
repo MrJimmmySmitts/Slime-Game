@@ -29,16 +29,22 @@ if (instance_exists(target)) {
 if (hp <= 0) {
 
     // Spawn ammo pickups using configured range
-    var drops_to_spawn = irandom_range(ammo_drop_min, ammo_drop_max);
-    repeat (drops_to_spawn) {
-        var spawn_x = x + irandom_range(-6, 6);
-        var spawn_y = y + irandom_range(-6, 6);
-        instance_create_layer(spawn_x, spawn_y, layer_get_name(layer), obj_ammo);
+    var _layer_name = layer_get_name(layer);
+
+    // Spawn stock pickup with combined ammo amount
+    var _stock_amt = irandom_range(stock_drop_min_amount, stock_drop_max_amount);
+    if (_stock_amt > 0) {
+        pickupSpawnStock(x, y, _layer_name, _stock_amt);
     }
 
-    // Spawn configured slime pickup
-    var drop = instance_create_layer(x, y, layer_get_name(layer), slime_drop_object);
-    drop.amount = irandom_range(slime_drop_min, slime_drop_max);
+    // Spawn modifier pickup (respect preferred id if provided)
+    var _mod_amt = irandom_range(modifier_drop_min, modifier_drop_max);
+    if (_mod_amt > 0) {
+        var _mod_id = pickupChooseModifierId(modifier_drop_id);
+        if (_mod_id != ItemId.None) {
+            pickupSpawnModifier(x, y, _layer_name, _mod_id, _mod_amt);
+        }
+    }
 
     instance_destroy();
 }

@@ -1,17 +1,18 @@
 {
   "$GMObject":"",
-  "%Name":"obj_slime_3",
-  "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-  ],
+  "%Name":"obj_pickup_stock",
+  "eventList":[],
   "managed":true,
-  "name":"obj_slime_3",
+  "name":"obj_pickup_stock",
   "overriddenProperties":[],
   "parent":{
     "name":"Objects",
     "path":"folders/Objects.yy",
   },
-  "parentObjectId":null,
+  "parentObjectId":{
+    "name":"obj_pickup_base",
+    "path":"objects/obj_pickup_base/obj_pickup_base.yy",
+  },
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -25,15 +26,13 @@
   "physicsShape":1,
   "physicsShapePoints":[],
   "physicsStartAwake":true,
-  "properties":[
-    {"$GMObjectProperty":"v1","%Name":"amount","filters":[],"listItems":[],"multiselect":false,"name":"amount","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"1","varType":0,},
-  ],
+  "properties":[],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"spr_slime_3",
-    "path":"sprites/spr_slime_3/spr_slime_3.yy",
+    "name":"spr_ammo",
+    "path":"sprites/spr_ammo/spr_ammo.yy",
   },
   "spriteMaskId":null,
   "visible":true,

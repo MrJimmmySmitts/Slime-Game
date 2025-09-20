@@ -226,6 +226,7 @@ function invDrawItems() {
 
         var _sp = itemGetSprite(_s.id);
         if (_sp == noone) continue;
+        var _col = itemGetColorTint(_s.id);
 
         var _pos = inv_get_slot_center(_i);
         var _cx  = _pos.xx;
@@ -234,7 +235,7 @@ function invDrawItems() {
         var _sw = sprite_get_width(_sp);
         var _sh = sprite_get_height(_sp);
         var _sc = min(global.invSlotW / _sw, global.invSlotH / _sh);
-        draw_sprite_ext(_sp, 0, _cx, _cy, _sc, _sc, 0, c_white, 1);
+        draw_sprite_ext(_sp, 0, _cx, _cy, _sc, _sc, 0, _col, 1);
 
         if (_s.count > 1) {
             var _pad = 4;
@@ -265,6 +266,7 @@ function invDrawCursorStack() {
 
     var _sp = itemGetSprite(_stack.id);
     if (_sp == noone) return;
+    var _col = itemGetColorTint(_stack.id);
 
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
@@ -273,7 +275,7 @@ function invDrawCursorStack() {
     var _sh = sprite_get_height(_sp);
     var _sc = min(global.invSlotW / _sw, global.invSlotH / _sh);
 
-    draw_sprite_ext(_sp, 0, _mx, _my, _sc, _sc, 0, c_white, 0.9);
+    draw_sprite_ext(_sp, 0, _mx, _my, _sc, _sc, 0, _col, 0.9);
     if (_stack.count > 1) {
         draw_set_halign(fa_right);
         draw_set_valign(fa_top);

@@ -45,17 +45,31 @@ function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
 
     var b = instance_create_layer(origin_x, origin_y, spawn_layer, bullet_obj);
 
+    // Resolve dynamic stats with safe fallbacks
+    var bullet_speed  = BULLET_SPEED;
+    if (variable_instance_exists(owner, "bullet_speed")) bullet_speed = owner.bullet_speed;
+
+    var bullet_damage = PLAYER_BASE_BULLET_DAMAGE;
+    if (variable_instance_exists(owner, "bullet_damage")) bullet_damage = owner.bullet_damage;
+
+    var cooldown_steps = FIRE_COOLDOWN_STEPS;
+    if (variable_instance_exists(owner, "fire_cooldown_steps")) cooldown_steps = max(1, owner.fire_cooldown_steps);
+
     // Common fields most bullet templates expect
     b.direction = point_direction(0, 0, dir_x, dir_y);
-    b.speed     = BULLET_SPEED;
+    b.speed     = bullet_speed;
 
     // Helpful extras (ignored if unused in your bullet)
     b.owner     = owner;
     b.dir_x     = dir_x;
     b.dir_y     = dir_y;
+    b.dirx      = dir_x;
+    b.diry      = dir_y;
+    b.spd       = bullet_speed;
+    b.damage    = bullet_damage;
 
-    // Reset cooldown
-    owner.fire_cd = FIRE_COOLDOWN_STEPS;
-    owner.ammo -= 1;
+    // Reset cooldown & ammo
+    owner.fire_cd = cooldown_steps;
+    owner.ammo = max(0, owner.ammo - 1);
     return true;
 }
