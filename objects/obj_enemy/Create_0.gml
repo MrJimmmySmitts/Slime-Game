@@ -16,6 +16,9 @@ vspeed           = 0;
 speed            = 0;
 direction        = 0;
 target           = noone;
+enemy_state      = EnemyState.Idle;
+enemy_flash_timer = 0;
+enemy_stun_timer  = 0;
 
 // Loot configuration
 stock_drop_min_amount = 6;   // minimum ammo units

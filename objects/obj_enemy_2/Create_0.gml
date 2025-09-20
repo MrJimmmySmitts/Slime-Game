@@ -12,6 +12,8 @@ is_dead = false;
 */
 enemy_speed = 2;
 enemy_range = 200;
+enemy_activation_range = enemy_range;
+enemy_leash_range      = enemy_activation_range + 96;
 
 // Ranged attack configuration
 projectile_cooldown_max = 75; // steps between shots (configurable)

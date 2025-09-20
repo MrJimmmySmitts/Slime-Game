@@ -12,6 +12,8 @@ is_dead = false;
 */
 enemy_speed = 0.9;
 enemy_range = 160;
+enemy_activation_range = enemy_range;
+enemy_leash_range      = enemy_activation_range + 96;
 
 // Override drop configuration
 stock_drop_min_amount = 3;
