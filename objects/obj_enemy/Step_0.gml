@@ -2,31 +2,19 @@ if (onPauseExit()) {
     hspeed = 0; vspeed = 0; speed = 0;
     exit;
 }
-    
+
 /*
-* Name: obj_enemy.Step (pursuit)
-* Description: Pursue the player when within range, using tilemap collision.
+* Name: obj_enemy.Step (behaviour)
+* Description: Handle timers, state transitions, and chasing logic.
 */
+if (enemy_flash_timer > 0) enemy_flash_timer -= 1;
+if (enemy_stun_timer  > 0) enemy_stun_timer  -= 1;
+
 enemySeekPlayerStep();
 
-
-if (!instance_exists(target)) {
-    target = instance_nearest(x, y, obj_player);
-}
-if (instance_exists(target)) {
-    var dx = sign(target.x - x);
-    var dy = sign(target.y - y);
-    var len = point_distance(x, y, target.x, target.y);
-    if (len > 0) {
-        dx = (target.x - x) / len;
-        dy = (target.y - y) / len;
-    }
-    x += dx * speed;
-    y += dy * speed;
-}
-
 // Die if hp <= 0 → drop ammo and slime
-if (hp <= 0) {
+if (hp <= 0 && !is_dead) {
+    is_dead = true;
 
     // Spawn ammo pickups using configured range
     var _layer_name = layer_get_name(layer);

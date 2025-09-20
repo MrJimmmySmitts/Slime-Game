@@ -115,7 +115,7 @@ Resolve the collision tilemap from the layer named "tm_collision".
 Related: [enemyBaseInit](#enemybaseinit), [enemySeekPlayerStep](#enemyseekplayerstep), [enemyUnstuckFromTilemap](#enemyunstuckfromtilemap)
 
 ### enemySeekPlayerStep
-Avoid tiny oscillations when very close to the player.
+Handle behaviour state transitions and chase the player when active.
 Related: [enemyBaseInit](#enemybaseinit), [enemyResolveTilemap](#enemyresolvetilemap), [enemyUnstuckFromTilemap](#enemyunstuckfromtilemap)
 
 ### enemyUnstuckFromTilemap

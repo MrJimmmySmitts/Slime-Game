@@ -204,18 +204,20 @@
     
     <section class="card">
       <h2>Overview</h2>
-      <p>This reference covers <strong>106</strong> documented functions across <strong>13</strong> script assets.</p>
+      <p>This reference covers <strong>125</strong> documented functions across <strong>15</strong> script assets.</p>
       <nav aria-label="Function groups">
         <ul>
           <li><a href="#script-scr-boot">scr_boot <span class="badge">2</span></a></li>
 <li><a href="#script-scr-dash">scr_dash <span class="badge">3</span></a></li>
 <li><a href="#script-scr-dialog">scr_dialog <span class="badge">8</span></a></li>
 <li><a href="#script-scr-draw-inventory">scr_draw_inventory <span class="badge">11</span></a></li>
-<li><a href="#script-scr-enemy">scr_enemy <span class="badge">6</span></a></li>
+<li><a href="#script-scr-enemy">scr_enemy <span class="badge">10</span></a></li>
 <li><a href="#script-scr-input">scr_input <span class="badge">7</span></a></li>
 <li><a href="#script-scr-inventory">scr_inventory <span class="badge">14</span></a></li>
-<li><a href="#script-scr-items">scr_items <span class="badge">14</span></a></li>
+<li><a href="#script-scr-items">scr_items <span class="badge">16</span></a></li>
 <li><a href="#script-scr-menu">scr_menu <span class="badge">5</span></a></li>
+<li><a href="#script-scr-pickups">scr_pickups <span class="badge">10</span></a></li>
+<li><a href="#script-scr-player-stats">scr_player_stats <span class="badge">3</span></a></li>
 <li><a href="#script-scr-pmove">scr_pmove <span class="badge">4</span></a></li>
 <li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">15</span></a></li>
 <li><a href="#script-scr-utils">scr_utils <span class="badge">15</span></a></li>
@@ -380,7 +382,7 @@
   <p><code>function invDrawAll()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:253</span>
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:254</span>
     <span title="Script asset">📄 scr_draw_inventory</span>
   </div>
 </article>
@@ -390,7 +392,7 @@
   <p><code>function invDrawCursorStack()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:261</span>
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:262</span>
     <span title="Script asset">📄 scr_draw_inventory</span>
   </div>
 </article>
@@ -477,13 +479,33 @@
 </section>
 <section id="script-scr-enemy">
   <h2>scr_enemy</h2>
-  <article class="card" id="function-enemybaseinit">
+  <article class="card" id="function-enemyapplydamage">
+  <h3>enemyApplyDamage</h3>
+  <p>Apply damage with stun/flash feedback and ensure the enemy becomes active.</p>
+  <p><code>function enemyApplyDamage(_amount, _source)</code></p>
+  <ul><li><code>_amount</code></li><li><code>_source</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:139</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemybaseinit">
   <h3>enemyBaseInit</h3>
   <p>Initialise defaults, collider, tilemap, and fractional move remainders.</p>
   <p><code>function enemyBaseInit()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:35</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:45</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemychasetarget">
+  <h3>enemyChaseTarget</h3>
+  <p>Move towards the provided target using tilemap-aware motion.</p>
+  <p><code>function enemyChaseTarget(_target)</code></p>
+  <ul><li><code>_target</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:114</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -493,17 +515,37 @@
   <p><code>function enemyResolveTilemap()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:88</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:227</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
 <article class="card" id="function-enemyseekplayerstep">
   <h3>enemySeekPlayerStep</h3>
-  <p>Avoid tiny oscillations when very close to the player.</p>
+  <p>Handle behaviour state transitions and chase the player when active.</p>
   <p><code>function enemySeekPlayerStep()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:58</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:182</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemysetactive">
+  <h3>enemySetActive</h3>
+  <p>Activate the enemy and assign a chase target (defaults to nearest player).</p>
+  <p><code>function enemySetActive(_target)</code></p>
+  <ul><li><code>_target</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:97</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemysetidle">
+  <h3>enemySetIdle</h3>
+  <p>Reset behaviour state to idle and clear movement remainders/target.</p>
+  <p><code>function enemySetIdle()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:86</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -513,7 +555,7 @@
   <p><code>function enemyUnstuckFromTilemap(_tm, _max)</code></p>
   <ul><li><code>_tm</code></li><li><code>_max</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:6</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:16</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -523,7 +565,7 @@
   <p><code>function moveAxisWithTilemap(_tm, _axis, _amount, _w, _h)</code></p>
   <ul><li><code>_tm</code></li><li><code>_axis</code></li><li><code>_amount</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:122</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:261</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -533,7 +575,7 @@
   <p><code>function tmRectHitsSolid(_tm, _x, _y, _w, _h)</code></p>
   <ul><li><code>_tm</code></li><li><code>_x</code></li><li><code>_y</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:97</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:236</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -619,7 +661,7 @@
   <p><code>function invAddOrDrop(_id, _count, _wx, _wy, _layer_name)</code></p>
   <ul><li><code>_id</code></li><li><code>_count</code></li><li><code>_wx</code></li><li><code>_wy</code></li><li><code>_layer_name</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:149</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:137</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -629,7 +671,7 @@
   <p><code>function invDragActiveGet()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:207</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:195</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -639,7 +681,7 @@
   <p><code>function invDragActiveSet(_on)</code></p>
   <ul><li><code>_on</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:228</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:216</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -649,7 +691,7 @@
   <p><code>function invDragStackGet()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:217</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:205</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -659,7 +701,7 @@
   <p><code>function invDragStackSet(_stack)</code></p>
   <ul><li><code>_stack</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:238</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:226</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -689,7 +731,7 @@
   <p><code>function inventorySkinBoot()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:177</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:165</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -699,7 +741,7 @@
   <p><code>function inventoryUiBoot(_slot_w, _slot_h)</code></p>
   <ul><li><code>_slot_w</code></li><li><code>_slot_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:158</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:146</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -709,7 +751,7 @@
   <p><code>function invHide()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:257</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:245</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -719,7 +761,7 @@
   <p><code>function invShow()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:248</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:236</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -729,7 +771,7 @@
   <p><code>function invToggle()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:267</span>
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:255</span>
     <span title="Script asset">📄 scr_inventory</span>
   </div>
 </article>
@@ -762,7 +804,7 @@
   <p><code>function invApplyMerge(_src_stack, _dst_stack, _rule)</code></p>
   <ul><li><code>_src_stack</code></li><li><code>_dst_stack</code></li><li><code>_rule</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:221</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:266</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -772,7 +814,7 @@
   <p><code>function invCanMerge(_src_stack, _dst_stack)</code></p>
   <ul><li><code>_src_stack</code></li><li><code>_dst_stack</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:203</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:248</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -782,7 +824,7 @@
   <p><code>function invTryMergeDragIntoSlot(_slot_index)</code></p>
   <ul><li><code>_slot_index</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:256</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:301</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -792,7 +834,7 @@
   <p><code>function itemCoalesce(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:145</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:190</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -802,7 +844,7 @@
   <p><code>function itemDbGet(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:119</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:164</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -812,7 +854,7 @@
   <p><code>function itemDbInit()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:54</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:57</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -822,7 +864,27 @@
   <p><code>function itemDbPut(_id, _def)</code></p>
   <ul><li><code>_id</code></li><li><code>_def</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:24</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:27</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetbuffs">
+  <h3>itemGetBuffs</h3>
+  <p>Returns the buff struct for the item, or undefined.</p>
+  <p><code>function itemGetBuffs(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:354</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetcolortint">
+  <h3>itemGetColorTint</h3>
+  <p>Returns configured tint colour for inventory/world visuals.</p>
+  <p><code>function itemGetColorTint(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:343</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -832,7 +894,7 @@
   <p><code>function itemGetDef(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:109</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:154</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -842,7 +904,7 @@
   <p><code>function itemGetMaxStack(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:275</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:320</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -852,7 +914,7 @@
   <p><code>function itemGetName(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:127</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:172</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -862,7 +924,7 @@
   <p><code>function itemGetSprite(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:287</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:332</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -872,7 +934,7 @@
   <p><code>function itemIsValid(_id)</code></p>
   <ul><li><code>_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:136</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:181</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -882,7 +944,7 @@
   <p><code>function itemMergeRuleLookup(_a_id, _b_id)</code></p>
   <ul><li><code>_a_id</code></li><li><code>_b_id</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:153</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:198</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -892,7 +954,7 @@
   <p><code>function ruleMake(_with_id, _result_id, _src_cost, _dst_cost, _result_count)</code></p>
   <ul><li><code>_with_id</code></li><li><code>_result_id</code></li><li><code>_src_cost</code></li><li><code>_dst_cost</code></li><li><code>_result_count</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_items/scr_items.gml:39</span>
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:42</span>
     <span title="Script asset">📄 scr_items</span>
   </div>
 </article>
@@ -947,6 +1009,142 @@
   <div class="meta">
     <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:80</span>
     <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-pickups">
+  <h2>scr_pickups</h2>
+  <article class="card" id="function-pickupchoosemodifierid">
+  <h3>pickupChooseModifierId</h3>
+  <p>Resolves preferred modifier id or random fallback.</p>
+  <p><code>function pickupChooseModifierId(_preferred)</code></p>
+  <ul><li><code>_preferred</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:175</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupclampamount">
+  <h3>pickupClampAmount</h3>
+  <p>Returns a non-negative integer amount for stack counts.</p>
+  <p><code>function pickupClampAmount(_amt)</code></p>
+  <ul><li><code>_amt</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:19</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupcombineintoself">
+  <h3>pickupCombineIntoSelf</h3>
+  <p>Absorbs nearby pickups of the same type into _inst.</p>
+  <p><code>function pickupCombineIntoSelf(_inst)</code></p>
+  <ul><li><code>_inst</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:59</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupconfiguremodifier">
+  <h3>pickupConfigureModifier</h3>
+  <p>Applies modifier settings and merges duplicates.</p>
+  <p><code>function pickupConfigureModifier(_inst, _item_id, _amount)</code></p>
+  <ul><li><code>_inst</code></li><li><code>_item_id</code></li><li><code>_amount</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:125</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupconfigurestock">
+  <h3>pickupConfigureStock</h3>
+  <p>Applies stock settings and merges duplicates.</p>
+  <p><code>function pickupConfigureStock(_inst, _amount)</code></p>
+  <ul><li><code>_inst</code></li><li><code>_amount</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:102</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupplayercollect">
+  <h3>pickupPlayerCollect</h3>
+  <p>Applies pickup effects when the player collides with it.</p>
+  <p><code>function pickupPlayerCollect(_player, _pickup)</code></p>
+  <ul><li><code>_player</code></li><li><code>_pickup</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:214</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickuprefreshappearance">
+  <h3>pickupRefreshAppearance</h3>
+  <p>Updates sprite tint based on pickup class/item id.</p>
+  <p><code>function pickupRefreshAppearance(_inst)</code></p>
+  <ul><li><code>_inst</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:29</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupresolvelayer">
+  <h3>pickupResolveLayer</h3>
+  <p>Returns a safe layer name for spawning pickups.</p>
+  <p><code>function pickupResolveLayer(_layer_name)</code></p>
+  <ul><li><code>_layer_name</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:150</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupspawnmodifier">
+  <h3>pickupSpawnModifier</h3>
+  <p>Spawns a modifier pickup with the specified item id and amount.</p>
+  <p><code>function pickupSpawnModifier(_x, _y, _layer_name, _item_id, _amount)</code></p>
+  <ul><li><code>_x</code></li><li><code>_y</code></li><li><code>_layer_name</code></li><li><code>_item_id</code></li><li><code>_amount</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:199</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+<article class="card" id="function-pickupspawnstock">
+  <h3>pickupSpawnStock</h3>
+  <p>Spawns a stock pickup instance with the given amount.</p>
+  <p><code>function pickupSpawnStock(_x, _y, _layer_name, _amount)</code></p>
+  <ul><li><code>_x</code></li><li><code>_y</code></li><li><code>_layer_name</code></li><li><code>_amount</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pickups/scr_pickups.gml:160</span>
+    <span title="Script asset">📄 scr_pickups</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-player-stats">
+  <h2>scr_player_stats</h2>
+  <article class="card" id="function-playerstatsapplybuff">
+  <h3>playerStatsApplyBuff</h3>
+  <p>Applies a buff struct multiplied by count onto stats struct.</p>
+  <p><code>function playerStatsApplyBuff(_stats, _buff, _count)</code></p>
+  <ul><li><code>_stats</code></li><li><code>_buff</code></li><li><code>_count</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_player_stats/scr_player_stats.gml:30</span>
+    <span title="Script asset">📄 scr_player_stats</span>
+  </div>
+</article>
+<article class="card" id="function-playerstatsensurebase">
+  <h3>playerStatsEnsureBase</h3>
+  <p>Stores baseline stats for later modifier application.</p>
+  <p><code>function playerStatsEnsureBase(_inst)</code></p>
+  <ul><li><code>_inst</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_player_stats/scr_player_stats.gml:9</span>
+    <span title="Script asset">📄 scr_player_stats</span>
+  </div>
+</article>
+<article class="card" id="function-playerstatsrecalculate">
+  <h3>playerStatsRecalculate</h3>
+  <p>Rebuilds derived stats from current inventory contents.</p>
+  <p><code>function playerStatsRecalculate(_inst)</code></p>
+  <ul><li><code>_inst</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_player_stats/scr_player_stats.gml:49</span>
+    <span title="Script asset">📄 scr_player_stats</span>
   </div>
 </article>
 </section>
@@ -1323,7 +1521,7 @@
 </article>
 </section>
   
-    <footer>Generated on 2025-09-20T07:37:02.629Z</footer>
+    <footer>Generated on 2025-09-20T08:37:01.373Z</footer>
   </main>
 </body>
 </html>

@@ -1,4 +1,14 @@
 /*
+* Name: EnemyState
+* Description: Enemy behaviour state machine values.
+*/
+enum EnemyState
+{
+    Idle   = 0,
+    Active = 1,
+}
+
+/*
 * Name: enemyUnstuckFromTilemap
 * Description: If the collider overlaps the collision tilemap at the current position,
 *              push out along the smallest displacement up to _max pixels.
@@ -36,6 +46,24 @@ function enemyBaseInit() {
     if (!variable_instance_exists(id, "enemy_speed")) enemy_speed = 1.25;
     if (!variable_instance_exists(id, "enemy_range")) enemy_range = 200;
 
+    if (!variable_instance_exists(id, "enemy_activation_range")) enemy_activation_range = enemy_range;
+    if (!variable_instance_exists(id, "enemy_leash_range")) {
+        enemy_leash_range = max(enemy_activation_range + 96, enemy_activation_range);
+    } else {
+        enemy_leash_range = max(enemy_leash_range, enemy_activation_range);
+    }
+
+    if (!variable_instance_exists(id, "enemy_flash_duration")) {
+        enemy_flash_duration = max(2, round(room_speed * 0.08));
+    }
+    if (!variable_instance_exists(id, "enemy_stun_duration")) {
+        enemy_stun_duration = max(2, round(room_speed * 0.15));
+    }
+
+    enemy_flash_timer = 0;
+    enemy_stun_timer  = 0;
+    enemy_state       = EnemyState.Idle;
+
     var w = sprite_get_width(sprite_index);
     var h = sprite_get_height(sprite_index);
     enemy_col_w = (w > 0) ? clamp(w * 0.50, 8, 24) : 16;
@@ -52,31 +80,142 @@ function enemyBaseInit() {
 }
 
 /*
+* Name: enemySetIdle
+* Description: Reset behaviour state to idle and clear movement remainders/target.
+*/
+function enemySetIdle() {
+    enemy_state = EnemyState.Idle;
+    target      = noone;
+    if (variable_instance_exists(id, "enemy_move_rx")) enemy_move_rx = 0;
+    if (variable_instance_exists(id, "enemy_move_ry")) enemy_move_ry = 0;
+}
+
+/*
+* Name: enemySetActive
+* Description: Activate the enemy and assign a chase target (defaults to nearest player).
+*/
+function enemySetActive(_target) {
+    enemy_state = EnemyState.Active;
+
+    var _t = noone;
+    if (instance_exists(_target)) {
+        _t = _target;
+    } else {
+        _t = instance_nearest(x, y, obj_player);
+    }
+
+    target = instance_exists(_t) ? _t : noone;
+}
+
+/*
+* Name: enemyChaseTarget
+* Description: Move towards the provided target using tilemap-aware motion.
+*/
+function enemyChaseTarget(_target) {
+    if (!instance_exists(_target)) return;
+
+    var _tx = _target.x;
+    var _ty = _target.y;
+
+    var dx = _tx - x;
+    var dy = _ty - y;
+    var dist = point_distance(x, y, _tx, _ty);
+
+    if (dist <= enemy_speed) return;
+    if (dist <= 0) return;
+
+    var inv = 1 / dist;
+    var vx = dx * inv * enemy_speed;
+    var vy = dy * inv * enemy_speed;
+
+    moveAxisWithTilemap(enemy_tm, 0, vx, enemy_col_w, enemy_col_h);
+    moveAxisWithTilemap(enemy_tm, 1, vy, enemy_col_w, enemy_col_h);
+}
+
+/*
+* Name: enemyApplyDamage
+* Description: Apply damage with stun/flash feedback and ensure the enemy becomes active.
+*/
+function enemyApplyDamage(_amount, _source) {
+    if (!variable_instance_exists(id, "hp")) return;
+
+    var _dmg = is_real(_amount) ? _amount : 0;
+    _dmg = max(0, _dmg);
+    hp = max(0, hp - _dmg);
+
+    if (!variable_instance_exists(id, "enemy_flash_duration")) {
+        enemy_flash_duration = max(2, round(room_speed * 0.08));
+    }
+    if (!variable_instance_exists(id, "enemy_stun_duration")) {
+        enemy_stun_duration = max(2, round(room_speed * 0.15));
+    }
+
+    enemy_flash_timer = max(enemy_flash_timer, enemy_flash_duration);
+    enemy_stun_timer  = max(enemy_stun_timer, enemy_stun_duration);
+
+    var _attacker = noone;
+    if (instance_exists(_source)) {
+        if (_source.object_index == obj_player) {
+            _attacker = _source;
+        } else if (variable_instance_exists(_source, "owner") && instance_exists(_source.owner)) {
+            if (_source.owner.object_index == obj_player) {
+                _attacker = _source.owner;
+            }
+        }
+    }
+
+    if (!instance_exists(_attacker)) {
+        _attacker = instance_nearest(x, y, obj_player);
+    }
+
+    if (instance_exists(_attacker)) {
+        enemySetActive(_attacker);
+    } else {
+        enemySetActive(noone);
+    }
+}
+
+/*
 * Name: enemySeekPlayerStep
-* Description: Avoid tiny oscillations when very close to the player.
+* Description: Handle behaviour state transitions and chase the player when active.
 */
 function enemySeekPlayerStep() {
     if (onPauseExit()) return;
     if (!instance_exists(obj_player)) return;
 
-    var p = instance_nearest(x, y, obj_player);
-    if (p == noone) return;
+    var _player = instance_nearest(x, y, obj_player);
+    if (_player == noone) {
+        enemySetIdle();
+        return;
+    }
 
-    var dx = p.x - x;
-    var dy = p.y - y;
-    var dist = point_distance(x, y, p.x, p.y);
+    switch (enemy_state) {
+        case EnemyState.Idle:
+            if (point_distance(x, y, _player.x, _player.y) <= enemy_activation_range) {
+                enemySetActive(_player);
+            }
+            break;
 
-    // NEW: if we're closer than one "speed" step, don't move this frame
-    if (dist <= enemy_speed) return;
+        case EnemyState.Active:
+            if (!instance_exists(target) || target.object_index != obj_player) {
+                target = _player;
+            }
 
-    if (dist <= enemy_range) {
-        var fx = dx / dist;
-        var fy = dy / dist;
-        var vx = fx * enemy_speed;
-        var vy = fy * enemy_speed;
+            if (!instance_exists(target)) {
+                enemySetIdle();
+                break;
+            }
 
-        moveAxisWithTilemap(enemy_tm, 0, vx, enemy_col_w, enemy_col_h);
-        moveAxisWithTilemap(enemy_tm, 1, vy, enemy_col_w, enemy_col_h);
+            var _dist = point_distance(x, y, target.x, target.y);
+            if (_dist > enemy_leash_range) {
+                enemySetIdle();
+                break;
+            }
+
+            if (enemy_stun_timer <= 0) {
+                enemyChaseTarget(target);
+            }
+            break;
     }
 }
 
