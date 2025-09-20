@@ -12,18 +12,23 @@ function dialogInit() {
     global.dialogType = "";
     global.dialogCbRetry = undefined;
     global.dialogCbQuit  = undefined;
+    global.dialogCbOk    = undefined;
+    global.dialogCbMenu  = undefined;
 }
 
 /*
 * Name: dialogQueuePush
 * Description: Push a message onto the dialogue queue to be shown later.
 */
-function dialogQueuePush(_text) {
+function dialogQueuePush(_text, _ok_cb) {
+
+    if (argument_count < 2) _ok_cb = undefined;
 
     if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) dialogInit();
     array_push(global.dialogQueue, {
         text    : string(_text),
         type    : "ok",
+        ok_cb   : _ok_cb,
         retry_cb: undefined,
         quit_cb : undefined
     });
@@ -46,6 +51,19 @@ function dialogQueuePushQuestion(_text, _retry_cb, _quit_cb) {
     });
 }
 
+function dialogQueuePushWin(_text, _menu_cb, _restart_cb, _quit_cb) {
+
+    if (!variable_global_exists("dialogQueue") || !is_array(global.dialogQueue)) dialogInit();
+
+    array_push(global.dialogQueue, {
+        text: string(_text),
+        type: "win",
+        menu_cb: _menu_cb,
+        retry_cb: _restart_cb,
+        quit_cb: _quit_cb
+    });
+}
+
 /*
 * Name: dialogShowNext
 * Description: Show the next message from the queue, pausing gameplay.
@@ -58,6 +76,18 @@ function dialogShowNext() {
     global.dialogCurrent = _entry.text;
     global.dialogType    = _entry.type;
 
+
+    if (variable_struct_exists(_entry, "ok_cb")) {
+        global.dialogCbOk = _entry.ok_cb;
+    } else {
+        global.dialogCbOk = undefined;
+    }
+
+    if (variable_struct_exists(_entry, "menu_cb")) {
+        global.dialogCbMenu = _entry.menu_cb;
+    } else {
+        global.dialogCbMenu = undefined;
+    }
 
     if (variable_struct_exists(_entry, "retry_cb")) {
         global.dialogCbRetry = _entry.retry_cb;
@@ -86,6 +116,8 @@ function dialogHide() {
     global.dialogType = "";
     global.dialogCbRetry = undefined;
     global.dialogCbQuit  = undefined;
+    global.dialogCbOk    = undefined;
+    global.dialogCbMenu  = undefined;
     recomputePauseState(); // unpause if nothing else visible
 
     // Absorb the dismiss click so the player doesn’t fire accidentally
@@ -150,15 +182,41 @@ function dialogStep() {
             dialogHide();
             return;
         }
+    } else if (global.dialogType == "win") {
+        var _btn_x_quit    = _box_x + _box_w - _btn_w - _pad;
+        var _btn_x_restart = _box_x + (_box_w - _btn_w) * 0.5;
+        var _btn_x_menu    = _box_x + _pad;
+
+        var _hover_menu    = (_mx >= _btn_x_menu    && _mx <= _btn_x_menu    + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_restart = (_mx >= _btn_x_restart && _mx <= _btn_x_restart + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_quit    = (_mx >= _btn_x_quit    && _mx <= _btn_x_quit    + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        if (keyboard_check_pressed(ord("M")) || (mouse_check_button_pressed(mb_left) && _hover_menu)) {
+            if (!is_undefined(global.dialogCbMenu)) global.dialogCbMenu();
+            dialogHide();
+            return;
+        }
+        if (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("R")) || (mouse_check_button_pressed(mb_left) && _hover_restart)) {
+            if (!is_undefined(global.dialogCbRetry)) global.dialogCbRetry();
+            dialogHide();
+            return;
+        }
+        if (keyboard_check_pressed(ord("Q")) || (mouse_check_button_pressed(mb_left) && _hover_quit)) {
+            if (!is_undefined(global.dialogCbQuit)) global.dialogCbQuit();
+            dialogHide();
+            return;
+        }
     } else {
         var _btn_x = _box_x + _box_w - _btn_w - _pad;
         var _hover_ok = (_mx >= _btn_x && _mx <= _btn_x + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
 
         if (keyboard_check_pressed(vk_enter)) {
+            if (!is_undefined(global.dialogCbOk)) global.dialogCbOk();
             dialogHide();
             return;
         }
         if (mouse_check_button_pressed(mb_left) && _hover_ok) {
+            if (!is_undefined(global.dialogCbOk)) global.dialogCbOk();
             dialogHide();
             return;
         }
@@ -221,6 +279,37 @@ function dialogDraw() {
         draw_set_halign(fa_center);
         draw_set_valign(fa_middle);
         draw_text(_btn_x_retry + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Retry");
+
+        // Quit button
+        draw_set_color(_hover_quit ? make_color_rgb(160, 80, 80) : make_color_rgb(128, 64, 64));
+        draw_rectangle(_btn_x_quit, _btn_y, _btn_x_quit + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_text(_btn_x_quit + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Quit");
+    } else if (global.dialogType == "win") {
+        var _btn_w = 96;
+        var _btn_h = 28;
+        var _btn_y = _box_y + _box_h - _btn_h - _pad;
+        var _btn_x_menu    = _box_x + _pad;
+        var _btn_x_restart = _box_x + (_box_w - _btn_w) * 0.5;
+        var _btn_x_quit    = _box_x + _box_w - _btn_w - _pad;
+
+        var _hover_menu    = (_mx >= _btn_x_menu    && _mx <= _btn_x_menu    + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_restart = (_mx >= _btn_x_restart && _mx <= _btn_x_restart + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+        var _hover_quit    = (_mx >= _btn_x_quit    && _mx <= _btn_x_quit    + _btn_w && _my >= _btn_y && _my <= _btn_y + _btn_h);
+
+        // Menu button
+        draw_set_color(_hover_menu ? make_color_rgb(80, 120, 200) : make_color_rgb(64, 96, 168));
+        draw_rectangle(_btn_x_menu, _btn_y, _btn_x_menu + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_set_halign(fa_center);
+        draw_set_valign(fa_middle);
+        draw_text(_btn_x_menu + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Menu");
+
+        // Restart button
+        draw_set_color(_hover_restart ? make_color_rgb(80, 160, 80) : make_color_rgb(64, 128, 64));
+        draw_rectangle(_btn_x_restart, _btn_y, _btn_x_restart + _btn_w, _btn_y + _btn_h, false);
+        draw_set_color(c_white);
+        draw_text(_btn_x_restart + _btn_w * 0.5, _btn_y + _btn_h * 0.5, "Restart");
 
         // Quit button
         draw_set_color(_hover_quit ? make_color_rgb(160, 80, 80) : make_color_rgb(128, 64, 64));
