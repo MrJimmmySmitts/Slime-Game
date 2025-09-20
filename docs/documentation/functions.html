@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Slime Game Function Reference</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #1f2430;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #2a3d66, #403f7a);
+      color: #fff;
+      padding: 2.5rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      letter-spacing: 0.03em;
+    }
+    header p {
+      margin: 0.75rem 0 0;
+      max-width: 70ch;
+    }
+    main {
+      max-width: 1100px;
+      margin: -3rem auto 2rem;
+      padding: 0 1.25rem 2.5rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(18, 21, 34, 0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(66, 71, 112, 0.08);
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #2a3d66;
+      background: rgba(42, 61, 102, 0.08);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    nav a:hover,
+    nav a:focus {
+      background: #2a3d66;
+      color: #fff;
+    }
+    section + section {
+      margin-top: 3rem;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.75rem;
+      color: #2a3d66;
+    }
+    h3 {
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem;
+      color: #3a3f63;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      color: #4c5270;
+      margin-top: 0.75rem;
+    }
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .badge {
+      background: rgba(64, 63, 122, 0.12);
+      color: #403f7a;
+      padding: 0.1rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    code {
+      background: rgba(42, 61, 102, 0.08);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.95rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px rgba(42, 61, 102, 0.08);
+    }
+    thead {
+      background: rgba(42, 61, 102, 0.08);
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) {
+      background: rgba(42, 61, 102, 0.03);
+    }
+    a.inline-link {
+      color: #2a3d66;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(42, 61, 102, 0.35);
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    a.inline-link:hover,
+    a.inline-link:focus {
+      color: #111b36;
+      border-color: #111b36;
+    }
+    .empty {
+      color: #6d728b;
+      font-style: italic;
+    }
+    footer {
+      font-size: 0.85rem;
+      color: #6d728b;
+      margin-top: 2rem;
+      text-align: right;
+    }
+    @media (max-width: 768px) {
+      header {
+        padding: 2rem 1rem;
+      }
+      main {
+        margin-top: -2.5rem;
+        padding: 0 1rem 2rem;
+      }
+      .card {
+        padding: 1.5rem;
+      }
+      nav ul {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .meta {
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        margin-bottom: 1rem;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 8px 18px rgba(18, 21, 34, 0.08);
+        padding: 0.75rem 1rem;
+      }
+      td {
+        padding: 0.35rem 0;
+      }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+        color: #2a3d66;
+        margin-bottom: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Slime Game Function Reference</h1>
+    <p>Annotated list of helper scripts and runtime functions available in the project.</p>
+  </header>
+  <main>
+    
+    <section class="card">
+      <h2>Overview</h2>
+      <p>This reference covers <strong>106</strong> documented functions across <strong>13</strong> script assets.</p>
+      <nav aria-label="Function groups">
+        <ul>
+          <li><a href="#script-scr-boot">scr_boot <span class="badge">2</span></a></li>
+<li><a href="#script-scr-dash">scr_dash <span class="badge">3</span></a></li>
+<li><a href="#script-scr-dialog">scr_dialog <span class="badge">8</span></a></li>
+<li><a href="#script-scr-draw-inventory">scr_draw_inventory <span class="badge">11</span></a></li>
+<li><a href="#script-scr-enemy">scr_enemy <span class="badge">6</span></a></li>
+<li><a href="#script-scr-input">scr_input <span class="badge">7</span></a></li>
+<li><a href="#script-scr-inventory">scr_inventory <span class="badge">14</span></a></li>
+<li><a href="#script-scr-items">scr_items <span class="badge">14</span></a></li>
+<li><a href="#script-scr-menu">scr_menu <span class="badge">5</span></a></li>
+<li><a href="#script-scr-pmove">scr_pmove <span class="badge">4</span></a></li>
+<li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">15</span></a></li>
+<li><a href="#script-scr-utils">scr_utils <span class="badge">15</span></a></li>
+<li><a href="#script-scr-weapon">scr_weapon <span class="badge">2</span></a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="script-scr-boot">
+  <h2>scr_boot</h2>
+  <article class="card" id="function-gameinit">
+  <h3>gameInit</h3>
+  <p>One-time bootstrap for globals, layers, and runtime knobs. Safe to call once at game start.</p>
+  <p><code>function gameInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_boot/scr_boot.gml:5</span>
+    <span title="Script asset">📄 scr_boot</span>
+  </div>
+</article>
+<article class="card" id="function-gameshutdown">
+  <h3>gameShutdown</h3>
+  <p>Cleanup hook for DS resources created during gameInit (currently a no-op).</p>
+  <p><code>function gameShutdown()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_boot/scr_boot.gml:71</span>
+    <span title="Script asset">📄 scr_boot</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-dash">
+  <h2>scr_dash</h2>
+  <article class="card" id="function-dashinit">
+  <h3>dashInit</h3>
+  <p>Initialise dash state on the instance.</p>
+  <p><code>function dashInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dash/scr_dash.gml:5</span>
+    <span title="Script asset">📄 scr_dash</span>
+  </div>
+</article>
+<article class="card" id="function-dashstep">
+  <h3>dashStep</h3>
+  <p>Advances dash motion/timers. Returns true if dashing this step.</p>
+  <p><code>function dashStep(col_w, col_h, tilemap)</code></p>
+  <ul><li><code>col_w</code></li><li><code>col_h</code></li><li><code>tilemap</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dash/scr_dash.gml:33</span>
+    <span title="Script asset">📄 scr_dash</span>
+  </div>
+</article>
+<article class="card" id="function-dashtrystart">
+  <h3>dashTryStart</h3>
+  <p>Starts a dash in direction [fx, fy] if available.</p>
+  <p><code>function dashTryStart(fx, fy)</code></p>
+  <ul><li><code>fx</code></li><li><code>fy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dash/scr_dash.gml:17</span>
+    <span title="Script asset">📄 scr_dash</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-dialog">
+  <h2>scr_dialog</h2>
+  <article class="card" id="function-dialogdraw">
+  <h3>dialogDraw</h3>
+  <p>Draw the dialogue box, text and buttons in GUI space.</p>
+  <p><code>function dialogDraw()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:172</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialoghide">
+  <h3>dialogHide</h3>
+  <p>Hide current dialogue and unpause (recompute). Also locks player input briefly to absorb the click.</p>
+  <p><code>function dialogHide()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:83</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialoginit">
+  <h3>dialogInit</h3>
+  <p>Initialise global dialogue state and queue. Call at boot.</p>
+  <p><code>function dialogInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:5</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogisactive">
+  <h3>dialogIsActive</h3>
+  <p>Returns true if a dialogue is currently visible.</p>
+  <p><code>function dialogIsActive()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:104</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogqueuepush">
+  <h3>dialogQueuePush</h3>
+  <p>Push a message onto the dialogue queue to be shown later.</p>
+  <p><code>function dialogQueuePush(_text)</code></p>
+  <ul><li><code>_text</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:21</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogqueuepushquestion">
+  <h3>dialogQueuePushQuestion</h3>
+  <p>Queue a question dialog with Retry and Quit callbacks.</p>
+  <p><code>function dialogQueuePushQuestion(_text, _retry_cb, _quit_cb)</code></p>
+  <ul><li><code>_text</code></li><li><code>_retry_cb</code></li><li><code>_quit_cb</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:37</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogshownext">
+  <h3>dialogShowNext</h3>
+  <p>Show the next message from the queue, pausing gameplay.</p>
+  <p><code>function dialogShowNext()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:53</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogstep">
+  <h3>dialogStep</h3>
+  <p>Handle input for visible dialogues, including OK or Retry/Quit buttons.</p>
+  <p><code>function dialogStep()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:112</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-draw-inventory">
+  <h2>scr_draw_inventory</h2>
+  <article class="card" id="function-inv-get-slot-center">
+  <h3>inv_get_slot_center</h3>
+  <p>Returns { xx, yy } center coordinates for a slot index.</p>
+  <p><code>function inv_get_slot_center(_idx)</code></p>
+  <ul><li><code>_idx</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:164</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawall">
+  <h3>invDrawAll</h3>
+  <p>Convenience: draw slot frames then items.</p>
+  <p><code>function invDrawAll()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:253</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawcursorstack">
+  <h3>invDrawCursorStack</h3>
+  <p>Draw the sprite for the currently dragged stack at the GUI mouse position.</p>
+  <p><code>function invDrawCursorStack()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:261</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawitems">
+  <h3>invDrawItems</h3>
+  <p>Draw item sprites in each occupied slot, scaled to fit while preserving aspect.</p>
+  <p><code>function invDrawItems()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:222</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawpanelbg">
+  <h3>invDrawPanelBg</h3>
+  <p>Draws a translucent backdrop behind the grid.</p>
+  <p><code>function invDrawPanelBg()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:80</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawslots">
+  <h3>invDrawSlots</h3>
+  <p>Draw slot frames using global.invSprSlot, scaled to slot size.</p>
+  <p><code>function invDrawSlots()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:182</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdrawtooltip">
+  <h3>invDrawTooltip</h3>
+  <p>Draws a simple tooltip with item name when hovering a non-empty slot.</p>
+  <p><code>function invDrawTooltip()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:133</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invguimouse">
+  <h3>invGuiMouse</h3>
+  <p>Returns { x, y } mouse position in GUI coordinates (for Draw GUI).</p>
+  <p><code>function invGuiMouse()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:6</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invhittest">
+  <h3>invHitTest</h3>
+  <p>Returns slot index under the GUI mouse, or -1 if none.</p>
+  <p><code>function invHitTest()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:96</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invpanelgetorigin">
+  <h3>invPanelGetOrigin</h3>
+  <p>Returns { x, y } for the top-left of the inventory grid panel.</p>
+  <p><code>function invPanelGetOrigin()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:17</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invpanelgetrect">
+  <h3>invPanelGetRect</h3>
+  <p>Returns { l, t, r, b } rectangle of the grid in GUI space.</p>
+  <p><code>function invPanelGetRect()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_draw_inventory/scr_draw_inventory.gml:63</span>
+    <span title="Script asset">📄 scr_draw_inventory</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-enemy">
+  <h2>scr_enemy</h2>
+  <article class="card" id="function-enemybaseinit">
+  <h3>enemyBaseInit</h3>
+  <p>Initialise defaults, collider, tilemap, and fractional move remainders.</p>
+  <p><code>function enemyBaseInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:35</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemyresolvetilemap">
+  <h3>enemyResolveTilemap</h3>
+  <p>Resolve the collision tilemap from the layer named &quot;tm_collision&quot;.</p>
+  <p><code>function enemyResolveTilemap()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:88</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemyseekplayerstep">
+  <h3>enemySeekPlayerStep</h3>
+  <p>Avoid tiny oscillations when very close to the player.</p>
+  <p><code>function enemySeekPlayerStep()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:58</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-enemyunstuckfromtilemap">
+  <h3>enemyUnstuckFromTilemap</h3>
+  <p>If the collider overlaps the collision tilemap at the current position, push out along the smallest displacement up to _max pixels.</p>
+  <p><code>function enemyUnstuckFromTilemap(_tm, _max)</code></p>
+  <ul><li><code>_tm</code></li><li><code>_max</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:6</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-moveaxiswithtilemap">
+  <h3>moveAxisWithTilemap</h3>
+  <p>Axis-separated movement with tilemap collision that supports fractional speeds via per-instance accumulators (enemy_move_rx / enemy_move_ry). No overshoot.</p>
+  <p><code>function moveAxisWithTilemap(_tm, _axis, _amount, _w, _h)</code></p>
+  <ul><li><code>_tm</code></li><li><code>_axis</code></li><li><code>_amount</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:122</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+<article class="card" id="function-tmrecthitssolid">
+  <h3>tmRectHitsSolid</h3>
+  <p>Check if any solid tile occupies rectangle (x,y,w,h) in tilemap coordinates.</p>
+  <p><code>function tmRectHitsSolid(_tm, _x, _y, _w, _h)</code></p>
+  <ul><li><code>_tm</code></li><li><code>_x</code></li><li><code>_y</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:97</span>
+    <span title="Script asset">📄 scr_enemy</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-input">
+  <h2>scr_input</h2>
+  <article class="card" id="function-inputdashpressed">
+  <h3>inputDashPressed</h3>
+  <p>Returns true if Space is pressed this step.</p>
+  <p><code>function inputDashPressed()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:50</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputfireheld">
+  <h3>inputFireHeld</h3>
+  <p>True while primary fire is held AND input isn&#39;t locked.</p>
+  <p><code>function inputFireHeld()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:85</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputfirepressed">
+  <h3>inputFirePressed</h3>
+  <p>True on the frame primary fire is pressed AND input isn&#39;t locked.</p>
+  <p><code>function inputFirePressed()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:75</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputgetaimaxis">
+  <h3>inputGetAimAxis</h3>
+  <p>Returns a 2-element array [dx, dy] for current aim. Uses IJKL (held) if pressed; otherwise falls back to the instance&#39;s facing_x/facing_y.</p>
+  <p><code>function inputGetAimAxis()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:59</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputgetaimheld">
+  <h3>inputGetAimHeld</h3>
+  <p>Returns a normalised {dx, dy} vector from IJKL held down.</p>
+  <p><code>function inputGetAimHeld()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:25</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputgetaimpressed">
+  <h3>inputGetAimPressed</h3>
+  <p>Returns a unit {dx, dy} for the *pressed this step* I/J/K/L key. Priority order: I, J, K, L (up, left, down, right).</p>
+  <p><code>function inputGetAimPressed()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:38</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+<article class="card" id="function-inputgetmove">
+  <h3>inputGetMove</h3>
+  <p>Returns a normalised {dx, dy} from WASD (and arrows as backup).</p>
+  <p><code>function inputGetMove()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_input/scr_input.gml:9</span>
+    <span title="Script asset">📄 scr_input</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-inventory">
+  <h2>scr_inventory</h2>
+  <article class="card" id="function-invaddordrop">
+  <h3>invAddOrDrop</h3>
+  <p>Add into INVENTORY_SLOTS or drop leftovers. Assumes inventoryBoot() already ran.</p>
+  <p><code>function invAddOrDrop(_id, _count, _wx, _wy, _layer_name)</code></p>
+  <ul><li><code>_id</code></li><li><code>_count</code></li><li><code>_wx</code></li><li><code>_wy</code></li><li><code>_layer_name</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:149</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdragactiveget">
+  <h3>invDragActiveGet</h3>
+  <p>Returns true if drag is flagged active; false if unset/not active.</p>
+  <p><code>function invDragActiveGet()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:207</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdragactiveset">
+  <h3>invDragActiveSet</h3>
+  <p>Sets the drag active flag, creating the field on first use.</p>
+  <p><code>function invDragActiveSet(_on)</code></p>
+  <ul><li><code>_on</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:228</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdragstackget">
+  <h3>invDragStackGet</h3>
+  <p>Returns current dragged stack struct, or {id: ItemId.None, count: 0} if unset.</p>
+  <p><code>function invDragStackGet()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:217</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invdragstackset">
+  <h3>invDragStackSet</h3>
+  <p>Sets the dragged stack, creating the field on first use.</p>
+  <p><code>function invDragStackSet(_stack)</code></p>
+  <ul><li><code>_stack</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:238</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invempty">
+  <h3>invEmpty</h3>
+  <p>Canonical empty stack value.</p>
+  <p><code>function invEmpty()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:9</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-inventoryboot">
+  <h3>inventoryBoot</h3>
+  <p>Builds the inventory subsystem once. Must be called from gameInit().</p>
+  <p><code>function inventoryBoot(_slot_count)</code></p>
+  <ul><li><code>_slot_count</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:18</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-inventoryskinboot">
+  <h3>inventorySkinBoot</h3>
+  <p>Binds UI sprite assets to non-conflicting globals used by inventory drawers.</p>
+  <p><code>function inventorySkinBoot()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:177</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-inventoryuiboot">
+  <h3>inventoryUiBoot</h3>
+  <p>Sets slot size and basic UI flags for the inventory. Call from gameInit().</p>
+  <p><code>function inventoryUiBoot(_slot_w, _slot_h)</code></p>
+  <ul><li><code>_slot_w</code></li><li><code>_slot_h</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:158</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invhide">
+  <h3>invHide</h3>
+  <p>Hide inventory and recompute pause.</p>
+  <p><code>function invHide()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:257</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invshow">
+  <h3>invShow</h3>
+  <p>Show inventory and recompute pause.</p>
+  <p><code>function invShow()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:248</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invtoggle">
+  <h3>invToggle</h3>
+  <p>Toggle inventory UI and pause state.</p>
+  <p><code>function invToggle()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:267</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invtryaddsimple">
+  <h3>invTryAddSimple</h3>
+  <p>Fill existing stacks, then empty slots. Returns remaining count.</p>
+  <p><code>function invTryAddSimple(_item_id, _count)</code></p>
+  <ul><li><code>_item_id</code></li><li><code>_count</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:79</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+<article class="card" id="function-invworlddropspawn">
+  <h3>invWorldDropSpawn</h3>
+  <p>Spawn a world pickup for leftovers.</p>
+  <p><code>function invWorldDropSpawn(_item_id, _count, _wx, _wy, _layer_name)</code></p>
+  <ul><li><code>_item_id</code></li><li><code>_count</code></li><li><code>_wx</code></li><li><code>_wy</code></li><li><code>_layer_name</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_inventory/scr_inventory.gml:126</span>
+    <span title="Script asset">📄 scr_inventory</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-items">
+  <h2>scr_items</h2>
+  <article class="card" id="function-invapplymerge">
+  <h3>invApplyMerge</h3>
+  <p>Applies a merge using a rule; returns { dst_after, src_after } or undefined if it cannot fit.</p>
+  <p><code>function invApplyMerge(_src_stack, _dst_stack, _rule)</code></p>
+  <ul><li><code>_src_stack</code></li><li><code>_dst_stack</code></li><li><code>_rule</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:221</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-invcanmerge">
+  <h3>invCanMerge</h3>
+  <p>Returns a normalized merge rule (or undefined) for two stacks using itemMergeRuleLookup.</p>
+  <p><code>function invCanMerge(_src_stack, _dst_stack)</code></p>
+  <ul><li><code>_src_stack</code></li><li><code>_dst_stack</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:203</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-invtrymergedragintoslot">
+  <h3>invTryMergeDragIntoSlot</h3>
+  <p>Attempts to merge the globally dragged stack into a given slot index.</p>
+  <p><code>function invTryMergeDragIntoSlot(_slot_index)</code></p>
+  <ul><li><code>_slot_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:256</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemcoalesce">
+  <h3>itemCoalesce</h3>
+  <p>Returns _id if valid; otherwise ItemId.None.</p>
+  <p><code>function itemCoalesce(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:145</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemdbget">
+  <h3>itemDbGet</h3>
+  <p>Alias to itemGetDef for compatibility with older naming.</p>
+  <p><code>function itemDbGet(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:119</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemdbinit">
+  <h3>itemDbInit</h3>
+  <p>Builds the item database with stack caps and data-driven merge rules. Calls should happen once at boot (e.g., inside gameInit()).</p>
+  <p><code>function itemDbInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:54</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemdbput">
+  <h3>itemDbPut</h3>
+  <p>Registers an item definition in the global DB (DS map keyed by item id).</p>
+  <p><code>function itemDbPut(_id, _def)</code></p>
+  <ul><li><code>_id</code></li><li><code>_def</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:24</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetdef">
+  <h3>itemGetDef</h3>
+  <p>Returns the item definition struct for a given id, or undefined.</p>
+  <p><code>function itemGetDef(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:109</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetmaxstack">
+  <h3>itemGetMaxStack</h3>
+  <p>Returns the stack cap for the given item id from the item DB. Defaults to 1; &quot;None&quot; stays 0.</p>
+  <p><code>function itemGetMaxStack(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:275</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetname">
+  <h3>itemGetName</h3>
+  <p>Convenience: returns display name for item_id, or &quot;Unknown&quot;.</p>
+  <p><code>function itemGetName(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:127</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemgetsprite">
+  <h3>itemGetSprite</h3>
+  <p>Returns the icon sprite for the given item id from the DB, or `noone` if unknown.</p>
+  <p><code>function itemGetSprite(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:287</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemisvalid">
+  <h3>itemIsValid</h3>
+  <p>True if the id exists in the DB.</p>
+  <p><code>function itemIsValid(_id)</code></p>
+  <ul><li><code>_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:136</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-itemmergerulelookup">
+  <h3>itemMergeRuleLookup</h3>
+  <p>Finds a merge rule for A+B. Checks A’s rules for B, then B’s rules for A (swapping costs).</p>
+  <p><code>function itemMergeRuleLookup(_a_id, _b_id)</code></p>
+  <ul><li><code>_a_id</code></li><li><code>_b_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:153</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+<article class="card" id="function-rulemake">
+  <h3>ruleMake</h3>
+  <p>Convenience constructor for a single merge rule entry (A + with_id -&gt; result).</p>
+  <p><code>function ruleMake(_with_id, _result_id, _src_cost, _dst_cost, _result_count)</code></p>
+  <ul><li><code>_with_id</code></li><li><code>_result_id</code></li><li><code>_src_cost</code></li><li><code>_dst_cost</code></li><li><code>_result_count</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_items/scr_items.gml:39</span>
+    <span title="Script asset">📄 scr_items</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-menu">
+  <h2>scr_menu</h2>
+  <article class="card" id="function-menuactivateselection">
+  <h3>menuActivateSelection</h3>
+  <p>Perform the currently selected action (same as pressing Enter).</p>
+  <p><code>function menuActivateSelection()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:48</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetlayout">
+  <h3>menuGetLayout</h3>
+  <p>Return menu layout in GUI space for hit-testing and drawing.</p>
+  <p><code>function menuGetLayout()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:5</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuindexat">
+  <h3>menuIndexAt</h3>
+  <p>Menu index under the GUI-space point, or -1 if none.</p>
+  <p><code>function menuIndexAt(_mx, _my)</code></p>
+  <ul><li><code>_mx</code></li><li><code>_my</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:34</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuitembounds">
+  <h3>menuItemBounds</h3>
+  <p>Clickable rect for item index (GUI space) → [left, top, right, bottom].</p>
+  <p><code>function menuItemBounds(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:21</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menumouseupdate">
+  <h3>menuMouseUpdate</h3>
+  <p>When menu is visible, hover to select and click (LMB) to activate.</p>
+  <p><code>function menuMouseUpdate()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:80</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-pmove">
+  <h2>scr_pmove</h2>
+  <article class="card" id="function-pmoveapply">
+  <h3>pmoveApply</h3>
+  <p>Applies movement (dx,dy) with collision on a collision tilemap layer.</p>
+  <p><code>function pmoveApply(inst, dx, dy, tilemap_id, inset)</code></p>
+  <ul><li><code>inst</code></li><li><code>dx</code></li><li><code>dy</code></li><li><code>tilemap_id</code></li><li><code>inset</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pmove/scr_pmove.gml:92</span>
+    <span title="Script asset">📄 scr_pmove</span>
+  </div>
+</article>
+<article class="card" id="function-pmovemoveaxis">
+  <h3>pmoveMoveAxis</h3>
+  <p>Moves instance along one axis with pixel sweep to avoid tunnelling on tiles.</p>
+  <p><code>function pmoveMoveAxis(inst, tilemap_id, axis_dx, axis_dy, inset)</code></p>
+  <ul><li><code>inst</code></li><li><code>tilemap_id</code></li><li><code>axis_dx</code></li><li><code>axis_dy</code></li><li><code>inset</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pmove/scr_pmove.gml:39</span>
+    <span title="Script asset">📄 scr_pmove</span>
+  </div>
+</article>
+<article class="card" id="function-pmoveplacemeetingtilemap">
+  <h3>pmovePlaceMeetingTilemap</h3>
+  <p>Checks if bbox of the instance at (test_x, test_y) overlaps any solid tiles.</p>
+  <p><code>function pmovePlaceMeetingTilemap(inst, tilemap_id, test_x, test_y, inset)</code></p>
+  <ul><li><code>inst</code></li><li><code>tilemap_id</code></li><li><code>test_x</code></li><li><code>test_y</code></li><li><code>inset</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pmove/scr_pmove.gml:19</span>
+    <span title="Script asset">📄 scr_pmove</span>
+  </div>
+</article>
+<article class="card" id="function-tilemapsolidat">
+  <h3>tilemapSolidAt</h3>
+  <p>Returns true if the given tilemap id has a non-empty tile at (px, py).</p>
+  <p><code>function tilemapSolidAt(tilemap_id, px, py)</code></p>
+  <ul><li><code>tilemap_id</code></li><li><code>px</code></li><li><code>py</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_pmove/scr_pmove.gml:9</span>
+    <span title="Script asset">📄 scr_pmove</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-room-generation">
+  <h2>scr_room_generation</h2>
+  <article class="card" id="function-dgassigntemplates">
+  <h3>dgAssignTemplates</h3>
+  <p>Assigns templates to nodes based on exits.</p>
+  <p><code>function dgAssignTemplates(_cfg, _graph, _roomdb)</code></p>
+  <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:193</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgbuildfloorintoroom">
+  <h3>dgBuildFloorIntoRoom</h3>
+  <p>Clears + paints all rooms into layers.</p>
+  <p><code>function dgBuildFloorIntoRoom(_cfg, _graph, _roomdb)</code></p>
+  <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:254</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgconfigdefault">
+  <h3>dgConfigDefault</h3>
+  <p>Returns a struct with default generator settings.</p>
+  <p><code>function dgConfigDefault()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:5</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dggeneratefloor">
+  <h3>dgGenerateFloor</h3>
+  <p>Master function to build a floor.</p>
+  <p><code>function dgGenerateFloor(_cfg_override)</code></p>
+  <ul><li><code>_cfg_override</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:269</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dggraphaddnode">
+  <h3>dgGraphAddNode</h3>
+  <p>Adds node to graph.</p>
+  <p><code>function dgGraphAddNode(_map, _gx, _gy)</code></p>
+  <ul><li><code>_map</code></li><li><code>_gx</code></li><li><code>_gy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:102</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dggraphkey">
+  <h3>dgGraphKey</h3>
+  <p>Converts grid coords to a unique key.</p>
+  <p><code>function dgGraphKey(_gx, _gy)</code></p>
+  <ul><li><code>_gx</code></li><li><code>_gy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:94</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dggraphneighbors4">
+  <h3>dgGraphNeighbors4</h3>
+  <p>NESW neighbor offsets.</p>
+  <p><code>function dgGraphNeighbors4()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:119</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dglayerrequire">
+  <h3>dgLayerRequire</h3>
+  <p>Ensures tile layer exists.</p>
+  <p><code>function dgLayerRequire(_name, _tileset)</code></p>
+  <ul><li><code>_name</code></li><li><code>_tileset</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:219</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dglayoutbuild">
+  <h3>dgLayoutBuild</h3>
+  <p>Builds a connected layout graph.</p>
+  <p><code>function dgLayoutBuild(_cfg)</code></p>
+  <ul><li><code>_cfg</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:131</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgrnginit">
+  <h3>dgRngInit</h3>
+  <p>Initializes RNG based on config seed.</p>
+  <p><code>function dgRngInit(_cfg)</code></p>
+  <ul><li><code>_cfg</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:29</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgroomdbbuildexamples">
+  <h3>dgRoomdbBuildExamples</h3>
+  <p>Returns a small set of example room templates.</p>
+  <p><code>function dgRoomdbBuildExamples(_cfg)</code></p>
+  <ul><li><code>_cfg</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:49</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgroomtemplatenew">
+  <h3>dgRoomTemplateNew</h3>
+  <p>Creates a room template with exits + tile arrays.</p>
+  <p><code>function dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_grid)</code></p>
+  <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li><li><code>_walk_grid</code></li><li><code>_coll_grid</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:37</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgtemplatematches">
+  <h3>dgTemplateMatches</h3>
+  <p>Checks if template exits match needs.</p>
+  <p><code>function dgTemplateMatches(_tmpl, _n, _e, _s, _w)</code></p>
+  <ul><li><code>_tmpl</code></li><li><code>_n</code></li><li><code>_e</code></li><li><code>_s</code></li><li><code>_w</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:183</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgtilepaintroom">
+  <h3>dgTilePaintRoom</h3>
+  <p>Paints a template into tilemaps.</p>
+  <p><code>function dgTilePaintRoom(_cfg, _node, _tmpl, _walk_tm, _coll_tm)</code></p>
+  <ul><li><code>_cfg</code></li><li><code>_node</code></li><li><code>_tmpl</code></li><li><code>_walk_tm</code></li><li><code>_coll_tm</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:237</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-make-room">
+  <h3>make_room</h3>
+  <p>No description available.</p>
+  <p><code>function make_room(_name, _exN, _exE, _exS, _exW)</code></p>
+  <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:56</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-utils">
+  <h2>scr_utils</h2>
+  <article class="card" id="function-approxzero">
+  <h3>approxZero</h3>
+  <p>Returns true if |v| &lt;= eps.</p>
+  <p><code>function approxZero(v, eps)</code></p>
+  <ul><li><code>v</code></li><li><code>eps</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:9</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-clampf">
+  <h3>clampf</h3>
+  <p>Clamp a value to [a,b] as float.</p>
+  <p><code>function clampf(v, a, b)</code></p>
+  <ul><li><code>v</code></li><li><code>a</code></li><li><code>b</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:42</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-gamegetstate">
+  <h3>gameGetState</h3>
+  <p>Returns current game state; defaults safely to Playing.</p>
+  <p><code>function gameGetState()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:53</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-gameispaused">
+  <h3>gameIsPaused</h3>
+  <p>True if gameplay should halt (Paused or Inventory).</p>
+  <p><code>function gameIsPaused()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:71</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-gamesetstate">
+  <h3>gameSetState</h3>
+  <p>Sets the current game state.</p>
+  <p><code>function gameSetState(_state)</code></p>
+  <ul><li><code>_state</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:62</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-inventoryisopen">
+  <h3>inventoryIsOpen</h3>
+  <p>Returns true if the global game state is Inventory.</p>
+  <p><code>function inventoryIsOpen()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:89</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-keeplastnonzerovec">
+  <h3>keepLastNonzeroVec</h3>
+  <p>If (vx,vy) != (0,0) returns it; otherwise returns last stored pair.</p>
+  <p><code>function keepLastNonzeroVec(vx, vy, last_x, last_y)</code></p>
+  <ul><li><code>vx</code></li><li><code>vy</code></li><li><code>last_x</code></li><li><code>last_y</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:32</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-menuhide">
+  <h3>menuHide</h3>
+  <p>Hide pause menu and recompute pause.</p>
+  <p><code>function menuHide()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:113</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-menushow">
+  <h3>menuShow</h3>
+  <p>Show pause menu and recompute pause.</p>
+  <p><code>function menuShow()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:104</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-menutoggle">
+  <h3>menuToggle</h3>
+  <p>Toggle pause menu and recompute pause.</p>
+  <p><code>function menuToggle()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:122</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-onpauseexit">
+  <h3>onPauseExit</h3>
+  <p>Return true when the game is paused so callers can early-exit Step.</p>
+  <p><code>function onPauseExit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:81</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-recomputepausestate">
+  <h3>recomputePauseState</h3>
+  <p>Recompute global pause from inventory/menu/dialogue visibility.</p>
+  <p><code>function recomputePauseState()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:97</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-signnonzero">
+  <h3>signNonzero</h3>
+  <p>Returns sign(v) but treats 0 as 0.</p>
+  <p><code>function signNonzero(v)</code></p>
+  <ul><li><code>v</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:48</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-vec2len">
+  <h3>vec2Len</h3>
+  <p>Returns Euclidean length of (vx, vy).</p>
+  <p><code>function vec2Len(vx, vy)</code></p>
+  <ul><li><code>vx</code></li><li><code>vy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:15</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+<article class="card" id="function-vec2norm">
+  <h3>vec2Norm</h3>
+  <p>Normalises (vx, vy); returns (nx, ny). If zero, returns (0,0).</p>
+  <p><code>function vec2Norm(vx, vy)</code></p>
+  <ul><li><code>vx</code></li><li><code>vy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_utils/scr_utils.gml:21</span>
+    <span title="Script asset">📄 scr_utils</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-weapon">
+  <h2>scr_weapon</h2>
+  <article class="card" id="function-weapontickcooldown">
+  <h3>weaponTickCooldown</h3>
+  <p>Decrements fire cooldown on an instance if present.</p>
+  <p><code>function weaponTickCooldown(inst)</code></p>
+  <ul><li><code>inst</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_weapon/scr_weapon.gml:9</span>
+    <span title="Script asset">📄 scr_weapon</span>
+  </div>
+</article>
+<article class="card" id="function-weapontryfire">
+  <h3>weaponTryFire</h3>
+  <p>Spawns a bullet if cooldown is ready and aim vector is valid.</p>
+  <p><code>function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)</code></p>
+  <ul><li><code>owner</code></li><li><code>origin_x</code></li><li><code>origin_y</code></li><li><code>aim_dx</code></li><li><code>aim_dy</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_weapon/scr_weapon.gml:19</span>
+    <span title="Script asset">📄 scr_weapon</span>
+  </div>
+</article>
+</section>
+  
+    <footer>Generated on 2025-09-20T07:37:02.629Z</footer>
+  </main>
+</body>
+</html>
