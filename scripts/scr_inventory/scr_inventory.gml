@@ -125,21 +125,9 @@ function invTryAddSimple(_item_id, _count)
 */
 function invWorldDropSpawn(_item_id, _count, _wx, _wy, _layer_name)
 {
-    var obj_name = "";
-    switch (_item_id) {
-        case ItemId.Slime1: obj_name = "obj_slime_1"; break;
-        case ItemId.Slime2: obj_name = "obj_slime_2"; break;
-        case ItemId.Slime3: obj_name = "obj_slime_3"; break;
-        default: obj_name = ""; break;
-    }
-    if (obj_name == "") return;
-
-    var obj_ix = asset_get_index(obj_name);
-    if (obj_ix == -1) return;
-
-    var lyr = layer_exists(_layer_name) ? _layer_name : "Instances";
-    var inst = instance_create_layer(_wx, _wy, lyr, obj_ix);
-    if (!is_undefined(inst) && variable_instance_exists(inst, "count")) inst.count = _count;
+    if (_count <= 0) return;
+    var lyr = pickupResolveLayer(_layer_name);
+    pickupSpawnModifier(_wx, _wy, lyr, _item_id, _count);
 }
 
 /*

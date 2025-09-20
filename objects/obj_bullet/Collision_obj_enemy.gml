@@ -9,17 +9,22 @@ with (other) {
     if (hp <= 0 && !is_dead) {
         is_dead = true;
 
-        // Spawn ammo pickups on death
-        var drops_to_spawn = irandom_range(ammo_drop_min, ammo_drop_max);
-        repeat (drops_to_spawn) {
-            var spawn_x = x + irandom_range(-6, 6);
-            var spawn_y = y + irandom_range(-6, 6);
-            instance_create_layer(spawn_x, spawn_y, layer_get_name(layer), obj_ammo);
+        var _layer_name = layer_get_name(layer);
+
+        // Spawn stock pickup
+        var _stock_amt = irandom_range(stock_drop_min_amount, stock_drop_max_amount);
+        if (_stock_amt > 0) {
+            pickupSpawnStock(x, y, _layer_name, _stock_amt);
         }
 
-        // Spawn slime pickup on death
-        var slime = instance_create_layer(x, y, layer_get_name(layer), slime_drop_object);
-        slime.amount = irandom_range(slime_drop_min, slime_drop_max);
+        // Spawn modifier pickup
+        var _mod_amt = irandom_range(modifier_drop_min, modifier_drop_max);
+        if (_mod_amt > 0) {
+            var _mod_id = pickupChooseModifierId(modifier_drop_id);
+            if (_mod_id != ItemId.None) {
+                pickupSpawnModifier(x, y, _layer_name, _mod_id, _mod_amt);
+            }
+        }
 
         instance_destroy(); // remove enemy
     }

@@ -51,6 +51,7 @@ enum InvAnchor
 #macro BULLET_SPEED          8.0
 #macro FIRE_COOLDOWN_STEPS   8       // autofire rate
 #macro BULLET_LAYER_NAME     "Instances"   // change if your bullet layer differs
+#macro PLAYER_BASE_BULLET_DAMAGE 10
 
 // Resolve at runtime by string to avoid hard compile errors on rename/missing
 #macro OBJ_BULLET_NAME       "obj_bullet"

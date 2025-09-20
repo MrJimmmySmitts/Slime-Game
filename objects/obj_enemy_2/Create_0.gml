@@ -21,9 +21,9 @@ projectile_damage       = 1;
 projectile_range        = enemy_range;
 
 // Override drop configuration
-ammo_drop_min   = 3;
-ammo_drop_max   = 4;
-slime_drop_object = obj_slime_2;
-slime_drop_min    = 1;
-slime_drop_max    = 1;
+stock_drop_min_amount = 8;
+stock_drop_max_amount = 12;
+modifier_drop_min     = 1;
+modifier_drop_max     = 1;
+modifier_drop_id      = ItemId.ModCatalyst;
 

@@ -8,11 +8,14 @@
 */
 enum ItemId
 {
-    None   = 0,      // required by UI/empty slots
+    None        = 0,      // required by UI/empty slots
 
-    Slime1 = 1001,
-    Slime2 = 1002,
-    Slime3 = 1003,
+    ModVitality = 1001,
+    ModMunitions= 1002,
+    ModVelocity = 1003,
+    ModTrigger  = 1004,
+    ModDash     = 1005,
+    ModCatalyst = 1006,
 
     // Add more here as needed (e.g., KeyBronze = 2001, PotionHP = 3001, ...)
 }
@@ -73,33 +76,75 @@ function itemDbInit() {
         desc: ""
     });
 
-    // ---- Slimes ----
-    itemDbPut(ItemId.Slime1, {
-        name: "Slime 1",
-        max_stack: 1,
-        merge_rules: [ ruleMake(ItemId.Slime1, ItemId.Slime2, 1, 1, 1) ],
-        icon_sprite: spr_slime_1,
-        color_tint: c_white,
-        desc: "Gloopy basics."
-    });
-
-    itemDbPut(ItemId.Slime2, {
-        name: "Slime 2",
-        max_stack: 1,
-        merge_rules: [ ruleMake(ItemId.Slime2, ItemId.Slime3, 1, 1, 1) ],
-        icon_sprite: spr_slime_2,
-        color_tint: c_white,
-        desc: "Thicker ooze."
-    });
-
-    itemDbPut(ItemId.Slime3, {
-        name: "Slime 3",
-        max_stack: 1,
+    // ---- Modifiers ----
+    itemDbPut(ItemId.ModVitality, {
+        name: "Vitality Gel",
+        max_stack: 3,
         merge_rules: [],
-        icon_sprite: spr_slime_3,
-        color_tint: c_white,
-        desc: "Potent sludge."
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(240, 88, 108),
+        desc: "Restorative compound that bolsters vitality.",
+        buffs: { hp_max: 1 }
     });
+
+    itemDbPut(ItemId.ModMunitions, {
+        name: "Munitions Pack",
+        max_stack: 3,
+        merge_rules: [],
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(240, 180, 64),
+        desc: "Compact ammo canister expanding your reserves.",
+        buffs: { ammo_max: 3 }
+    });
+
+    itemDbPut(ItemId.ModVelocity, {
+        name: "Velocity Core",
+        max_stack: 3,
+        merge_rules: [],
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(72, 220, 148),
+        desc: "Hyper-reactive goo that accelerates movement.",
+        buffs: { move_speed: 0.4 }
+    });
+
+    itemDbPut(ItemId.ModTrigger, {
+        name: "Trigger Coil",
+        max_stack: 3,
+        merge_rules: [],
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(84, 160, 255),
+        desc: "Clockwork actuator shortening weapon cooldowns.",
+        buffs: { fire_cooldown: -1 }
+    });
+
+    itemDbPut(ItemId.ModDash, {
+        name: "Dash Capacitor",
+        max_stack: 3,
+        merge_rules: [],
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(104, 228, 222),
+        desc: "Stores kinetic energy to lengthen dashes.",
+        buffs: { dash_distance: 24 }
+    });
+
+    itemDbPut(ItemId.ModCatalyst, {
+        name: "Catalyst Shard",
+        max_stack: 3,
+        merge_rules: [],
+        icon_sprite: spr_slime_1,
+        color_tint: make_color_rgb(198, 120, 255),
+        desc: "Amplifies projectile potency.",
+        buffs: { bullet_damage: 2 }
+    });
+
+    global.ITEM_MODIFIER_IDS = [
+        ItemId.ModVitality,
+        ItemId.ModMunitions,
+        ItemId.ModVelocity,
+        ItemId.ModTrigger,
+        ItemId.ModDash,
+        ItemId.ModCatalyst
+    ];
 }
 
 /*
@@ -289,5 +334,27 @@ function itemGetSprite(_id) {
     if (is_undefined(_def)) return noone;
     if (is_undefined(_def.icon_sprite) || _def.icon_sprite == noone) return noone;
     return _def.icon_sprite;
+}
+
+/*
+* Name: itemGetColorTint
+* Description: Returns configured tint colour for inventory/world visuals.
+*/
+function itemGetColorTint(_id) {
+    var _def = itemGetDef(_id);
+    if (is_undefined(_def)) return c_white;
+    if (is_undefined(_def.color_tint)) return c_white;
+    return _def.color_tint;
+}
+
+/*
+* Name: itemGetBuffs
+* Description: Returns the buff struct for the item, or undefined.
+*/
+function itemGetBuffs(_id) {
+    var _def = itemGetDef(_id);
+    if (is_undefined(_def)) return undefined;
+    if (is_undefined(_def.buffs)) return undefined;
+    return _def.buffs;
 }
 

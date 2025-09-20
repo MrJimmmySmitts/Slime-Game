@@ -17,14 +17,12 @@ speed            = 0;
 direction        = 0;
 target           = noone;
 
-// Ammo drop configuration
-ammo_drop_min   = 3;   // minimum ammo pickups
-ammo_drop_max   = 5;   // maximum ammo pickups
-
-// Slime drop configuration
-slime_drop_object = obj_slime_1; // default slime pickup object
-slime_drop_min    = 1;           // minimum slime pickups
-slime_drop_max    = 3;           // maximum slime pickups
+// Loot configuration
+stock_drop_min_amount = 6;   // minimum ammo units
+stock_drop_max_amount = 10;  // maximum ammo units
+modifier_drop_min     = 1;   // minimum modifier stack size
+modifier_drop_max     = 1;   // maximum modifier stack size
+modifier_drop_id      = ItemId.None; // random modifier when none specified
 
 /*
 * Name: obj_enemy.Create (base init)

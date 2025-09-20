@@ -19,6 +19,8 @@ if (hp <= 0) {
     exit;
 }
 
+playerStatsRecalculate(id);
+
 // ----- Gather input -----
 var mv  = inputGetMove();            // {dx,dy} WASD / arrows
 var aih = inputGetAimHeld();        // {dx,dy} IJKL held
@@ -38,6 +40,12 @@ if (!variable_instance_exists(id, "facing_x"))        facing_x        = 1;
 if (!variable_instance_exists(id, "facing_y"))        facing_y        = 0;
 if (!variable_instance_exists(id, "move_speed"))      move_speed      = PLAYER_MOVE_SPEED;
 if (!variable_instance_exists(id, "fire_cd"))         fire_cd         = 0;
+if (!variable_instance_exists(id, "dash_distance_total")) dash_distance_total = PLAYER_DASH_DISTANCE;
+if (!variable_instance_exists(id, "dash_duration_max"))   dash_duration_max   = PLAYER_DASH_TIME;
+if (!variable_instance_exists(id, "dash_cooldown_max"))   dash_cooldown_max   = PLAYER_DASH_COOLDOWN;
+if (!variable_instance_exists(id, "bullet_speed"))        bullet_speed        = BULLET_SPEED;
+if (!variable_instance_exists(id, "bullet_damage"))       bullet_damage       = PLAYER_BASE_BULLET_DAMAGE;
+if (!variable_instance_exists(id, "fire_cooldown_steps")) fire_cooldown_steps = FIRE_COOLDOWN_STEPS;
 
 // ----- Facing calculation -----
 var new_face = keepLastNonzeroVec(aih.dx, aih.dy, facing_x, facing_y);
@@ -63,11 +71,13 @@ if (want_dash && !dash_active && dash_cooldown <= 0)
 {
     // Dash in facing direction (or swap to mv if preferred)
     var nd = vec2Norm(facing_x, facing_y);
-    dash_dx = nd[0] * (PLAYER_DASH_DISTANCE / PLAYER_DASH_TIME);
-    dash_dy = nd[1] * (PLAYER_DASH_DISTANCE / PLAYER_DASH_TIME);
-    dash_time     = PLAYER_DASH_TIME;
+    var dash_total = dash_distance_total;
+    var dash_time_total = max(1, dash_duration_max);
+    dash_dx = nd[0] * (dash_total / dash_time_total);
+    dash_dy = nd[1] * (dash_total / dash_time_total);
+    dash_time     = dash_time_total;
     dash_active   = true;
-    dash_cooldown = PLAYER_DASH_COOLDOWN;
+    dash_cooldown = dash_cooldown_max;
 }
 
 var step_dx = 0;
