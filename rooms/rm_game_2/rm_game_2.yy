@@ -15,7 +15,6 @@
   "isDnd":false,
   "layers":[
     {"$GMRInstanceLayer":"","%Name":"Instances","depth":0,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
-
         {"$GMRInstance":"v2","%Name":"inst_PLAYERSPAWN_1","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_PLAYERSPAWN_1","objectId":{"name":"obj_trigger","path":"objects/obj_trigger/obj_trigger.yy",},"properties":[{"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":null,"propertyId":{"name":"trigger_kind","path":"objects/obj_trigger/obj_trigger.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"0",}],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":128.0,"y":256.0,},
 
         {"$GMRInstance":"v2","%Name":"inst_7FFF7EB4_1","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_7FFF7EB4_1","objectId":{"name":"obj_inventory","path":"objects/obj_inventory/obj_inventory.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":96.0,"y":32.0,},
