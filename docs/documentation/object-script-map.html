@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Slime Game Object ↔ Script Map</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #1f2430;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #2a3d66, #403f7a);
+      color: #fff;
+      padding: 2.5rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      letter-spacing: 0.03em;
+    }
+    header p {
+      margin: 0.75rem 0 0;
+      max-width: 70ch;
+    }
+    main {
+      max-width: 1100px;
+      margin: -3rem auto 2rem;
+      padding: 0 1.25rem 2.5rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(18, 21, 34, 0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(66, 71, 112, 0.08);
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #2a3d66;
+      background: rgba(42, 61, 102, 0.08);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    nav a:hover,
+    nav a:focus {
+      background: #2a3d66;
+      color: #fff;
+    }
+    section + section {
+      margin-top: 3rem;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.75rem;
+      color: #2a3d66;
+    }
+    h3 {
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem;
+      color: #3a3f63;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      font-size: 0.95rem;
+      color: #4c5270;
+      margin-top: 0.75rem;
+    }
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .badge {
+      background: rgba(64, 63, 122, 0.12);
+      color: #403f7a;
+      padding: 0.1rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    code {
+      background: rgba(42, 61, 102, 0.08);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.95rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px rgba(42, 61, 102, 0.08);
+    }
+    thead {
+      background: rgba(42, 61, 102, 0.08);
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) {
+      background: rgba(42, 61, 102, 0.03);
+    }
+    a.inline-link {
+      color: #2a3d66;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(42, 61, 102, 0.35);
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    a.inline-link:hover,
+    a.inline-link:focus {
+      color: #111b36;
+      border-color: #111b36;
+    }
+    .empty {
+      color: #6d728b;
+      font-style: italic;
+    }
+    footer {
+      font-size: 0.85rem;
+      color: #6d728b;
+      margin-top: 2rem;
+      text-align: right;
+    }
+    @media (max-width: 768px) {
+      header {
+        padding: 2rem 1rem;
+      }
+      main {
+        margin-top: -2.5rem;
+        padding: 0 1rem 2rem;
+      }
+      .card {
+        padding: 1.5rem;
+      }
+      nav ul {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .meta {
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        margin-bottom: 1rem;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 8px 18px rgba(18, 21, 34, 0.08);
+        padding: 0.75rem 1rem;
+      }
+      td {
+        padding: 0.35rem 0;
+      }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+        color: #2a3d66;
+        margin-bottom: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Slime Game Object ↔ Script Map</h1>
+    <p>Cross-reference of object events and the helper scripts they rely on.</p>
+  </header>
+  <main>
+    
+    <section class="card">
+      <h2>Overview</h2>
+      <p>Script usage across <strong>17</strong> objects. Each badge indicates the script asset providing the function.</p>
+      <nav aria-label="Object list">
+        <ul>
+          <li><a href="#object-obj-ammo">obj_ammo <span class="badge">0</span></a></li>
+<li><a href="#object-obj-bullet">obj_bullet <span class="badge">1</span></a></li>
+<li><a href="#object-obj-dialog">obj_dialog <span class="badge">2</span></a></li>
+<li><a href="#object-obj-enemy">obj_enemy <span class="badge">3</span></a></li>
+<li><a href="#object-obj-enemy-1">obj_enemy_1 <span class="badge">0</span></a></li>
+<li><a href="#object-obj-enemy-2">obj_enemy_2 <span class="badge">2</span></a></li>
+<li><a href="#object-obj-enemy-bullet">obj_enemy_bullet <span class="badge">1</span></a></li>
+<li><a href="#object-obj-floor-gen">obj_floor_gen <span class="badge">1</span></a></li>
+<li><a href="#object-obj-game-controller">obj_game_controller <span class="badge">1</span></a></li>
+<li><a href="#object-obj-inventory">obj_inventory <span class="badge">10</span></a></li>
+<li><a href="#object-obj-menu-controller">obj_menu_controller <span class="badge">6</span></a></li>
+<li><a href="#object-obj-player">obj_player <span class="badge">16</span></a></li>
+<li><a href="#object-obj-slime-1">obj_slime_1 <span class="badge">0</span></a></li>
+<li><a href="#object-obj-slime-2">obj_slime_2 <span class="badge">0</span></a></li>
+<li><a href="#object-obj-slime-3">obj_slime_3 <span class="badge">0</span></a></li>
+<li><a href="#object-obj-spawner">obj_spawner <span class="badge">1</span></a></li>
+<li><a href="#object-obj-trigger">obj_trigger <span class="badge">0</span></a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="object-obj-ammo">
+  <h2>obj_ammo</h2>
+  <div class="meta">
+    <span>📁 objects/obj_ammo</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_ammo/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-bullet">
+  <h2>obj_bullet</h2>
+  <div class="meta">
+    <span>📁 objects/obj_bullet</span>
+    <span>🧩 4 events</span>
+    <span>🛠️ 1 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_bullet/Collision_obj_enemy.gml">Collision → obj_enemy</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_bullet/Collision_obj_enemy_parent.gml">Collision → obj_enemy_parent</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_bullet/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_bullet/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-onpauseexit">onPauseExit</a> <span class="badge">scr_utils</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-dialog">
+  <h2>obj_dialog</h2>
+  <div class="meta">
+    <span>📁 objects/obj_dialog</span>
+    <span>🧩 3 events</span>
+    <span>🛠️ 2 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_dialog/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_dialog/Draw_64.gml">Draw → 64</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-dialogdraw">dialogDraw</a> <span class="badge">scr_dialog</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_dialog/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-dialogstep">dialogStep</a> <span class="badge">scr_dialog</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-enemy">
+  <h2>obj_enemy</h2>
+  <div class="meta">
+    <span>📁 objects/obj_enemy</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 3 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_enemy/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-enemybaseinit">enemyBaseInit</a> <span class="badge">scr_enemy</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_enemy/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-enemyseekplayerstep">enemySeekPlayerStep</a> <span class="badge">scr_enemy</span></li><li><a class="inline-link" href="functions.html#function-onpauseexit">onPauseExit</a> <span class="badge">scr_utils</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-enemy-1">
+  <h2>obj_enemy_1</h2>
+  <div class="meta">
+    <span>📁 objects/obj_enemy_1</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_enemy_1/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_enemy_1/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-enemy-2">
+  <h2>obj_enemy_2</h2>
+  <div class="meta">
+    <span>📁 objects/obj_enemy_2</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 2 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_enemy_2/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_enemy_2/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-approxzero">approxZero</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-vec2norm">vec2Norm</a> <span class="badge">scr_utils</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-enemy-bullet">
+  <h2>obj_enemy_bullet</h2>
+  <div class="meta">
+    <span>📁 objects/obj_enemy_bullet</span>
+    <span>🧩 3 events</span>
+    <span>🛠️ 1 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_enemy_bullet/Collision_obj_player.gml">Collision → obj_player</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_enemy_bullet/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_enemy_bullet/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-onpauseexit">onPauseExit</a> <span class="badge">scr_utils</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-floor-gen">
+  <h2>obj_floor_gen</h2>
+  <div class="meta">
+    <span>📁 objects/obj_floor_gen</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 1 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_floor_gen/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-dggeneratefloor">dgGenerateFloor</a> <span class="badge">scr_room_generation</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-game-controller">
+  <h2>obj_game_controller</h2>
+  <div class="meta">
+    <span>📁 objects/obj_game_controller</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 1 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_game_controller/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-gameinit">gameInit</a> <span class="badge">scr_boot</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-inventory">
+  <h2>obj_inventory</h2>
+  <div class="meta">
+    <span>📁 objects/obj_inventory</span>
+    <span>🧩 3 events</span>
+    <span>🛠️ 10 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_inventory/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_inventory/Draw_64.gml">Draw → 64</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invdragactiveget">invDragActiveGet</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invdrawall">invDrawAll</a> <span class="badge">scr_draw_inventory</span></li><li><a class="inline-link" href="functions.html#function-invdrawcursorstack">invDrawCursorStack</a> <span class="badge">scr_draw_inventory</span></li><li><a class="inline-link" href="functions.html#function-invpanelgetorigin">invPanelGetOrigin</a> <span class="badge">scr_draw_inventory</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_inventory/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invapplymerge">invApplyMerge</a> <span class="badge">scr_items</span></li><li><a class="inline-link" href="functions.html#function-invcanmerge">invCanMerge</a> <span class="badge">scr_items</span></li><li><a class="inline-link" href="functions.html#function-invdragactiveget">invDragActiveGet</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invdragactiveset">invDragActiveSet</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invdragstackget">invDragStackGet</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invdragstackset">invDragStackSet</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invhittest">invHitTest</a> <span class="badge">scr_draw_inventory</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-menu-controller">
+  <h2>obj_menu_controller</h2>
+  <div class="meta">
+    <span>📁 objects/obj_menu_controller</span>
+    <span>🧩 3 events</span>
+    <span>🛠️ 6 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_menu_controller/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_menu_controller/Draw_64.gml">Draw → 64</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-menugetlayout">menuGetLayout</a> <span class="badge">scr_menu</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_menu_controller/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invhide">invHide</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invtoggle">invToggle</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-menuactivateselection">menuActivateSelection</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menumouseupdate">menuMouseUpdate</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menutoggle">menuToggle</a> <span class="badge">scr_utils</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-player">
+  <h2>obj_player</h2>
+  <div class="meta">
+    <span>📁 objects/obj_player</span>
+    <span>🧩 9 events</span>
+    <span>🛠️ 16 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_player/Alarm_0.gml">Alarm → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Collision_obj_ammo.gml">Collision → obj_ammo</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Collision_obj_enemy.gml">Collision → obj_enemy</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Collision_obj_slime_1.gml">Collision → obj_slime_1</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invaddordrop">invAddOrDrop</a> <span class="badge">scr_inventory</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Collision_obj_slime_2.gml">Collision → obj_slime_2</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invaddordrop">invAddOrDrop</a> <span class="badge">scr_inventory</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Draw_0.gml">Draw → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-inputgetaimaxis">inputGetAimAxis</a> <span class="badge">scr_input</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Draw_64.gml">Draw → 64</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_player/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-approxzero">approxZero</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-dialogqueuepushquestion">dialogQueuePushQuestion</a> <span class="badge">scr_dialog</span></li><li><a class="inline-link" href="functions.html#function-inputdashpressed">inputDashPressed</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-inputfireheld">inputFireHeld</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-inputfirepressed">inputFirePressed</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-inputgetaimheld">inputGetAimHeld</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-inputgetaimpressed">inputGetAimPressed</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-inputgetmove">inputGetMove</a> <span class="badge">scr_input</span></li><li><a class="inline-link" href="functions.html#function-keeplastnonzerovec">keepLastNonzeroVec</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-onpauseexit">onPauseExit</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-pmoveapply">pmoveApply</a> <span class="badge">scr_pmove</span></li><li><a class="inline-link" href="functions.html#function-vec2norm">vec2Norm</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-weapontickcooldown">weaponTickCooldown</a> <span class="badge">scr_weapon</span></li><li><a class="inline-link" href="functions.html#function-weapontryfire">weaponTryFire</a> <span class="badge">scr_weapon</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-slime-1">
+  <h2>obj_slime_1</h2>
+  <div class="meta">
+    <span>📁 objects/obj_slime_1</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_slime_1/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-slime-2">
+  <h2>obj_slime_2</h2>
+  <div class="meta">
+    <span>📁 objects/obj_slime_2</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_slime_2/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-slime-3">
+  <h2>obj_slime_3</h2>
+  <div class="meta">
+    <span>📁 objects/obj_slime_3</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_slime_3/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-spawner">
+  <h2>obj_spawner</h2>
+  <div class="meta">
+    <span>📁 objects/obj_spawner</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 1 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_spawner/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_spawner/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-tilemapsolidat">tilemapSolidAt</a> <span class="badge">scr_pmove</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-trigger">
+  <h2>obj_trigger</h2>
+  <div class="meta">
+    <span>📁 objects/obj_trigger</span>
+    <span>🧩 1 events</span>
+    <span>🛠️ 0 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_trigger/Collision_obj_player.gml">Collision → obj_player</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+  
+    <footer>Generated on 2025-09-20T07:37:02.630Z</footer>
+  </main>
+</body>
+</html>
