@@ -1,8 +1,4 @@
 /*
 * Name: obj_trigger.Step
-* Description: Update the trigger behaviour each frame.
+* Description: Base trigger performs no step logic by default.
 */
-if (is_struct(trigger_behaviour))
-{
-    trigger_behaviour.onStep();
-}

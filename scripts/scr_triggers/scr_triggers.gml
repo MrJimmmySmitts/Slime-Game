@@ -1,127 +1,118 @@
+// scr_triggers.gml — trigger helper functions
 
-// scr_triggers.gml — trigger behaviour structs and helpers
-
+// ====================================================================
+// Base helpers
 // ====================================================================
 
 /*
-* Name: TriggerKind
-* Description: Enumerates trigger behaviour specialisations.
+* Name: triggerBaseSetActive
+* Description: Enable or disable the trigger instance.
 */
-enum TriggerKind
+function triggerBaseSetActive(_state)
 {
-    PlayerSpawn = 0,
-    EnemySpawn  = 1,
-    LevelExit   = 2,
+    trigger_active = (_state != 0);
 }
 
-
-// --------------------------------------------------------------------
-// TriggerBase helpers
-// --------------------------------------------------------------------
-
-function TriggerBase_setActive(_state)
+/*
+* Name: triggerBaseIsActive
+* Description: Returns whether the trigger should currently process logic.
+*/
+function triggerBaseIsActive()
 {
-    self.active = (_state != 0);
+    return trigger_active;
 }
 
-function TriggerBase_isActive()
+/*
+* Name: triggerBaseLayerName
+* Description: Resolve the instance layer name, caching the result for reuse.
+*/
+function triggerBaseLayerName()
 {
-    return self.active;
-}
-
-function TriggerBase_layerName()
-{
-    if (!instance_exists(self.inst))
+    if (!is_string(trigger_cached_layer_name) || string_length(trigger_cached_layer_name) <= 0)
     {
-        return "Instances";
-    }
-
-    if (!is_string(self.cached_layer_name) || string_length(self.cached_layer_name) <= 0)
-    {
-        var _layer_id = self.inst.layer;
+        var _layer_id = layer;
         if (is_real(_layer_id) && _layer_id != -1)
         {
             var _layer_name = layer_get_name(_layer_id);
             if (is_string(_layer_name) && string_length(_layer_name) > 0)
             {
-                self.cached_layer_name = _layer_name;
+                trigger_cached_layer_name = _layer_name;
             }
         }
 
-        if (!is_string(self.cached_layer_name) || string_length(self.cached_layer_name) <= 0)
+        if (!is_string(trigger_cached_layer_name) || string_length(trigger_cached_layer_name) <= 0)
         {
-            self.cached_layer_name = "Instances";
+            trigger_cached_layer_name = "Instances";
         }
     }
 
-    return self.cached_layer_name;
+    return trigger_cached_layer_name;
 }
 
-function TriggerBase_resolveTilemap()
+/*
+* Name: triggerBaseResolveTilemap
+* Description: Store a reference to the collision tilemap for later use.
+*/
+function triggerBaseResolveTilemap()
 {
     var _layer_id = layer_get_id("tm_collision");
     if (_layer_id != -1)
     {
-        self.tilemap_id = layer_tilemap_get_id(_layer_id);
+        trigger_tilemap_id = layer_tilemap_get_id(_layer_id);
     }
     else
     {
-        self.tilemap_id = noone;
+        trigger_tilemap_id = noone;
     }
-    return self.tilemap_id;
-}
 
-function TriggerBase_onCreate()
-{
-    self.cached_layer_name = "";
-    self.layerName();
-}
-
-function TriggerBase_onRoomStart() { }
-function TriggerBase_onStep()      { }
-function TriggerBase_onPlayerEnter(_player) { }
-
-function TriggerBase_onDestroy()
-{
-    self.inst = undefined;
+    return trigger_tilemap_id;
 }
 
 /*
-* Name: TriggerBase
-* Description: Base behaviour struct shared by all trigger kinds.
+* Name: triggerBaseInit
+* Description: Prepare shared state for trigger objects.
 */
-function TriggerBase(_inst) constructor
+function triggerBaseInit()
 {
-    inst              = _inst;
-    active            = true;
-    cached_layer_name = "";
-    tilemap_id        = noone;
+    trigger_active = true;
+    trigger_cached_layer_name = "";
+    trigger_tilemap_id = noone;
 
-    setActive      = method(self, TriggerBase_setActive);
-    isActive       = method(self, TriggerBase_isActive);
-    layerName      = method(self, TriggerBase_layerName);
-    resolveTilemap = method(self, TriggerBase_resolveTilemap);
-    onCreate       = method(self, TriggerBase_onCreate);
-    onRoomStart    = method(self, TriggerBase_onRoomStart);
-    onStep         = method(self, TriggerBase_onStep);
-    onPlayerEnter  = method(self, TriggerBase_onPlayerEnter);
-    onDestroy      = method(self, TriggerBase_onDestroy);
+    triggerBaseLayerName();
 }
 
-// --------------------------------------------------------------------
-// TriggerPlayerSpawn helpers
-// --------------------------------------------------------------------
-
-function TriggerPlayerSpawn_spawnPlayer()
+/*
+* Name: triggerBaseOnDestroy
+* Description: Clean up cached state when the trigger is removed.
+*/
+function triggerBaseOnDestroy()
 {
-    if (!instance_exists(self.inst))
-    {
-        return;
-    }
+    trigger_cached_layer_name = "";
+    trigger_tilemap_id = noone;
+}
 
-    var _px = self.inst.x;
-    var _py = self.inst.y;
-    var _layer_name = self.layerName();
+// ====================================================================
+// Player spawn helpers
+// ====================================================================
+
+/*
+* Name: triggerPlayerSpawnInit
+* Description: Reset the internal spawn flag.
+*/
+function triggerPlayerSpawnInit()
+{
+    trigger_spawned = false;
+}
+
+/*
+* Name: triggerPlayerSpawnSpawnPlayer
+* Description: Create (or reposition) the player at the trigger's location.
+*/
+function triggerPlayerSpawnSpawnPlayer()
+{
+    var _px = x;
+    var _py = y;
+    var _layer_name = triggerBaseLayerName();
 
     if (instance_exists(obj_player))
     {
@@ -136,97 +127,65 @@ function TriggerPlayerSpawn_spawnPlayer()
         instance_create_layer(_px, _py, _layer_name, obj_player);
     }
 
-    self.spawned = true;
+    trigger_spawned = true;
 }
 
-function TriggerPlayerSpawn_onCreate()
+// ====================================================================
+// Enemy spawn helpers
+// ====================================================================
+
+/*
+* Name: triggerEnemySpawnInit
+* Description: Configure default values for the enemy spawner.
+*/
+function triggerEnemySpawnInit()
 {
-    if (!is_undefined(self._base_on_create))
-    {
-        self._base_on_create();
-    }
-    self.spawned = false;
+    spawn_timer = 0;
+
+    if (!variable_instance_exists(id, "spawn_interval_min")) spawn_interval_min = 60;
+    if (!variable_instance_exists(id, "spawn_interval_max")) spawn_interval_max = 180;
+    if (!variable_instance_exists(id, "spawn_radius"))        spawn_radius = 200;
+    if (!variable_instance_exists(id, "spawn_attempts"))      spawn_attempts = 10;
+
+    spawn_pool = [obj_enemy_1, obj_enemy_2];
 }
 
-function TriggerPlayerSpawn_onRoomStart()
+/*
+* Name: triggerEnemySpawnReadConfig
+* Description: Sanitize user-configured spawn values.
+*/
+function triggerEnemySpawnReadConfig()
 {
-    if (!is_undefined(self._base_on_room_start))
-    {
-        self._base_on_room_start();
-    }
+    spawn_interval_min = max(1, round(spawn_interval_min));
+    spawn_interval_max = max(spawn_interval_min, round(spawn_interval_max));
+    spawn_radius       = max(0, spawn_radius);
+    spawn_attempts     = max(1, round(spawn_attempts));
 
-    if (!self.spawned)
+    if (!is_array(spawn_pool) || array_length(spawn_pool) <= 0)
     {
-        self.spawnPlayer();
+        spawn_pool = [obj_enemy_1, obj_enemy_2];
     }
 }
 
 /*
-* Name: TriggerPlayerSpawn
-* Description: Spawns (or repositions) the player when the room loads.
+* Name: triggerEnemySpawnResetTimer
+* Description: Randomise the next spawn time.
 */
-function TriggerPlayerSpawn(_inst) constructor
+function triggerEnemySpawnResetTimer()
 {
-    TriggerBase(_inst);
-
-    spawned = false;
-
-    spawnPlayer = method(self, TriggerPlayerSpawn_spawnPlayer);
-
-    _base_on_create = self.onCreate;
-    onCreate = method(self, TriggerPlayerSpawn_onCreate);
-
-    _base_on_room_start = self.onRoomStart;
-    onRoomStart = method(self, TriggerPlayerSpawn_onRoomStart);
+    spawn_timer = irandom_range(spawn_interval_min, spawn_interval_max);
 }
 
-// --------------------------------------------------------------------
-// TriggerEnemySpawn helpers
-// --------------------------------------------------------------------
-
-function TriggerEnemySpawn_readConfig()
+/*
+* Name: triggerEnemySpawnPickEnemyObject
+* Description: Choose an enemy object from the configured pool.
+*/
+function triggerEnemySpawnPickEnemyObject()
 {
-    if (!instance_exists(self.inst))
+    if (is_array(spawn_pool) && array_length(spawn_pool) > 0)
     {
-        return;
-    }
-
-    if (variable_instance_exists(self.inst, "spawn_interval_min"))
-    {
-        self.spawn_interval_min = max(1, round(self.inst.spawn_interval_min));
-    }
-
-    if (variable_instance_exists(self.inst, "spawn_interval_max"))
-    {
-        self.spawn_interval_max = max(self.spawn_interval_min, round(self.inst.spawn_interval_max));
-    }
-    else if (self.spawn_interval_max < self.spawn_interval_min)
-    {
-        self.spawn_interval_max = self.spawn_interval_min;
-    }
-
-    if (variable_instance_exists(self.inst, "spawn_radius"))
-    {
-        self.spawn_radius = max(0, self.inst.spawn_radius);
-    }
-
-    if (variable_instance_exists(self.inst, "spawn_attempts"))
-    {
-        self.spawn_attempts = max(1, round(self.inst.spawn_attempts));
-    }
-}
-
-function TriggerEnemySpawn_resetTimer()
-{
-    self.spawn_timer = irandom_range(self.spawn_interval_min, self.spawn_interval_max);
-}
-
-function TriggerEnemySpawn_pickEnemyObject()
-{
-    if (is_array(self.spawn_pool) && array_length(self.spawn_pool) > 0)
-    {
-        var _idx = irandom(array_length(self.spawn_pool) - 1);
-        var _candidate = self.spawn_pool[_idx];
+        var _idx = irandom(array_length(spawn_pool) - 1);
+        var _candidate = spawn_pool[_idx];
         if (!is_undefined(_candidate) && _candidate != noone)
         {
             return _candidate;
@@ -236,33 +195,31 @@ function TriggerEnemySpawn_pickEnemyObject()
     return obj_enemy_1;
 }
 
-function TriggerEnemySpawn_spawnOnce()
+/*
+* Name: triggerEnemySpawnSpawnOnce
+* Description: Attempt to spawn a single enemy, respecting collision tiles.
+*/
+function triggerEnemySpawnSpawnOnce()
 {
-    if (!instance_exists(self.inst))
-    {
-        self.resetTimer();
-        return;
-    }
-
-    var _tilemap    = self.tilemap_id;
-    var _attempts   = max(1, self.spawn_attempts);
-    var _layer_name = self.layerName();
+    var _tilemap    = trigger_tilemap_id;
+    var _attempts   = max(1, spawn_attempts);
+    var _layer_name = triggerBaseLayerName();
 
     while (_attempts > 0)
     {
-        var _sx = self.inst.x + irandom_range(-self.spawn_radius, self.spawn_radius);
-        var _sy = self.inst.y + irandom_range(-self.spawn_radius, self.spawn_radius);
+        var _sx = x + irandom_range(-spawn_radius, spawn_radius);
+        var _sy = y + irandom_range(-spawn_radius, spawn_radius);
 
         var _blocked = false;
         if (_tilemap != noone && _tilemap != -1)
         {
-            var _distance = point_distance(self.inst.x, self.inst.y, _sx, _sy);
+            var _distance = point_distance(x, y, _sx, _sy);
             var _steps = max(1, ceil(_distance / 16));
             for (var _i = 0; _i <= _steps; ++_i)
             {
                 var _t = (_steps <= 0) ? 0 : (_i / _steps);
-                var _px = lerp(self.inst.x, _sx, _t);
-                var _py = lerp(self.inst.y, _sy, _t);
+                var _px = lerp(x, _sx, _t);
+                var _py = lerp(y, _sy, _t);
                 if (tilemapSolidAt(_tilemap, _px, _py))
                 {
                     _blocked = true;
@@ -273,7 +230,7 @@ function TriggerEnemySpawn_spawnOnce()
 
         if (!_blocked)
         {
-            var _enemy_obj = self.pickEnemyObject();
+            var _enemy_obj = triggerEnemySpawnPickEnemyObject();
             instance_create_layer(_sx, _sy, _layer_name, _enemy_obj);
             break;
         }
@@ -281,99 +238,41 @@ function TriggerEnemySpawn_spawnOnce()
         _attempts -= 1;
     }
 
-    self.resetTimer();
+    triggerEnemySpawnResetTimer();
 }
 
-function TriggerEnemySpawn_onCreate()
+// ====================================================================
+// Level exit helpers
+// ====================================================================
+
+/*
+* Name: triggerLevelInit
+* Description: Reset level exit bookkeeping variables.
+*/
+function triggerLevelInit()
 {
-    if (!is_undefined(self._base_on_create))
-    {
-        self._base_on_create();
-    }
-    self.readConfig();
-}
-
-function TriggerEnemySpawn_onRoomStart()
-{
-    if (!is_undefined(self._base_on_room_start))
-    {
-        self._base_on_room_start();
-    }
-    self.resolveTilemap();
-    self.resetTimer();
-}
-
-function TriggerEnemySpawn_onStep()
-{
-    if (!is_undefined(self._base_on_step))
-    {
-        self._base_on_step();
-    }
-    if (!self.isActive())
-    {
-        return;
-    }
-    if (onPauseExit())
-    {
-        return;
-    }
-
-    if (self.spawn_timer > 0)
-    {
-        self.spawn_timer -= 1;
-    }
-
-    if (self.spawn_timer <= 0)
-    {
-        self.spawnOnce();
-    }
+    trigger_triggered = false;
 }
 
 /*
-* Name: TriggerEnemySpawn
-* Description: Spawns enemies around the trigger while respecting tile collision.
+* Name: triggerLevelMarkTriggered
+* Description: Mark the trigger as completed and disable further use.
 */
-function TriggerEnemySpawn(_inst) constructor
+function triggerLevelMarkTriggered()
 {
-    TriggerBase(_inst);
-
-    spawn_timer        = 0;
-    spawn_interval_min = 60;
-    spawn_interval_max = 180;
-    spawn_radius       = 200;
-    spawn_attempts     = 10;
-    spawn_pool         = [obj_enemy_1, obj_enemy_2];
-
-    readConfig      = method(self, TriggerEnemySpawn_readConfig);
-    resetTimer      = method(self, TriggerEnemySpawn_resetTimer);
-    pickEnemyObject = method(self, TriggerEnemySpawn_pickEnemyObject);
-    spawnOnce       = method(self, TriggerEnemySpawn_spawnOnce);
-
-    _base_on_create = self.onCreate;
-    onCreate = method(self, TriggerEnemySpawn_onCreate);
-
-    _base_on_room_start = self.onRoomStart;
-    onRoomStart = method(self, TriggerEnemySpawn_onRoomStart);
-
-    _base_on_step = self.onStep;
-    onStep = method(self, TriggerEnemySpawn_onStep);
+    trigger_triggered = true;
+    triggerBaseSetActive(false);
 }
 
-// --------------------------------------------------------------------
-// TriggerLevel helpers
-// --------------------------------------------------------------------
-
-function TriggerLevel_markTriggered()
+/*
+* Name: triggerLevelSafeMessage
+* Description: Retrieve a custom message while providing a sensible fallback.
+*/
+function triggerLevelSafeMessage(_property_name, _default_value)
 {
-    self.triggered = true;
-    self.setActive(false);
-}
-
-function TriggerLevel_safeMessage(_property_name, _default_value)
-{
-    if (instance_exists(self.inst) && variable_instance_exists(self.inst, _property_name))
+    if (variable_instance_exists(id, _property_name))
     {
-        var _text = string(self.inst[_property_name]);
+        var _text = string(self[_property_name]);
         if (string_length(_text) > 0)
         {
             return _text;
@@ -382,14 +281,13 @@ function TriggerLevel_safeMessage(_property_name, _default_value)
     return _default_value;
 }
 
-function TriggerLevel_onPlayerEnter(_player)
+/*
+* Name: triggerLevelHandlePlayer
+* Description: Handle the player entering the exit trigger.
+*/
+function triggerLevelHandlePlayer(_player)
 {
-    if (!is_undefined(self._base_on_player_enter))
-    {
-        self._base_on_player_enter(_player);
-    }
-
-    if (self.triggered)
+    if (trigger_triggered)
     {
         return;
     }
@@ -398,9 +296,9 @@ function TriggerLevel_onPlayerEnter(_player)
         return;
     }
 
-    self.markTriggered();
+    triggerLevelMarkTriggered();
 
-    var _message = self.safeMessage("level_message", "Exit reached! Prepare for the next area.");
+    var _message = triggerLevelSafeMessage("level_message", "Exit reached! Prepare for the next area.");
     var _next_room = room_next(room);
     if (_next_room != -1)
     {
@@ -408,7 +306,7 @@ function TriggerLevel_onPlayerEnter(_player)
     }
     else
     {
-        var _win_text = self.safeMessage("level_final_message", "You win! What would you like to do?");
+        var _win_text = triggerLevelSafeMessage("level_final_message", "You win! What would you like to do?");
         dialogQueuePushWin(
             _win_text,
             function()
@@ -425,43 +323,5 @@ function TriggerLevel_onPlayerEnter(_player)
                 game_end();
             }
         );
-    }
-}
-
-/*
-* Name: TriggerLevel
-* Description: Handles level completion and final victory dialogue.
-*/
-function TriggerLevel(_inst) constructor
-{
-    TriggerBase(_inst);
-
-    triggered = false;
-
-    markTriggered = method(self, TriggerLevel_markTriggered);
-    safeMessage   = method(self, TriggerLevel_safeMessage);
-
-    _base_on_player_enter = self.onPlayerEnter;
-    onPlayerEnter = method(self, TriggerLevel_onPlayerEnter);
-}
-
-// --------------------------------------------------------------------
-// Factory helper
-// --------------------------------------------------------------------
-
-
-function triggerCreateBehaviour(_inst, _kind)
-{
-    switch (_kind)
-    {
-        case TriggerKind.PlayerSpawn:
-            return TriggerPlayerSpawn(_inst);
-
-        case TriggerKind.EnemySpawn:
-            return TriggerEnemySpawn(_inst);
-
-        case TriggerKind.LevelExit:
-        default:
-            return TriggerLevel(_inst);
     }
 }
