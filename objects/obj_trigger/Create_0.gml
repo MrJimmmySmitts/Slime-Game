@@ -15,6 +15,8 @@ trigger_behaviour = triggerCreateBehaviour(id, trigger_kind);
 if (is_struct(trigger_behaviour))
 {
     trigger_behaviour.onCreate();
+    trigger_behaviour.onRoomStart();
+
 }
 else
 {

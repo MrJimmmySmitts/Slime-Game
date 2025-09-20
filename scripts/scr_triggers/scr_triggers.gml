@@ -1,5 +1,6 @@
-// ====================================================================
+
 // scr_triggers.gml — trigger behaviour structs and helpers
+
 // ====================================================================
 
 /*
@@ -12,6 +13,7 @@ enum TriggerKind
     EnemySpawn  = 1,
     LevelExit   = 2,
 }
+
 
 // --------------------------------------------------------------------
 // TriggerBase helpers
@@ -446,6 +448,7 @@ function TriggerLevel(_inst) constructor
 // --------------------------------------------------------------------
 // Factory helper
 // --------------------------------------------------------------------
+
 
 function triggerCreateBehaviour(_inst, _kind)
 {
