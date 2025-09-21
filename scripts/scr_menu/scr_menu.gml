@@ -402,7 +402,7 @@ function menuAdjustSlider(_entry, _dir)
         _value = clamp(_value, 0, 1);
 
         global.Settings.master_volume = _value;
-        audio_master_gain(audio_master, global.Settings.master_volume, 0);
+        audio_master_gain(global.Settings.master_volume);
     }
 }
 
