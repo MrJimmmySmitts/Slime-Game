@@ -303,7 +303,19 @@ function triggerLevelHandlePlayer(_player)
     var _next_room = room_next(room);
     if (_next_room != -1)
     {
-        dialogQueuePush(_message, function() { room_goto(_next_room); });
+        dialogQueuePush(
+            _message,
+            function()
+            {
+                // Recompute the next room when the callback fires so we
+                // avoid referencing locals from the outer scope.
+                var _target_room = room_next(room);
+                if (_target_room != -1)
+                {
+                    room_goto(_target_room);
+                }
+            }
+        );
     }
     else
     {
