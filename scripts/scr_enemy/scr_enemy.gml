@@ -64,8 +64,12 @@ function enemyBaseInit() {
     enemy_stun_timer  = 0;
     enemy_state       = EnemyState.Idle;
 
-    var w = sprite_get_width(sprite_index);
-    var h = sprite_get_height(sprite_index);
+    var w = 0;
+    var h = 0;
+    if (sprite_index >= 0) {
+        w = sprite_get_width(sprite_index);
+        h = sprite_get_height(sprite_index);
+    }
     enemy_col_w = (w > 0) ? clamp(w * 0.50, 8, 24) : 16;
     enemy_col_h = (h > 0) ? clamp(h * 0.50, 8, 24) : 16;
 
