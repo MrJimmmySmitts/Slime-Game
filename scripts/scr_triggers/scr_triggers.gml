@@ -272,7 +272,8 @@ function triggerLevelSafeMessage(_property_name, _default_value)
 {
     if (variable_instance_exists(id, _property_name))
     {
-        var _text = string(self[_property_name]);
+        var _value = variable_instance_get(id, _property_name);
+        var _text = string(_value);
         if (string_length(_text) > 0)
         {
             return _text;
