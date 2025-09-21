@@ -26,7 +26,7 @@ function gameInit()
     }
 
     global.Settings.master_volume = clamp(global.Settings.master_volume, 0, 1);
-    audio_master_gain(global.Settings.master_volume, 0);
+    audio_master_gain(global.Settings.master_volume);
     recomputePauseState(); 
         
     // Create a single global namespace for the project
