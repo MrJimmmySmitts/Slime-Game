@@ -150,8 +150,8 @@ function menuRebuildItems()
                             stat:              _def.stat,
                             base:              variable_struct_exists(_def, "base") ? _def.base : undefined,
                             step:              variable_struct_exists(_def, "step") ? _def.step : 1,
-                            min:               variable_struct_exists(_def, "min") ? _def.min : -1e9,
-                            max:               variable_struct_exists(_def, "max") ? _def.max : 1e9,
+                            min:               variable_struct_exists(_def, "min") ? _def.min : -1000000000,
+                            max:               variable_struct_exists(_def, "max") ? _def.max : 1000000000,
                             decimals:          variable_struct_exists(_def, "decimals") ? _def.decimals : 0,
                             current:           variable_struct_exists(_def, "current") ? _def.current : undefined,
                             current_behaviour: variable_struct_exists(_def, "current_behaviour") ? _def.current_behaviour : "clamp",
@@ -573,8 +573,8 @@ function menuDebugAdjustStat(_entry, _dir)
     if (!variable_instance_exists(_player, _stat)) return;
 
     var _step     = variable_struct_exists(_entry, "step") ? _entry.step : 1;
-    var _min      = variable_struct_exists(_entry, "min") ? _entry.min : -1e9;
-    var _max      = variable_struct_exists(_entry, "max") ? _entry.max : 1e9;
+    var _min      = variable_struct_exists(_entry, "min") ? _entry.min : -1000000000;
+    var _max      = variable_struct_exists(_entry, "max") ? _entry.max : 1000000000;
     var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
 
     var _value = variable_instance_get(_player, _stat);
