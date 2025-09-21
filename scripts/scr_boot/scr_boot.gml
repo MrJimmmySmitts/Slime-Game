@@ -8,7 +8,25 @@ function gameInit()
         
     global.isPaused   = false; // start Paused
     global.invVisible = false; // inventory hidden by default
-    global.menuVisible = true; // Start Menu 
+    global.menuVisible = true; // Start Menu
+
+    if (!variable_global_exists("Settings"))
+    {
+        global.Settings = {
+            master_volume:    1.0,
+            screen_size_index:0,
+            debug_god_mode:   false,
+        };
+    }
+    else
+    {
+        if (!variable_struct_exists(global.Settings, "master_volume"))    global.Settings.master_volume    = 1.0;
+        if (!variable_struct_exists(global.Settings, "screen_size_index")) global.Settings.screen_size_index = 0;
+        if (!variable_struct_exists(global.Settings, "debug_god_mode"))    global.Settings.debug_god_mode   = false;
+    }
+
+    global.Settings.master_volume = clamp(global.Settings.master_volume, 0, 1);
+    audio_master_gain(audio_master, global.Settings.master_volume, 0);
     recomputePauseState(); 
         
     // Create a single global namespace for the project
