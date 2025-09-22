@@ -39,7 +39,8 @@ function dgFunctionExists(_name) {
         return false;
     }
 
-    if (is_undefined(global.__dgFunctionExistsCache)) {
+    if (!variable_global_exists("__dgFunctionExistsCache")
+        || !is_struct(global.__dgFunctionExistsCache)) {
         global.__dgFunctionExistsCache = {};
     }
 
