@@ -204,7 +204,7 @@
     
     <section class="card">
       <h2>Overview</h2>
-      <p>Script usage across <strong>16</strong> objects. Each badge indicates the script asset providing the function.</p>
+      <p>Script usage across <strong>18</strong> objects. Each badge indicates the script asset providing the function.</p>
       <nav aria-label="Object list">
         <ul>
           <li><a href="#object-obj-bullet">obj_bullet <span class="badge">2</span></a></li>
@@ -216,13 +216,15 @@
 <li><a href="#object-obj-floor-gen">obj_floor_gen <span class="badge">1</span></a></li>
 <li><a href="#object-obj-game-controller">obj_game_controller <span class="badge">1</span></a></li>
 <li><a href="#object-obj-inventory">obj_inventory <span class="badge">10</span></a></li>
-<li><a href="#object-obj-menu-controller">obj_menu_controller <span class="badge">6</span></a></li>
+<li><a href="#object-obj-menu-controller">obj_menu_controller <span class="badge">32</span></a></li>
 <li><a href="#object-obj-pickup-base">obj_pickup_base <span class="badge">2</span></a></li>
 <li><a href="#object-obj-pickup-modifier">obj_pickup_modifier <span class="badge">1</span></a></li>
 <li><a href="#object-obj-pickup-stock">obj_pickup_stock <span class="badge">0</span></a></li>
 <li><a href="#object-obj-player">obj_player <span class="badge">17</span></a></li>
-<li><a href="#object-obj-spawner">obj_spawner <span class="badge">1</span></a></li>
-<li><a href="#object-obj-trigger">obj_trigger <span class="badge">0</span></a></li>
+<li><a href="#object-obj-trigger">obj_trigger <span class="badge">3</span></a></li>
+<li><a href="#object-obj-trigger-enemy-spawn">obj_trigger_enemy_spawn <span class="badge">7</span></a></li>
+<li><a href="#object-obj-trigger-level-exit">obj_trigger_level_exit <span class="badge">3</span></a></li>
+<li><a href="#object-obj-trigger-player-spawn">obj_trigger_player_spawn <span class="badge">2</span></a></li>
         </ul>
       </nav>
     </section>
@@ -481,7 +483,7 @@
   <div class="meta">
     <span>📁 objects/obj_menu_controller</span>
     <span>🧩 3 events</span>
-    <span>🛠️ 6 unique script functions</span>
+    <span>🛠️ 32 unique script functions</span>
   </div>
   <table>
       <thead>
@@ -493,15 +495,15 @@
       <tbody>
         <tr>
   <td data-label="Event"><span title="objects/obj_menu_controller/Create_0.gml">Create → 0</span></td>
-  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-menuapplyscreensize">menuApplyScreenSize</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menurebuilditems">menuRebuildItems</a> <span class="badge">scr_menu</span></li></ul></td>
 </tr>
 <tr>
   <td data-label="Event"><span title="objects/obj_menu_controller/Draw_64.gml">Draw → 64</span></td>
-  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-menugetlayout">menuGetLayout</a> <span class="badge">scr_menu</span></li></ul></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-menudebugformatstatvalue">menuDebugFormatStatValue</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebuggetstatdisplayvalue">menuDebugGetStatDisplayValue</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebuggetstatrange">menuDebugGetStatRange</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebugiseditingindex">menuDebugIsEditingIndex</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudropdowngetoptionrect">menuDropdownGetOptionRect</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menugetdropdownbaserect">menuGetDropdownBaseRect</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menugetitemrect">menuGetItemRect</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menugetlayout">menuGetLayout</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menugetnumberfieldrects">menuGetNumberFieldRects</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menugetslidertrackrect">menuGetSliderTrackRect</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuoptiongetcount">menuOptionGetCount</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuoptiongetcurrentlabel">menuOptionGetCurrentLabel</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuoptiongetindex">menuOptionGetIndex</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuoptiongetlabelforindex">menuOptionGetLabelForIndex</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuslidergetrange">menuSliderGetRange</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuslidergetvalue">menuSliderGetValue</a> <span class="badge">scr_menu</span></li></ul></td>
 </tr>
 <tr>
   <td data-label="Event"><span title="objects/obj_menu_controller/Step_0.gml">Step → 0</span></td>
-  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invhide">invHide</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invtoggle">invToggle</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-menuactivateselection">menuActivateSelection</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menumouseupdate">menuMouseUpdate</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menutoggle">menuToggle</a> <span class="badge">scr_utils</span></li></ul></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-invhide">invHide</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-invtoggle">invToggle</a> <span class="badge">scr_inventory</span></li><li><a class="inline-link" href="functions.html#function-menuactivateselection">menuActivateSelection</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuadjustselection">menuAdjustSelection</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menuclosesettings">menuCloseSettings</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebugcancelediting">menuDebugCancelEditing</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebugensureeditingentryvalid">menuDebugEnsureEditingEntryValid</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebughandleeditinginput">menuDebugHandleEditingInput</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudebugisediting">menuDebugIsEditing</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudropdownclose">menuDropdownClose</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudropdownconfirm">menuDropdownConfirm</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menudropdownstep">menuDropdownStep</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menumouseupdate">menuMouseUpdate</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menurebuilditems">menuRebuildItems</a> <span class="badge">scr_menu</span></li><li><a class="inline-link" href="functions.html#function-menutoggle">menuToggle</a> <span class="badge">scr_utils</span></li></ul></td>
 </tr>
       </tbody>
     </table>
@@ -609,38 +611,12 @@
       </tbody>
     </table>
 </section>
-<section id="object-obj-spawner">
-  <h2>obj_spawner</h2>
-  <div class="meta">
-    <span>📁 objects/obj_spawner</span>
-    <span>🧩 2 events</span>
-    <span>🛠️ 1 unique script functions</span>
-  </div>
-  <table>
-      <thead>
-        <tr>
-          <th>Event</th>
-          <th>Script calls</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-  <td data-label="Event"><span title="objects/obj_spawner/Create_0.gml">Create → 0</span></td>
-  <td data-label="Script calls"><span class="empty">No script functions</span></td>
-</tr>
-<tr>
-  <td data-label="Event"><span title="objects/obj_spawner/Step_0.gml">Step → 0</span></td>
-  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-tilemapsolidat">tilemapSolidAt</a> <span class="badge">scr_pmove</span></li></ul></td>
-</tr>
-      </tbody>
-    </table>
-</section>
 <section id="object-obj-trigger">
   <h2>obj_trigger</h2>
   <div class="meta">
     <span>📁 objects/obj_trigger</span>
-    <span>🧩 1 events</span>
-    <span>🛠️ 0 unique script functions</span>
+    <span>🧩 5 events</span>
+    <span>🛠️ 3 unique script functions</span>
   </div>
   <table>
       <thead>
@@ -654,11 +630,109 @@
   <td data-label="Event"><span title="objects/obj_trigger/Collision_obj_player.gml">Collision → obj_player</span></td>
   <td data-label="Script calls"><span class="empty">No script functions</span></td>
 </tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerbaseinit">triggerBaseInit</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger/Destroy_0.gml">Destroy → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerbaseondestroy">triggerBaseOnDestroy</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger/Other_4.gml">Other → 4</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerbaselayername">triggerBaseLayerName</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><span class="empty">No script functions</span></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-trigger-enemy-spawn">
+  <h2>obj_trigger_enemy_spawn</h2>
+  <div class="meta">
+    <span>📁 objects/obj_trigger_enemy_spawn</span>
+    <span>🧩 3 events</span>
+    <span>🛠️ 7 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_trigger_enemy_spawn/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerenemyspawninit">triggerEnemySpawnInit</a> <span class="badge">scr_triggers</span></li><li><a class="inline-link" href="functions.html#function-triggerenemyspawnreadconfig">triggerEnemySpawnReadConfig</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger_enemy_spawn/Other_4.gml">Other → 4</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerbaseresolvetilemap">triggerBaseResolveTilemap</a> <span class="badge">scr_triggers</span></li><li><a class="inline-link" href="functions.html#function-triggerenemyspawnresettimer">triggerEnemySpawnResetTimer</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger_enemy_spawn/Step_0.gml">Step → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-onpauseexit">onPauseExit</a> <span class="badge">scr_utils</span></li><li><a class="inline-link" href="functions.html#function-triggerbaseisactive">triggerBaseIsActive</a> <span class="badge">scr_triggers</span></li><li><a class="inline-link" href="functions.html#function-triggerenemyspawnspawnonce">triggerEnemySpawnSpawnOnce</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-trigger-level-exit">
+  <h2>obj_trigger_level_exit</h2>
+  <div class="meta">
+    <span>📁 objects/obj_trigger_level_exit</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 3 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_trigger_level_exit/Collision_obj_player.gml">Collision → obj_player</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerbaseisactive">triggerBaseIsActive</a> <span class="badge">scr_triggers</span></li><li><a class="inline-link" href="functions.html#function-triggerlevelhandleplayer">triggerLevelHandlePlayer</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger_level_exit/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerlevelinit">triggerLevelInit</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+      </tbody>
+    </table>
+</section>
+<section id="object-obj-trigger-player-spawn">
+  <h2>obj_trigger_player_spawn</h2>
+  <div class="meta">
+    <span>📁 objects/obj_trigger_player_spawn</span>
+    <span>🧩 2 events</span>
+    <span>🛠️ 2 unique script functions</span>
+  </div>
+  <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Script calls</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+  <td data-label="Event"><span title="objects/obj_trigger_player_spawn/Create_0.gml">Create → 0</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerplayerspawninit">triggerPlayerSpawnInit</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
+<tr>
+  <td data-label="Event"><span title="objects/obj_trigger_player_spawn/Other_4.gml">Other → 4</span></td>
+  <td data-label="Script calls"><ul><li><a class="inline-link" href="functions.html#function-triggerplayerspawnspawnplayer">triggerPlayerSpawnSpawnPlayer</a> <span class="badge">scr_triggers</span></li></ul></td>
+</tr>
       </tbody>
     </table>
 </section>
   
-    <footer>Generated on 2025-09-20T08:37:01.374Z</footer>
+    <footer>Generated on 2025-09-22T12:23:01.735Z</footer>
   </main>
 </body>
 </html>

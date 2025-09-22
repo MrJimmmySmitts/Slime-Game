@@ -204,22 +204,23 @@
     
     <section class="card">
       <h2>Overview</h2>
-      <p>This reference covers <strong>125</strong> documented functions across <strong>15</strong> script assets.</p>
+      <p>This reference covers <strong>201</strong> documented functions across <strong>16</strong> script assets.</p>
       <nav aria-label="Function groups">
         <ul>
           <li><a href="#script-scr-boot">scr_boot <span class="badge">2</span></a></li>
 <li><a href="#script-scr-dash">scr_dash <span class="badge">3</span></a></li>
-<li><a href="#script-scr-dialog">scr_dialog <span class="badge">8</span></a></li>
+<li><a href="#script-scr-dialog">scr_dialog <span class="badge">9</span></a></li>
 <li><a href="#script-scr-draw-inventory">scr_draw_inventory <span class="badge">11</span></a></li>
 <li><a href="#script-scr-enemy">scr_enemy <span class="badge">10</span></a></li>
 <li><a href="#script-scr-input">scr_input <span class="badge">7</span></a></li>
 <li><a href="#script-scr-inventory">scr_inventory <span class="badge">14</span></a></li>
 <li><a href="#script-scr-items">scr_items <span class="badge">16</span></a></li>
-<li><a href="#script-scr-menu">scr_menu <span class="badge">5</span></a></li>
+<li><a href="#script-scr-menu">scr_menu <span class="badge">60</span></a></li>
 <li><a href="#script-scr-pickups">scr_pickups <span class="badge">10</span></a></li>
 <li><a href="#script-scr-player-stats">scr_player_stats <span class="badge">3</span></a></li>
 <li><a href="#script-scr-pmove">scr_pmove <span class="badge">4</span></a></li>
-<li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">15</span></a></li>
+<li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">18</span></a></li>
+<li><a href="#script-scr-triggers">scr_triggers <span class="badge">17</span></a></li>
 <li><a href="#script-scr-utils">scr_utils <span class="badge">15</span></a></li>
 <li><a href="#script-scr-weapon">scr_weapon <span class="badge">2</span></a></li>
         </ul>
@@ -243,7 +244,7 @@
   <p><code>function gameShutdown()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_boot/scr_boot.gml:71</span>
+    <span title="Source path">📁 scripts/scr_boot/scr_boot.gml:89</span>
     <span title="Script asset">📄 scr_boot</span>
   </div>
 </article>
@@ -289,7 +290,7 @@
   <p><code>function dialogDraw()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:172</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:230</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -299,7 +300,7 @@
   <p><code>function dialogHide()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:83</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:113</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -319,17 +320,17 @@
   <p><code>function dialogIsActive()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:104</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:136</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
 <article class="card" id="function-dialogqueuepush">
   <h3>dialogQueuePush</h3>
   <p>Push a message onto the dialogue queue to be shown later.</p>
-  <p><code>function dialogQueuePush(_text)</code></p>
-  <ul><li><code>_text</code></li></ul>
+  <p><code>function dialogQueuePush(_text, _ok_cb)</code></p>
+  <ul><li><code>_text</code></li><li><code>_ok_cb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:21</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:23</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -339,7 +340,17 @@
   <p><code>function dialogQueuePushQuestion(_text, _retry_cb, _quit_cb)</code></p>
   <ul><li><code>_text</code></li><li><code>_retry_cb</code></li><li><code>_quit_cb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:37</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:42</span>
+    <span title="Script asset">📄 scr_dialog</span>
+  </div>
+</article>
+<article class="card" id="function-dialogqueuepushwin">
+  <h3>dialogQueuePushWin</h3>
+  <p>No description available.</p>
+  <p><code>function dialogQueuePushWin(_text, _menu_cb, _restart_cb, _quit_cb)</code></p>
+  <ul><li><code>_text</code></li><li><code>_menu_cb</code></li><li><code>_restart_cb</code></li><li><code>_quit_cb</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:54</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -349,7 +360,7 @@
   <p><code>function dialogShowNext()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:53</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:71</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -359,7 +370,7 @@
   <p><code>function dialogStep()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:112</span>
+    <span title="Source path">📁 scripts/scr_dialog/scr_dialog.gml:144</span>
     <span title="Script asset">📄 scr_dialog</span>
   </div>
 </article>
@@ -485,7 +496,7 @@
   <p><code>function enemyApplyDamage(_amount, _source)</code></p>
   <ul><li><code>_amount</code></li><li><code>_source</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:139</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:143</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -505,7 +516,7 @@
   <p><code>function enemyChaseTarget(_target)</code></p>
   <ul><li><code>_target</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:114</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:118</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -515,7 +526,7 @@
   <p><code>function enemyResolveTilemap()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:227</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:231</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -525,7 +536,7 @@
   <p><code>function enemySeekPlayerStep()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:182</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:186</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -535,7 +546,7 @@
   <p><code>function enemySetActive(_target)</code></p>
   <ul><li><code>_target</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:97</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:101</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -545,7 +556,7 @@
   <p><code>function enemySetIdle()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:86</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:90</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -565,7 +576,7 @@
   <p><code>function moveAxisWithTilemap(_tm, _axis, _amount, _w, _h)</code></p>
   <ul><li><code>_tm</code></li><li><code>_axis</code></li><li><code>_amount</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:261</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:265</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -575,7 +586,7 @@
   <p><code>function tmRectHitsSolid(_tm, _x, _y, _w, _h)</code></p>
   <ul><li><code>_tm</code></li><li><code>_x</code></li><li><code>_y</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:236</span>
+    <span title="Source path">📁 scripts/scr_enemy/scr_enemy.gml:240</span>
     <span title="Script asset">📄 scr_enemy</span>
   </div>
 </article>
@@ -967,7 +978,347 @@
   <p><code>function menuActivateSelection()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:48</span>
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:732</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuadjustoption">
+  <h3>menuAdjustOption</h3>
+  <p>Cycle through option lists (screen sizes, etc.).</p>
+  <p><code>function menuAdjustOption(_entry, _dir)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_dir</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1125</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuadjustselection">
+  <h3>menuAdjustSelection</h3>
+  <p>Adjust the currently selected entry (e.g., sliders/options) by ±1 step.</p>
+  <p><code>function menuAdjustSelection(_dir)</code></p>
+  <ul><li><code>_dir</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1041</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuadjustslider">
+  <h3>menuAdjustSlider</h3>
+  <p>Handle slider-style adjustments (currently master volume).</p>
+  <p><code>function menuAdjustSlider(_entry, _dir)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_dir</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1110</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuapplyscreensize">
+  <h3>menuApplyScreenSize</h3>
+  <p>Apply the supplied screen size option to the game window/gui.</p>
+  <p><code>function menuApplyScreenSize(_option)</code></p>
+  <ul><li><code>_option</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1190</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuclosesettings">
+  <h3>menuCloseSettings</h3>
+  <p>Return to the main menu screen and rebuild entries.</p>
+  <p><code>function menuCloseSettings()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1157</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugadjuststat">
+  <h3>menuDebugAdjustStat</h3>
+  <p>Adjust a numeric player stat with clamping and optional base/current synchronisation.</p>
+  <p><code>function menuDebugAdjustStat(_entry, _dir)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_dir</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1580</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugcancelediting">
+  <h3>menuDebugCancelEditing</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugCancelEditing()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1453</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugdescribestat">
+  <h3>menuDebugDescribeStat</h3>
+  <p>Format a player stat value for display in the debug panel.</p>
+  <p><code>function menuDebugDescribeStat(_player, _def)</code></p>
+  <ul><li><code>_player</code></li><li><code>_def</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1237</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugensureeditingentryvalid">
+  <h3>menuDebugEnsureEditingEntryValid</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugEnsureEditingEntryValid()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1545</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugformatstatvalue">
+  <h3>menuDebugFormatStatValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugFormatStatValue(_entry, _value)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_value</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1283</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetloadroomlabel">
+  <h3>menuDebugGetLoadRoomLabel</h3>
+  <p>Format the label for the debug load-level entry.</p>
+  <p><code>function menuDebugGetLoadRoomLabel()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1637</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetplayer">
+  <h3>menuDebugGetPlayer</h3>
+  <p>Return the first player instance or noone if none exist.</p>
+  <p><code>function menuDebugGetPlayer()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1227</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetroomlabelforindex">
+  <h3>menuDebugGetRoomLabelForIndex</h3>
+  <p>Cycle the debug room selection index.</p>
+  <p><code>function menuDebugGetRoomLabelForIndex(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1606</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetstatdisplayvalue">
+  <h3>menuDebugGetStatDisplayValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugGetStatDisplayValue(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1293</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetstatrange">
+  <h3>menuDebugGetStatRange</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugGetStatRange(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1265</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebuggetstatvalue">
+  <h3>menuDebugGetStatValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugGetStatValue(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1252</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebughandleeditinginput">
+  <h3>menuDebugHandleEditingInput</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugHandleEditingInput()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1503</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugisediting">
+  <h3>menuDebugIsEditing</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugIsEditing()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1411</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugiseditingindex">
+  <h3>menuDebugIsEditingIndex</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugIsEditingIndex(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1417</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugloadselectedroom">
+  <h3>menuDebugLoadSelectedRoom</h3>
+  <p>Jump to the currently selected debug room.</p>
+  <p><code>function menuDebugLoadSelectedRoom()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1657</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugsetstatvalue">
+  <h3>menuDebugSetStatValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugSetStatValue(_entry, _value)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_value</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1304</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugspawnenemy">
+  <h3>menuDebugSpawnEnemy</h3>
+  <p>Spawn a debug enemy near the player (or centre if no player).</p>
+  <p><code>function menuDebugSpawnEnemy()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1675</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugstartediting">
+  <h3>menuDebugStartEditing</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugStartEditing(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1423</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugsubmitediting">
+  <h3>menuDebugSubmitEditing</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugSubmitEditing()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1463</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudebugvalidateinput">
+  <h3>menuDebugValidateInput</h3>
+  <p>No description available.</p>
+  <p><code>function menuDebugValidateInput(_entry, _text)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_text</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1359</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdownclose">
+  <h3>menuDropdownClose</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownClose()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:469</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdownconfirm">
+  <h3>menuDropdownConfirm</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownConfirm()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:499</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdowngetoptionrect">
+  <h3>menuDropdownGetOptionRect</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownGetOptionRect(_index, _option_index)</code></p>
+  <ul><li><code>_index</code></li><li><code>_option_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:122</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdownopen">
+  <h3>menuDropdownOpen</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownOpen(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:446</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdownoptionatposition">
+  <h3>menuDropdownOptionAtPosition</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownOptionAtPosition(_index, _entry, _mx, _my)</code></p>
+  <ul><li><code>_index</code></li><li><code>_entry</code></li><li><code>_mx</code></li><li><code>_my</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:537</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menudropdownstep">
+  <h3>menuDropdownStep</h3>
+  <p>No description available.</p>
+  <p><code>function menuDropdownStep(_dir)</code></p>
+  <ul><li><code>_dir</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:475</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetdropdownbaserect">
+  <h3>menuGetDropdownBaseRect</h3>
+  <p>No description available.</p>
+  <p><code>function menuGetDropdownBaseRect(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:110</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetitemrect">
+  <h3>menuGetItemRect</h3>
+  <p>No description available.</p>
+  <p><code>function menuGetItemRect(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:59</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetitemvaluerect">
+  <h3>menuGetItemValueRect</h3>
+  <p>No description available.</p>
+  <p><code>function menuGetItemValueRect(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:75</span>
     <span title="Script asset">📄 scr_menu</span>
   </div>
 </article>
@@ -977,7 +1328,37 @@
   <p><code>function menuGetLayout()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:5</span>
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:25</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetnumberfieldrects">
+  <h3>menuGetNumberFieldRects</h3>
+  <p>No description available.</p>
+  <p><code>function menuGetNumberFieldRects(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:139</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetscreensizelabel">
+  <h3>menuGetScreenSizeLabel</h3>
+  <p>Build the display label for the current screen size option.</p>
+  <p><code>function menuGetScreenSizeLabel()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1174</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menugetslidertrackrect">
+  <h3>menuGetSliderTrackRect</h3>
+  <p>No description available.</p>
+  <p><code>function menuGetSliderTrackRect(_index)</code></p>
+  <ul><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:97</span>
     <span title="Script asset">📄 scr_menu</span>
   </div>
 </article>
@@ -987,7 +1368,17 @@
   <p><code>function menuIndexAt(_mx, _my)</code></p>
   <ul><li><code>_mx</code></li><li><code>_my</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:34</span>
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:195</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuisgodmodeenabled">
+  <h3>menuIsGodModeEnabled</h3>
+  <p>Helper to read the debug god-mode flag.</p>
+  <p><code>function menuIsGodModeEnabled()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1215</span>
     <span title="Script asset">📄 scr_menu</span>
   </div>
 </article>
@@ -997,17 +1388,187 @@
   <p><code>function menuItemBounds(_index)</code></p>
   <ul><li><code>_index</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:21</span>
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:49</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menumousehandledebugstatpress">
+  <h3>menuMouseHandleDebugStatPress</h3>
+  <p>No description available.</p>
+  <p><code>function menuMouseHandleDebugStatPress(_index, _entry, _mx, _my)</code></p>
+  <ul><li><code>_index</code></li><li><code>_entry</code></li><li><code>_mx</code></li><li><code>_my</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:322</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menumousehandlesliderdrag">
+  <h3>menuMouseHandleSliderDrag</h3>
+  <p>No description available.</p>
+  <p><code>function menuMouseHandleSliderDrag(_index, _entry, _mx)</code></p>
+  <ul><li><code>_index</code></li><li><code>_entry</code></li><li><code>_mx</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:312</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menumousehandlesliderpress">
+  <h3>menuMouseHandleSliderPress</h3>
+  <p>No description available.</p>
+  <p><code>function menuMouseHandleSliderPress(_index, _entry, _mx, _my)</code></p>
+  <ul><li><code>_index</code></li><li><code>_entry</code></li><li><code>_mx</code></li><li><code>_my</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:293</span>
     <span title="Script asset">📄 scr_menu</span>
   </div>
 </article>
 <article class="card" id="function-menumouseupdate">
   <h3>menuMouseUpdate</h3>
-  <p>When menu is visible, hover to select and click (LMB) to activate.</p>
+  <p>When menu is visible, hover to select and click (LMB/RMB) to activate or adjust.</p>
   <p><code>function menuMouseUpdate()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:80</span>
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:834</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuopensettings">
+  <h3>menuOpenSettings</h3>
+  <p>Switch to the settings screen and rebuild entries.</p>
+  <p><code>function menuOpenSettings()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1145</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuoptiongetcount">
+  <h3>menuOptionGetCount</h3>
+  <p>No description available.</p>
+  <p><code>function menuOptionGetCount(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:341</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuoptiongetcurrentlabel">
+  <h3>menuOptionGetCurrentLabel</h3>
+  <p>No description available.</p>
+  <p><code>function menuOptionGetCurrentLabel(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:439</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuoptiongetindex">
+  <h3>menuOptionGetIndex</h3>
+  <p>No description available.</p>
+  <p><code>function menuOptionGetIndex(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:359</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuoptiongetlabelforindex">
+  <h3>menuOptionGetLabelForIndex</h3>
+  <p>No description available.</p>
+  <p><code>function menuOptionGetLabelForIndex(_entry, _index)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:411</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuoptionsetindex">
+  <h3>menuOptionSetIndex</h3>
+  <p>No description available.</p>
+  <p><code>function menuOptionSetIndex(_entry, _index)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_index</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:381</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menurebuilditems">
+  <h3>menuRebuildItems</h3>
+  <p>Build the current menu item list (main/settings/debug overlays).</p>
+  <p><code>function menuRebuildItems()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:561</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menusliderapplyvalue">
+  <h3>menuSliderApplyValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderApplyValue(_entry, _value)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_value</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:265</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menusliderclampvalue">
+  <h3>menuSliderClampValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderClampValue(_entry, _value)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_value</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:233</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuslidergetrange">
+  <h3>menuSliderGetRange</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderGetRange(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:218</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuslidergetstep">
+  <h3>menuSliderGetStep</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderGetStep(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:207</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuslidergetvalue">
+  <h3>menuSliderGetValue</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderGetValue(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:250</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menuslidervaluefrommouse">
+  <h3>menuSliderValueFromMouse</h3>
+  <p>No description available.</p>
+  <p><code>function menuSliderValueFromMouse(_entry, _track, _mx)</code></p>
+  <ul><li><code>_entry</code></li><li><code>_track</code></li><li><code>_mx</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:278</span>
+    <span title="Script asset">📄 scr_menu</span>
+  </div>
+</article>
+<article class="card" id="function-menutoggleentry">
+  <h3>menuToggleEntry</h3>
+  <p>Toggle boolean-style entries (debug panel, god mode).</p>
+  <p><code>function menuToggleEntry(_entry)</code></p>
+  <ul><li><code>_entry</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_menu/scr_menu.gml:1086</span>
     <span title="Script asset">📄 scr_menu</span>
   </div>
 </article>
@@ -1199,7 +1760,7 @@
   <p><code>function dgAssignTemplates(_cfg, _graph, _roomdb)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:193</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:291</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1209,7 +1770,7 @@
   <p><code>function dgBuildFloorIntoRoom(_cfg, _graph, _roomdb)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:254</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:355</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1223,13 +1784,43 @@
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
+<article class="card" id="function-dgconfigensuretilesetid">
+  <h3>dgConfigEnsureTilesetId</h3>
+  <p>Resolves a tileset asset reference (numeric id or name string).</p>
+  <p><code>function dgConfigEnsureTilesetId(_value, _field_name)</code></p>
+  <ul><li><code>_value</code></li><li><code>_field_name</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:37</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgconfigfail">
+  <h3>dgConfigFail</h3>
+  <p>Raises a fatal dungeon-generation configuration error.</p>
+  <p><code>function dgConfigFail(_message)</code></p>
+  <ul><li><code>_message</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:29</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgconfigvalidate">
+  <h3>dgConfigValidate</h3>
+  <p>Validates and normalizes dungeon generator configuration.</p>
+  <p><code>function dgConfigValidate(_cfg)</code></p>
+  <ul><li><code>_cfg</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:59</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
 <article class="card" id="function-dggeneratefloor">
   <h3>dgGenerateFloor</h3>
   <p>Master function to build a floor.</p>
   <p><code>function dgGenerateFloor(_cfg_override)</code></p>
   <ul><li><code>_cfg_override</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:269</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:371</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1239,7 +1830,7 @@
   <p><code>function dgGraphAddNode(_map, _gx, _gy)</code></p>
   <ul><li><code>_map</code></li><li><code>_gx</code></li><li><code>_gy</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:102</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:200</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1249,7 +1840,7 @@
   <p><code>function dgGraphKey(_gx, _gy)</code></p>
   <ul><li><code>_gx</code></li><li><code>_gy</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:94</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:192</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1259,7 +1850,7 @@
   <p><code>function dgGraphNeighbors4()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:119</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:217</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1269,7 +1860,7 @@
   <p><code>function dgLayerRequire(_name, _tileset)</code></p>
   <ul><li><code>_name</code></li><li><code>_tileset</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:219</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:317</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1279,7 +1870,7 @@
   <p><code>function dgLayoutBuild(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:131</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:229</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1289,7 +1880,7 @@
   <p><code>function dgRngInit(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:29</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:127</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1299,7 +1890,7 @@
   <p><code>function dgRoomdbBuildExamples(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:49</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:147</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1309,7 +1900,7 @@
   <p><code>function dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_grid)</code></p>
   <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li><li><code>_walk_grid</code></li><li><code>_coll_grid</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:37</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:135</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1319,7 +1910,7 @@
   <p><code>function dgTemplateMatches(_tmpl, _n, _e, _s, _w)</code></p>
   <ul><li><code>_tmpl</code></li><li><code>_n</code></li><li><code>_e</code></li><li><code>_s</code></li><li><code>_w</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:183</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:281</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1329,18 +1920,191 @@
   <p><code>function dgTilePaintRoom(_cfg, _node, _tmpl, _walk_tm, _coll_tm)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_node</code></li><li><code>_tmpl</code></li><li><code>_walk_tm</code></li><li><code>_coll_tm</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:237</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:338</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
 <article class="card" id="function-make-room">
   <h3>make_room</h3>
   <p>No description available.</p>
-  <p><code>function make_room(_name, _exN, _exE, _exS, _exW)</code></p>
-  <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li></ul>
+  <p><code>function make_room(_name, _exN, _exE, _exS, _exW, _w, _h)</code></p>
+  <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:56</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:151</span>
     <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+</section>
+<section id="script-scr-triggers">
+  <h2>scr_triggers</h2>
+  <article class="card" id="function-triggerbaseinit">
+  <h3>triggerBaseInit</h3>
+  <p>Prepare shared state for trigger objects.</p>
+  <p><code>function triggerBaseInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:75</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerbaseisactive">
+  <h3>triggerBaseIsActive</h3>
+  <p>Returns whether the trigger should currently process logic.</p>
+  <p><code>function triggerBaseIsActive()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:20</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerbaselayername">
+  <h3>triggerBaseLayerName</h3>
+  <p>Resolve the instance layer name, caching the result for reuse.</p>
+  <p><code>function triggerBaseLayerName()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:29</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerbaseondestroy">
+  <h3>triggerBaseOnDestroy</h3>
+  <p>Clean up cached state when the trigger is removed.</p>
+  <p><code>function triggerBaseOnDestroy()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:88</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerbaseresolvetilemap">
+  <h3>triggerBaseResolveTilemap</h3>
+  <p>Store a reference to the collision tilemap for later use.</p>
+  <p><code>function triggerBaseResolveTilemap()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:56</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerbasesetactive">
+  <h3>triggerBaseSetActive</h3>
+  <p>Enable or disable the trigger instance.</p>
+  <p><code>function triggerBaseSetActive(_state)</code></p>
+  <ul><li><code>_state</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:11</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerenemyspawninit">
+  <h3>triggerEnemySpawnInit</h3>
+  <p>Configure default values for the enemy spawner.</p>
+  <p><code>function triggerEnemySpawnInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:141</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerenemyspawnpickenemyobject">
+  <h3>triggerEnemySpawnPickEnemyObject</h3>
+  <p>Choose an enemy object from the configured pool.</p>
+  <p><code>function triggerEnemySpawnPickEnemyObject()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:183</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerenemyspawnreadconfig">
+  <h3>triggerEnemySpawnReadConfig</h3>
+  <p>Sanitize user-configured spawn values.</p>
+  <p><code>function triggerEnemySpawnReadConfig()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:157</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerenemyspawnresettimer">
+  <h3>triggerEnemySpawnResetTimer</h3>
+  <p>Randomise the next spawn time.</p>
+  <p><code>function triggerEnemySpawnResetTimer()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:174</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerenemyspawnspawnonce">
+  <h3>triggerEnemySpawnSpawnOnce</h3>
+  <p>Attempt to spawn a single enemy, respecting collision tiles.</p>
+  <p><code>function triggerEnemySpawnSpawnOnce()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:202</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerlevelhandleplayer">
+  <h3>triggerLevelHandlePlayer</h3>
+  <p>Handle the player entering the exit trigger.</p>
+  <p><code>function triggerLevelHandlePlayer(_player)</code></p>
+  <ul><li><code>_player</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:289</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerlevelinit">
+  <h3>triggerLevelInit</h3>
+  <p>Reset level exit bookkeeping variables.</p>
+  <p><code>function triggerLevelInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:252</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerlevelmarktriggered">
+  <h3>triggerLevelMarkTriggered</h3>
+  <p>Mark the trigger as completed and disable further use.</p>
+  <p><code>function triggerLevelMarkTriggered()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:261</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerlevelsafemessage">
+  <h3>triggerLevelSafeMessage</h3>
+  <p>Retrieve a custom message while providing a sensible fallback.</p>
+  <p><code>function triggerLevelSafeMessage(_property_name, _default_value)</code></p>
+  <ul><li><code>_property_name</code></li><li><code>_default_value</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:271</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerplayerspawninit">
+  <h3>triggerPlayerSpawnInit</h3>
+  <p>Reset the internal spawn flag.</p>
+  <p><code>function triggerPlayerSpawnInit()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:102</span>
+    <span title="Script asset">📄 scr_triggers</span>
+  </div>
+</article>
+<article class="card" id="function-triggerplayerspawnspawnplayer">
+  <h3>triggerPlayerSpawnSpawnPlayer</h3>
+  <p>Create (or reposition) the player at the trigger&#39;s location.</p>
+  <p><code>function triggerPlayerSpawnSpawnPlayer()</code></p>
+  <p class="empty">No parameters</p>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_triggers/scr_triggers.gml:111</span>
+    <span title="Script asset">📄 scr_triggers</span>
   </div>
 </article>
 </section>
@@ -1521,7 +2285,7 @@
 </article>
 </section>
   
-    <footer>Generated on 2025-09-20T08:37:01.373Z</footer>
+    <footer>Generated on 2025-09-22T12:23:01.734Z</footer>
   </main>
 </body>
 </html>

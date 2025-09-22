@@ -23,6 +23,104 @@ function dgConfigDefault() {
 }
 
 /*
+* Name: dgConfigFail
+* Description: Raises a fatal dungeon-generation configuration error.
+*/
+function dgConfigFail(_message) {
+    show_error("[DungeonGen] " + string(_message), true);
+}
+
+/*
+* Name: dgConfigEnsureTilesetId
+* Description: Resolves a tileset asset reference (numeric id or name string).
+*/
+function dgConfigEnsureTilesetId(_value, _field_name) {
+    if (is_numeric(_value)) {
+        return _value;
+    }
+    if (is_string(_value)) {
+        var idx = asset_get_index(_value);
+        if (idx == -1) {
+            dgConfigFail(_field_name + " references missing tileset '" + _value + "'.");
+        }
+        return idx;
+    }
+    if (is_undefined(_value)) {
+        dgConfigFail(_field_name + " is undefined; supply a valid tileset asset.");
+    }
+    dgConfigFail(_field_name + " must be a tileset asset id or asset name string.");
+    return -1;
+}
+
+/*
+* Name: dgConfigValidate
+* Description: Validates and normalizes dungeon generator configuration.
+*/
+function dgConfigValidate(_cfg) {
+    if (!is_numeric(_cfg.room_count_min)) {
+        dgConfigFail("room_count_min must be an integer >= 1.");
+    }
+    _cfg.room_count_min = floor(_cfg.room_count_min);
+    if (_cfg.room_count_min < 1) {
+        dgConfigFail("room_count_min must be >= 1.");
+    }
+
+    if (!is_numeric(_cfg.room_count_max)) {
+        dgConfigFail("room_count_max must be an integer >= room_count_min.");
+    }
+    _cfg.room_count_max = floor(_cfg.room_count_max);
+    if (_cfg.room_count_max < _cfg.room_count_min) {
+        dgConfigFail("room_count_max must be >= room_count_min.");
+    }
+
+    if (!is_numeric(_cfg.grid_radius)) {
+        dgConfigFail("grid_radius must be an integer >= 1.");
+    }
+    _cfg.grid_radius = floor(_cfg.grid_radius);
+    if (_cfg.grid_radius < 1) {
+        dgConfigFail("grid_radius must be >= 1.");
+    }
+
+    if (!is_numeric(_cfg.room_cell_w)) {
+        dgConfigFail("room_cell_w must be an integer >= 1.");
+    }
+    _cfg.room_cell_w = floor(_cfg.room_cell_w);
+    if (_cfg.room_cell_w < 1) {
+        dgConfigFail("room_cell_w must be >= 1.");
+    }
+
+    if (!is_numeric(_cfg.room_cell_h)) {
+        dgConfigFail("room_cell_h must be an integer >= 1.");
+    }
+    _cfg.room_cell_h = floor(_cfg.room_cell_h);
+    if (_cfg.room_cell_h < 1) {
+        dgConfigFail("room_cell_h must be >= 1.");
+    }
+
+    if (!is_string(_cfg.walk_layer_name) || _cfg.walk_layer_name == "") {
+        dgConfigFail("walk_layer_name must be a non-empty string.");
+    }
+
+    if (!is_string(_cfg.coll_layer_name) || _cfg.coll_layer_name == "") {
+        dgConfigFail("coll_layer_name must be a non-empty string.");
+    }
+
+    if (!is_numeric(_cfg.seed)) {
+        dgConfigFail("seed must be numeric (use -1 for randomise).");
+    }
+    _cfg.seed = floor(_cfg.seed);
+
+    if (_cfg.allow_room_rotation != true && _cfg.allow_room_rotation != false) {
+        dgConfigFail("allow_room_rotation must be true or false.");
+    }
+
+    _cfg.walk_tileset = dgConfigEnsureTilesetId(_cfg.walk_tileset, "walk_tileset");
+    _cfg.coll_tileset = dgConfigEnsureTilesetId(_cfg.coll_tileset, "coll_tileset");
+
+    return _cfg;
+}
+
+/*
 * Name: dgRngInit
 * Description: Initializes RNG based on config seed.
 */
@@ -217,6 +315,7 @@ function dgAssignTemplates(_cfg, _graph, _roomdb) {
 * Description: Ensures tile layer exists.
 */
 function dgLayerRequire(_name, _tileset) {
+    var tileset_id = dgConfigEnsureTilesetId(_tileset, "layer '" + _name + "'");
     var lid = layer_get_id(_name);
     if (lid == -1) {
         lid = layer_create(-100);
@@ -224,9 +323,11 @@ function dgLayerRequire(_name, _tileset) {
     }
     var tid = layer_tilemap_get_id(lid);
     if (tid == -1) {
-        tid = layer_tilemap_create(lid, 0, 0, _tileset, 32, 32);
+        var tile_w = tileset_get_tilewidth(tileset_id);
+        var tile_h = tileset_get_tileheight(tileset_id);
+        tid = layer_tilemap_create(lid, 0, 0, tileset_id, tile_w, tile_h);
     } else {
-        tilemap_set_tileset(tid, _tileset);
+        tilemap_set_tileset(tid, tileset_id);
     }
     return tid;
 }
@@ -277,6 +378,7 @@ function dgGenerateFloor(_cfg_override) {
         }
     }
 
+    dgConfigValidate(cfg);
     dgRngInit(cfg);
 
     var graph = dgLayoutBuild(cfg);
