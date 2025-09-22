@@ -10,9 +10,18 @@
         invToggle();
     }
 
+    if (!global.menuVisible && menuDebugIsEditing())
+    {
+        menuDebugCancelEditing();
+    }
+
     if (keyboard_check_pressed(vk_escape))
     {
-        if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open != -1)
+        if (menuDebugIsEditing())
+        {
+            menuDebugCancelEditing();
+        }
+        else if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open != -1)
         {
             menuDropdownClose();
         }
@@ -34,45 +43,52 @@
     {
         menuRebuildItems();
 
+        menuDebugEnsureEditingEntryValid();
+        if (menu_screen != MenuScreen.Settings && menuDebugIsEditing()) menuDebugCancelEditing();
+
         var _dropdown_index = (variable_instance_exists(id, "menu_dropdown_open")) ? menu_dropdown_open : -1;
+
+        var _editing = menuDebugIsEditing();
+        if (_editing) menuDebugHandleEditingInput();
+        _editing = menuDebugIsEditing();
 
         if (_dropdown_index != -1)
         {
-            if (keyboard_check_pressed(vk_up)) menuDropdownStep(-1);
-            if (keyboard_check_pressed(vk_down)) menuDropdownStep(1);
-            if (keyboard_check_pressed(vk_left)) menuDropdownStep(-1);
-            if (keyboard_check_pressed(vk_right)) menuDropdownStep(1);
-            if (keyboard_check_pressed(vk_enter)) menuDropdownConfirm();
-            if (keyboard_check_pressed(vk_backspace)) menuDropdownClose();
+            if (!_editing && keyboard_check_pressed(vk_up)) menuDropdownStep(-1);
+            if (!_editing && keyboard_check_pressed(vk_down)) menuDropdownStep(1);
+            if (!_editing && keyboard_check_pressed(vk_left)) menuDropdownStep(-1);
+            if (!_editing && keyboard_check_pressed(vk_right)) menuDropdownStep(1);
+            if (!_editing && keyboard_check_pressed(vk_enter)) menuDropdownConfirm();
+            if (!_editing && keyboard_check_pressed(vk_backspace)) menuDropdownClose();
         }
         else
         {
             var _count = is_array(menu_items) ? array_length(menu_items) : 0;
             if (_count > 0)
             {
-                if (keyboard_check_pressed(vk_up))
+                if (!_editing && keyboard_check_pressed(vk_up))
                 {
                     sel = (sel - 1 + _count) mod _count;
                 }
-                if (keyboard_check_pressed(vk_down))
+                if (!_editing && keyboard_check_pressed(vk_down))
                 {
                     sel = (sel + 1) mod _count;
                 }
-                if (keyboard_check_pressed(vk_left))
+                if (!_editing && keyboard_check_pressed(vk_left))
                 {
                     menuAdjustSelection(-1);
                 }
-                if (keyboard_check_pressed(vk_right))
+                if (!_editing && keyboard_check_pressed(vk_right))
                 {
                     menuAdjustSelection(1);
                 }
-                if (keyboard_check_pressed(vk_enter))
+                if (!_editing && keyboard_check_pressed(vk_enter))
                 {
                     menuActivateSelection();
                 }
             }
 
-            if (keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
+            if (!_editing && keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
             {
                 menuCloseSettings();
             }

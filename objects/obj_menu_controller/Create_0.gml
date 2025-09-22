@@ -60,5 +60,8 @@ debug_stat_defs = [
 menu_dropdown_open   = -1;
 menu_dropdown_hover  = -1;
 menu_slider_drag_index = -1;
+menu_number_edit_index  = -1;
+menu_number_edit_text   = "";
+menu_number_edit_invalid = false;
 
 menuRebuildItems();
