@@ -31,6 +31,109 @@ function dgConfigFail(_message) {
 }
 
 /*
+* Name: dgFunctionExists
+* Description: Compatibility wrapper for runtimes that lack function_exists().
+*/
+function dgFunctionExists(_name) {
+    if (!is_string(_name) || _name == "") {
+        return false;
+    }
+
+    if (is_undefined(global.__dgFunctionExistsCache)) {
+        global.__dgFunctionExistsCache = {};
+    }
+
+    var cache = global.__dgFunctionExistsCache;
+    if (variable_struct_exists(cache, _name)) {
+        return variable_struct_get(cache, _name);
+    }
+
+    var override = undefined;
+    if (variable_global_exists("__dgFunctionExistsOverrides")) {
+        var overrides = global.__dgFunctionExistsOverrides;
+        if (is_struct(overrides) && variable_struct_exists(overrides, _name)) {
+            override = variable_struct_get(overrides, _name);
+        }
+    }
+
+    if (is_undefined(override) && variable_global_exists("Game")) {
+        var G = global.Game;
+        if (is_struct(G) && variable_struct_exists(G, "runtime_features")) {
+            var runtime_features = G.runtime_features;
+            if (is_struct(runtime_features) && variable_struct_exists(runtime_features, _name)) {
+                override = variable_struct_get(runtime_features, _name);
+            }
+        }
+    }
+
+    var exists = false;
+    if (!is_undefined(override)) {
+        exists = override;
+    } else {
+        var idx = asset_get_index(_name);
+        if (idx != -1 && script_exists(idx)) {
+            exists = true;
+        }
+    }
+
+    variable_struct_set(cache, _name, exists);
+    return exists;
+}
+
+/*
+* Name: dgTilesetMetricsFallback
+* Description: Provides manual tile dimensions when runtime queries are unavailable.
+*/
+function dgTilesetMetricsFallback(_tileset_id) {
+    var key = string(_tileset_id);
+
+    if (variable_global_exists("Game")) {
+        var G = global.Game;
+        if (is_struct(G) && variable_struct_exists(G, "dungeon_gen")) {
+            var dg = G.dungeon_gen;
+            if (is_struct(dg) && variable_struct_exists(dg, "tileset_metrics")) {
+                var overrides = dg.tileset_metrics;
+                if (is_struct(overrides) && variable_struct_exists(overrides, key)) {
+                    var entry_override = variable_struct_get(overrides, key);
+                    if (is_struct(entry_override)
+                        && variable_struct_exists(entry_override, "w")
+                        && variable_struct_exists(entry_override, "h")) {
+                        return { w: entry_override.w, h: entry_override.h };
+                    }
+                }
+            }
+        }
+    }
+
+    static defaults = undefined;
+    if (is_undefined(defaults)) {
+        defaults = {};
+
+        var ts_walk_id = asset_get_index("ts_walk");
+        if (ts_walk_id != -1) {
+            variable_struct_set(defaults, string(ts_walk_id), { w: 16, h: 16 });
+        }
+
+        var ts_coll_id = asset_get_index("ts_coll");
+        if (ts_coll_id != -1) {
+            variable_struct_set(defaults, string(ts_coll_id), { w: 16, h: 16 });
+        }
+
+        var ts_basic_id = asset_get_index("ts_basic");
+        if (ts_basic_id != -1) {
+            variable_struct_set(defaults, string(ts_basic_id), { w: 16, h: 16 });
+        }
+    }
+
+    if (!is_undefined(defaults) && variable_struct_exists(defaults, key)) {
+        var entry_default = variable_struct_get(defaults, key);
+        return { w: entry_default.w, h: entry_default.h };
+    }
+
+    return undefined;
+}
+
+/*
 * Name: dgConfigEnsureTilesetId
 * Description: Resolves a tileset asset reference (numeric id or name string).
 */
@@ -324,7 +427,7 @@ function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid) {
         return variable_struct_get(global.__dgTilesetMetrics, key);
     }
 
-    if (function_exists("tileset_get_tile_width") && function_exists("tileset_get_tile_height")) {
+    if (dgFunctionExists("tileset_get_tile_width") && dgFunctionExists("tileset_get_tile_height")) {
         var builtin_w = tileset_get_tile_width(_tileset_id);
         var builtin_h = tileset_get_tile_height(_tileset_id);
         if (builtin_w > 0 && builtin_h > 0) {
@@ -335,7 +438,7 @@ function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid) {
     }
 
     if (_existing_tid != -1) {
-        if (function_exists("tilemap_get_tile_width") && function_exists("tilemap_get_tile_height")) {
+        if (dgFunctionExists("tilemap_get_tile_width") && dgFunctionExists("tilemap_get_tile_height")) {
             var width = tilemap_get_tile_width(_existing_tid);
             var height = tilemap_get_tile_height(_existing_tid);
             if (width > 0 && height > 0) {
@@ -346,8 +449,14 @@ function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid) {
         }
     }
 
+    var metrics_fallback = dgTilesetMetricsFallback(_tileset_id);
+    if (!is_undefined(metrics_fallback)) {
+        variable_struct_set(global.__dgTilesetMetrics, key, metrics_fallback);
+        return metrics_fallback;
+    }
+
     dgConfigFail("Unable to determine tile dimensions for tileset id " + string(_tileset_id)
-        + " while binding layer '" + _layer_name + "'. Ensure a tile layer exists in the room or use a runtime that provides tileset_get_tile_width().");
+        + " while binding layer '" + _layer_name + "'. Ensure a tile layer exists in the room or configure a fallback via global.Game.dungeon_gen.tileset_metrics.");
     return { w: 0, h: 0 };
 }
 /*
@@ -363,10 +472,10 @@ function dgLayerRequire(_name, _tileset) {
     }
     var tid = layer_tilemap_get_id(lid);
 
-    var has_tilemap_set_tile_width = function_exists("tilemap_set_tile_width");
-    var has_tilemap_set_tile_height = function_exists("tilemap_set_tile_height");
-    var has_tilemap_set_tileset = function_exists("tilemap_set_tileset");
-    var has_tilemap_get_tileset = function_exists("tilemap_get_tileset");
+    var has_tilemap_set_tile_width = dgFunctionExists("tilemap_set_tile_width");
+    var has_tilemap_set_tile_height = dgFunctionExists("tilemap_set_tile_height");
+    var has_tilemap_set_tileset = dgFunctionExists("tilemap_set_tileset");
+    var has_tilemap_get_tileset = dgFunctionExists("tilemap_get_tileset");
 
     var need_metrics = (tid == -1)
         || has_tilemap_set_tile_width
