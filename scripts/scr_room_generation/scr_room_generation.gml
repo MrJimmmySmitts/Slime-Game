@@ -11,11 +11,11 @@ function dgConfigDefault() {
         room_cell_w: 16,
         room_cell_h: 12,
 
-        walk_tileset: ts_ground,
-        coll_tileset: ts_walls,
+        walk_tileset: ts_walk,
+        coll_tileset: ts_coll,
 
-        walk_layer_name: "Terrain_Walk",
-        coll_layer_name: "Terrain_Collide",
+        walk_layer_name: "tm_floor",
+        coll_layer_name: "tm_collision",
 
         allow_room_rotation: false,
         seed: -1

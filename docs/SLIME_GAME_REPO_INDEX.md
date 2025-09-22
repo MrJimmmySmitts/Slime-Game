@@ -87,8 +87,8 @@ This document summarises the structure and contents of the Slime Game repository
 
 ## Tilesets
 - `tilesets/ts_basic/ts_basic.yy` (+ `output_tileset.png`)
-- `tilesets/ts_ground/ts_ground.yy` (+ `output_tileset.png`)
-- `tilesets/ts_walls/ts_walls.yy` (+ `output_tileset.png`)
+- `tilesets/ts_coll/ts_coll.yy` (+ `output_tileset.png`)
+- `tilesets/ts_walk/ts_walk.yy` (+ `output_tileset.png`)
 
 ---
 
@@ -230,8 +230,8 @@ sprites/spr_tileset/layers/36869dbf-ae9d-4b36-9a9a-08e0ab74d417/1269f670-6c49-48
 sprites/spr_tileset/spr_tileset.yy
 tilesets/ts_basic/output_tileset.png
 tilesets/ts_basic/ts_basic.yy
-tilesets/ts_ground/output_tileset.png
-tilesets/ts_ground/ts_ground.yy
-tilesets/ts_walls/output_tileset.png
-tilesets/ts_walls/ts_walls.yy
+tilesets/ts_coll/output_tileset.png
+tilesets/ts_coll/ts_coll.yy
+tilesets/ts_walk/output_tileset.png
+tilesets/ts_walk/ts_walk.yy
 ```
