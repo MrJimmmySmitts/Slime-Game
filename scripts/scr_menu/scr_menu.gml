@@ -139,17 +139,12 @@ function menuDropdownGetOptionRect(_index, _option_index)
 function menuGetNumberFieldRects(_index)
 {
     var _value_rect = menuGetItemValueRect(_index);
-    var _button_w   = 26;
-    var _gap        = 4;
+    var _side_w     = 72;
+    var _gap        = 6;
     var _mid_y      = (_value_rect.top + _value_rect.bottom) * 0.5;
 
-    var _minus_left  = _value_rect.left;
-    var _minus_right = min(_value_rect.right, _minus_left + _button_w);
-    var _plus_right  = _value_rect.right;
-    var _plus_left   = max(_value_rect.left, _plus_right - _button_w);
-
-    var _field_left  = _minus_right + _gap;
-    var _field_right = _plus_left - _gap;
+    var _field_left  = _value_rect.left + _side_w + _gap;
+    var _field_right = _value_rect.right - _side_w - _gap;
 
     if (_field_right < _field_left)
     {
@@ -158,24 +153,27 @@ function menuGetNumberFieldRects(_index)
         _field_right = _mid;
     }
 
+    var _min_right = max(_value_rect.left, _field_left - _gap);
+    var _max_left  = min(_value_rect.right, _field_right + _gap);
+
     return {
-        minus: {
-            left:   _minus_left,
-            right:  _minus_right,
-            top:    _value_rect.top,
-            bottom: _value_rect.bottom,
-            y:      _mid_y
-        },
-        plus: {
-            left:   _plus_left,
-            right:  _plus_right,
-            top:    _value_rect.top,
-            bottom: _value_rect.bottom,
-            y:      _mid_y
-        },
         field: {
             left:   _field_left,
             right:  _field_right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _mid_y
+        },
+        min: {
+            left:   _value_rect.left,
+            right:  _min_right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _mid_y
+        },
+        max: {
+            left:   _max_left,
+            right:  _value_rect.right,
             top:    _value_rect.top,
             bottom: _value_rect.bottom,
             y:      _mid_y
@@ -329,18 +327,11 @@ function menuMouseHandleDebugStatPress(_index, _entry, _mx, _my)
     var _rects = menuGetNumberFieldRects(_index);
     if (!is_struct(_rects)) return false;
 
-    var _minus = _rects.minus;
-    var _plus  = _rects.plus;
+    var _field = _rects.field;
 
-    if (point_in_rectangle(_mx, _my, _minus.left, _minus.top, _minus.right, _minus.bottom))
+    if (point_in_rectangle(_mx, _my, _field.left, _field.top, _field.right, _field.bottom))
     {
-        menuDebugAdjustStat(_entry, -1);
-        return true;
-    }
-
-    if (point_in_rectangle(_mx, _my, _plus.left, _plus.top, _plus.right, _plus.bottom))
-    {
-        menuDebugAdjustStat(_entry, 1);
+        if (!menuDebugIsEditingIndex(_index)) menuDebugStartEditing(_index);
         return true;
     }
 
@@ -788,9 +779,21 @@ function menuActivateSelection()
         }
 
         case MenuItemKind.Slider:
-        case MenuItemKind.DebugStat:
         {
             menuAdjustSelection(1);
+            break;
+        }
+
+        case MenuItemKind.DebugStat:
+        {
+            if (menuDebugIsEditingIndex(sel))
+            {
+                menuDebugSubmitEditing();
+            }
+            else
+            {
+                menuDebugStartEditing(sel);
+            }
             break;
         }
 
@@ -836,6 +839,23 @@ function menuMouseUpdate()
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
+    if (mouse_check_button_pressed(mb_left) && menuDebugIsEditing())
+    {
+        var _edit_index = menu_number_edit_index;
+        var _inside_item = false;
+
+        if (is_array(menu_items) && _edit_index >= 0 && _edit_index < array_length(menu_items))
+        {
+            var _bounds = menuItemBounds(_edit_index);
+            _inside_item = (_mx >= _bounds[0] && _mx <= _bounds[2] && _my >= _bounds[1] && _my <= _bounds[3]);
+        }
+
+        if (!_inside_item)
+        {
+            if (!menuDebugSubmitEditing()) menuDebugCancelEditing();
+        }
+    }
+
     var _count = array_length(menu_items);
 
     if (variable_instance_exists(id, "menu_slider_drag_index") && mouse_check_button_released(mb_left))
@@ -874,7 +894,14 @@ function menuMouseUpdate()
     }
 
     var _idx = menuIndexAt(_mx, _my);
-    if (_idx != -1) sel = _idx;
+    if (_idx != -1)
+    {
+        if (menuDebugIsEditing())
+        {
+            if (menuDebugIsEditingIndex(_idx)) sel = _idx;
+        }
+        else sel = _idx;
+    }
 
     if (mouse_check_button_pressed(mb_left))
     {
@@ -959,7 +986,8 @@ function menuMouseUpdate()
                     return;
                 }
 
-                menuAdjustSelection(1);
+                if (!menuDebugIsEditingIndex(_idx)) menuDebugStartEditing(_idx);
+                if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
                 return;
             }
 
@@ -979,7 +1007,14 @@ function menuMouseUpdate()
         }
         else
         {
-            menuAdjustSelection(-1);
+            if (menuDebugIsEditing())
+            {
+                menuDebugCancelEditing();
+            }
+            else
+            {
+                menuAdjustSelection(-1);
+            }
         }
     }
 
@@ -1266,29 +1301,23 @@ function menuDebugGetStatDisplayValue(_entry)
     return string(_text) + string(_suffix);
 }
 
-/*
-* Name: menuDebugAdjustStat
-* Description: Adjust a numeric player stat with clamping and optional base/current synchronisation.
-*/
-function menuDebugAdjustStat(_entry, _dir)
+function menuDebugSetStatValue(_entry, _value)
 {
-    if (_dir == 0) return;
+    if (!is_struct(_entry) || !variable_struct_exists(_entry, "stat")) return false;
+
     var _player = menuDebugGetPlayer();
-    if (!instance_exists(_player)) return;
-    if (!is_struct(_entry) || !variable_struct_exists(_entry, "stat")) return;
+    if (!instance_exists(_player)) return false;
 
     var _stat = _entry.stat;
-    if (!variable_instance_exists(_player, _stat)) return;
+    if (!variable_instance_exists(_player, _stat)) return false;
 
-    var _step     = variable_struct_exists(_entry, "step") ? _entry.step : 1;
-    var _min      = variable_struct_exists(_entry, "min") ? _entry.min : -1000000000;
-    var _max      = variable_struct_exists(_entry, "max") ? _entry.max : 1000000000;
-    var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
+    var _range = menuDebugGetStatRange(_entry);
+    var _min   = _range[0];
+    var _max   = _range[1];
 
-    var _value = variable_instance_get(_player, _stat);
-    _value += _dir * _step;
     _value = clamp(_value, _min, _max);
 
+    var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
     if (_decimals <= 0)
     {
         _value = round(_value);
@@ -1323,6 +1352,251 @@ function menuDebugAdjustStat(_entry, _dir)
             }
         }
     }
+
+    return true;
+}
+
+function menuDebugValidateInput(_entry, _text)
+{
+    if (!is_struct(_entry)) return false;
+
+    if (!is_string(_text)) _text = string(_text);
+
+    var _len = string_length(_text);
+    if (_len <= 0) return false;
+
+    var _range = menuDebugGetStatRange(_entry);
+    var _allow_negative = (_range[0] < 0);
+    var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
+
+    var _has_digit   = false;
+    var _has_decimal = false;
+
+    for (var _i = 1; _i <= _len; _i++)
+    {
+        var _ch = string_char_at(_text, _i);
+
+        if (_i == 1 && _ch == "-")
+        {
+            if (!_allow_negative) return false;
+            continue;
+        }
+
+        if (_ch == ".")
+        {
+            if (_has_decimal || _decimals <= 0) return false;
+            _has_decimal = true;
+            continue;
+        }
+
+        if (_ch >= "0" && _ch <= "9")
+        {
+            _has_digit = true;
+            continue;
+        }
+
+        return false;
+    }
+
+    if (!_has_digit) return false;
+
+    var _value = real(_text);
+    if (!is_real(_value)) return false;
+
+    if (_value < _range[0] || _value > _range[1]) return false;
+
+    return true;
+}
+
+function menuDebugIsEditing()
+{
+    if (!variable_instance_exists(id, "menu_number_edit_index")) return false;
+    return menu_number_edit_index != -1;
+}
+
+function menuDebugIsEditingIndex(_index)
+{
+    if (!menuDebugIsEditing()) return false;
+    return menu_number_edit_index == _index;
+}
+
+function menuDebugStartEditing(_index)
+{
+    if (!is_array(menu_items)) return;
+    if (_index < 0 || _index >= array_length(menu_items)) return;
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.DebugStat) return;
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return;
+
+    if (!variable_instance_exists(id, "menu_number_edit_index")) return;
+
+    menu_number_edit_index = _index;
+
+    var _value    = menuDebugGetStatValue(_entry);
+    var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
+    var _text     = "";
+
+    if (is_real(_value))
+    {
+        if (_decimals <= 0) _text = string(round(_value));
+        else _text = string_format(_value, 0, _decimals);
+    }
+
+    menu_number_edit_text = _text;
+    if (_text == "") menu_number_edit_invalid = true;
+    else menu_number_edit_invalid = !menuDebugValidateInput(_entry, _text);
+
+    keyboard_string = _text;
+}
+
+function menuDebugCancelEditing()
+{
+    if (!variable_instance_exists(id, "menu_number_edit_index")) return;
+
+    menu_number_edit_index  = -1;
+    menu_number_edit_text   = "";
+    menu_number_edit_invalid = false;
+    keyboard_string = "";
+}
+
+function menuDebugSubmitEditing()
+{
+    if (!menuDebugIsEditing()) return false;
+    if (!is_array(menu_items))
+    {
+        menuDebugCancelEditing();
+        return false;
+    }
+
+    var _index = menu_number_edit_index;
+    if (_index < 0 || _index >= array_length(menu_items))
+    {
+        menuDebugCancelEditing();
+        return false;
+    }
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.DebugStat)
+    {
+        menuDebugCancelEditing();
+        return false;
+    }
+
+    if (!menuDebugValidateInput(_entry, menu_number_edit_text))
+    {
+        menu_number_edit_invalid = true;
+        return false;
+    }
+
+    var _value = real(menu_number_edit_text);
+    if (!menuDebugSetStatValue(_entry, _value))
+    {
+        menu_number_edit_invalid = true;
+        return false;
+    }
+
+    menuDebugCancelEditing();
+    return true;
+}
+
+function menuDebugHandleEditingInput()
+{
+    if (!menuDebugIsEditing()) return;
+    if (!is_array(menu_items))
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    var _index = menu_number_edit_index;
+    if (_index < 0 || _index >= array_length(menu_items))
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.DebugStat)
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled)
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    menu_number_edit_text = keyboard_string;
+    menu_number_edit_invalid = !menuDebugValidateInput(_entry, menu_number_edit_text);
+
+    if (keyboard_check_pressed(vk_enter))
+    {
+        if (!menuDebugSubmitEditing()) menu_number_edit_invalid = true;
+    }
+    else if (keyboard_check_pressed(vk_escape))
+    {
+        menuDebugCancelEditing();
+    }
+}
+
+function menuDebugEnsureEditingEntryValid()
+{
+    if (!menuDebugIsEditing()) return;
+
+    if (!is_array(menu_items))
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    var _index = menu_number_edit_index;
+    if (_index < 0 || _index >= array_length(menu_items))
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.DebugStat)
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled)
+    {
+        menuDebugCancelEditing();
+        return;
+    }
+}
+
+/*
+* Name: menuDebugAdjustStat
+* Description: Adjust a numeric player stat with clamping and optional base/current synchronisation.
+*/
+function menuDebugAdjustStat(_entry, _dir)
+{
+    if (_dir == 0) return;
+    if (!is_struct(_entry) || !variable_struct_exists(_entry, "stat")) return;
+
+    var _player = menuDebugGetPlayer();
+    if (!instance_exists(_player)) return;
+
+    var _stat = _entry.stat;
+    if (!variable_instance_exists(_player, _stat)) return;
+
+    var _step = variable_struct_exists(_entry, "step") ? _entry.step : 1;
+    if (!is_real(_step)) _step = 1;
+
+    var _value = variable_instance_get(_player, _stat);
+    if (!is_real(_value)) _value = 0;
+
+    _value += _dir * _step;
+
+    menuDebugSetStatValue(_entry, _value);
 }
 
 /*
