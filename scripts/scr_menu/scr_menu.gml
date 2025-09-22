@@ -16,7 +16,6 @@ enum MenuItemKind
     Toggle      = 3,
     DebugStat   = 4,
     DebugAction = 5,
-    DebugLoad   = 6,
 }
 
 /*
@@ -134,6 +133,60 @@ function menuDropdownGetOptionRect(_index, _option_index)
         top:    _top,
         bottom: _bottom,
         y:      (_top + _bottom) * 0.5
+    };
+}
+
+function menuGetNumberFieldRects(_index)
+{
+    var _value_rect = menuGetItemValueRect(_index);
+    var _button_w   = 26;
+    var _gap        = 4;
+    var _mid_y      = (_value_rect.top + _value_rect.bottom) * 0.5;
+
+    var _minus_left  = _value_rect.left;
+    var _minus_right = min(_value_rect.right, _minus_left + _button_w);
+    var _plus_right  = _value_rect.right;
+    var _plus_left   = max(_value_rect.left, _plus_right - _button_w);
+
+    var _field_left  = _minus_right + _gap;
+    var _field_right = _plus_left - _gap;
+
+    if (_field_right < _field_left)
+    {
+        var _mid = (_field_left + _field_right) * 0.5;
+        _field_left  = _mid;
+        _field_right = _mid;
+    }
+
+    return {
+        minus: {
+            left:   _minus_left,
+            right:  _minus_right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _mid_y
+        },
+        plus: {
+            left:   _plus_left,
+            right:  _plus_right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _mid_y
+        },
+        field: {
+            left:   _field_left,
+            right:  _field_right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _mid_y
+        },
+        area: {
+            left:   _value_rect.left,
+            right:  _value_rect.right,
+            top:    _value_rect.top,
+            bottom: _value_rect.bottom,
+            y:      _value_rect.y
+        }
     };
 }
 
@@ -268,6 +321,32 @@ function menuMouseHandleSliderDrag(_index, _entry, _mx)
     menuSliderApplyValue(_entry, _value);
 }
 
+function menuMouseHandleDebugStatPress(_index, _entry, _mx, _my)
+{
+    if (!is_struct(_entry)) return false;
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return false;
+
+    var _rects = menuGetNumberFieldRects(_index);
+    if (!is_struct(_rects)) return false;
+
+    var _minus = _rects.minus;
+    var _plus  = _rects.plus;
+
+    if (point_in_rectangle(_mx, _my, _minus.left, _minus.top, _minus.right, _minus.bottom))
+    {
+        menuDebugAdjustStat(_entry, -1);
+        return true;
+    }
+
+    if (point_in_rectangle(_mx, _my, _plus.left, _plus.top, _plus.right, _plus.bottom))
+    {
+        menuDebugAdjustStat(_entry, 1);
+        return true;
+    }
+
+    return false;
+}
+
 function menuOptionGetCount(_entry)
 {
     if (!is_struct(_entry)) return 0;
@@ -276,6 +355,11 @@ function menuOptionGetCount(_entry)
     if (_target == "screen_size")
     {
         return is_array(screen_size_options) ? array_length(screen_size_options) : 0;
+    }
+
+    if (_target == "debug_room")
+    {
+        return is_array(settings_debug_rooms) ? array_length(settings_debug_rooms) : 0;
     }
 
     return 0;
@@ -292,6 +376,12 @@ function menuOptionGetIndex(_entry)
     {
         settings_screen_index = clamp(settings_screen_index, 0, _count - 1);
         return settings_screen_index;
+    }
+
+    if (_target == "debug_room")
+    {
+        settings_load_index = clamp(settings_load_index, 0, _count - 1);
+        return settings_load_index;
     }
 
     return -1;
@@ -314,6 +404,17 @@ function menuOptionSetIndex(_entry, _index)
         var _option = screen_size_options[settings_screen_index];
         menuApplyScreenSize(_option);
     }
+    else if (_target == "debug_room")
+    {
+        if (!is_array(settings_debug_rooms)) return;
+        var _count = array_length(settings_debug_rooms);
+        if (_count <= 0) return;
+
+        _index = clamp(_index, 0, _count - 1);
+        settings_load_index = _index;
+
+        menuDebugLoadSelectedRoom();
+    }
 }
 
 function menuOptionGetLabelForIndex(_entry, _index)
@@ -334,6 +435,11 @@ function menuOptionGetLabelForIndex(_entry, _index)
             }
         }
         return "(invalid)";
+    }
+
+    if (_target == "debug_room")
+    {
+        return menuDebugGetRoomLabelForIndex(_index);
     }
 
     return "";
@@ -517,10 +623,9 @@ function menuRebuildItems()
                     var _count = array_length(debug_stat_defs);
                     for (var _i = 0; _i < _count; _i++)
                     {
-                        var _def = debug_stat_defs[_i];
+                        var _def    = debug_stat_defs[_i];
                         var _suffix = variable_struct_exists(_def, "suffix") ? _def.suffix : "";
-                        var _value_label = menuDebugDescribeStat(_player, _def);
-                        var _label = string(_def.label) + ": " + _value_label + _suffix;
+                        var _label  = string(_def.label);
 
                         _slot = array_length(_items);
                         _items[_slot] = {
@@ -532,6 +637,7 @@ function menuRebuildItems()
                             min:               variable_struct_exists(_def, "min") ? _def.min : -1000000000,
                             max:               variable_struct_exists(_def, "max") ? _def.max : 1000000000,
                             decimals:          variable_struct_exists(_def, "decimals") ? _def.decimals : 0,
+                            suffix:            _suffix,
                             current:           variable_struct_exists(_def, "current") ? _def.current : undefined,
                             current_behaviour: variable_struct_exists(_def, "current_behaviour") ? _def.current_behaviour : "clamp",
                             enabled:           _player_exists
@@ -557,8 +663,9 @@ function menuRebuildItems()
 
                 _slot = array_length(_items);
                 _items[_slot] = {
-                    label:   menuDebugGetLoadRoomLabel(),
-                    kind:    MenuItemKind.DebugLoad,
+                    label:   "Load Level",
+                    kind:    MenuItemKind.Option,
+                    target:  "debug_room",
                     enabled: is_array(settings_debug_rooms) && array_length(settings_debug_rooms) > 0
                 };
             }
@@ -712,12 +819,6 @@ function menuActivateSelection()
             if (_action == "spawn_enemy") menuDebugSpawnEnemy();
             break;
         }
-
-        case MenuItemKind.DebugLoad:
-        {
-            menuDebugLoadSelectedRoom();
-            break;
-        }
     }
 
     if (menu_screen == MenuScreen.Settings) menuRebuildItems();
@@ -850,6 +951,18 @@ function menuMouseUpdate()
                 break;
             }
 
+            case MenuItemKind.DebugStat:
+            {
+                if (menuMouseHandleDebugStatPress(_idx, _entry, _mx, _my))
+                {
+                    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+                    return;
+                }
+
+                menuAdjustSelection(1);
+                return;
+            }
+
             default:
             {
                 menuActivateSelection();
@@ -925,10 +1038,6 @@ function menuAdjustSelection(_dir)
 
         case MenuItemKind.DebugStat:
             menuDebugAdjustStat(_entry, _dir);
-            break;
-
-        case MenuItemKind.DebugLoad:
-            menuDebugCycleRoom(_dir);
             break;
     }
 
@@ -1105,6 +1214,58 @@ function menuDebugDescribeStat(_player, _def)
     return string_format(_value, 0, _decimals);
 }
 
+function menuDebugGetStatValue(_entry)
+{
+    if (!is_struct(_entry) || !variable_struct_exists(_entry, "stat")) return undefined;
+
+    var _player = menuDebugGetPlayer();
+    if (!instance_exists(_player)) return undefined;
+
+    var _stat = _entry.stat;
+    if (!variable_instance_exists(_player, _stat)) return undefined;
+
+    return variable_instance_get(_player, _stat);
+}
+
+function menuDebugGetStatRange(_entry)
+{
+    var _min = variable_struct_exists(_entry, "min") ? _entry.min : -1000000000;
+    var _max = variable_struct_exists(_entry, "max") ? _entry.max : 1000000000;
+
+    if (!is_real(_min)) _min = -1000000000;
+    if (!is_real(_max)) _max = 1000000000;
+
+    if (_max < _min)
+    {
+        var _swap = _min;
+        _min = _max;
+        _max = _swap;
+    }
+
+    return [_min, _max];
+}
+
+function menuDebugFormatStatValue(_entry, _value)
+{
+    if (!is_real(_value)) return "--";
+
+    var _decimals = variable_struct_exists(_entry, "decimals") ? max(0, _entry.decimals) : 0;
+    if (_decimals <= 0) return string(round(_value));
+
+    return string_format(_value, 0, _decimals);
+}
+
+function menuDebugGetStatDisplayValue(_entry)
+{
+    var _value = menuDebugGetStatValue(_entry);
+    if (!is_real(_value)) return "--";
+
+    var _text = menuDebugFormatStatValue(_entry, _value);
+    var _suffix = variable_struct_exists(_entry, "suffix") ? _entry.suffix : "";
+
+    return string(_text) + string(_suffix);
+}
+
 /*
 * Name: menuDebugAdjustStat
 * Description: Adjust a numeric player stat with clamping and optional base/current synchronisation.
@@ -1168,14 +1329,31 @@ function menuDebugAdjustStat(_entry, _dir)
 * Name: menuDebugCycleRoom
 * Description: Cycle the debug room selection index.
 */
-function menuDebugCycleRoom(_dir)
+function menuDebugGetRoomLabelForIndex(_index)
 {
-    if (_dir == 0) return;
-    if (!is_array(settings_debug_rooms)) return;
-    var _count = array_length(settings_debug_rooms);
-    if (_count <= 0) return;
+    if (!is_array(settings_debug_rooms) || array_length(settings_debug_rooms) <= 0)
+    {
+        return "(no rooms)";
+    }
 
-    settings_load_index = (settings_load_index + _dir + _count) mod _count;
+    var _count = array_length(settings_debug_rooms);
+    _index = clamp(_index, 0, _count - 1);
+
+    var _entry = settings_debug_rooms[_index];
+    if (!is_struct(_entry) || !variable_struct_exists(_entry, "room"))
+    {
+        return "(invalid)";
+    }
+
+    if (variable_struct_exists(_entry, "name"))
+    {
+        return _entry.name;
+    }
+
+    var _room_name = room_get_name(_entry.room);
+    if (is_string(_room_name)) return string_replace_all(_room_name, "_", " ");
+
+    return "(invalid)";
 }
 
 /*
@@ -1192,22 +1370,8 @@ function menuDebugGetLoadRoomLabel()
     var _count = array_length(settings_debug_rooms);
     settings_load_index = clamp(settings_load_index, 0, _count - 1);
 
-    var _entry = settings_debug_rooms[settings_load_index];
-    if (!is_struct(_entry) || !variable_struct_exists(_entry, "room"))
-    {
-        return "Load Level: (invalid)";
-    }
-
-    var _label = "";
-    if (variable_struct_exists(_entry, "name"))
-    {
-        _label = _entry.name;
-    }
-    else
-    {
-        var _room_name = room_get_name(_entry.room);
-        _label = string_replace_all(_room_name, "_", " ");
-    }
+    var _label = menuDebugGetRoomLabelForIndex(settings_load_index);
+    if (_label == "") _label = "(invalid)";
 
     return "Load Level: " + _label;
 }
