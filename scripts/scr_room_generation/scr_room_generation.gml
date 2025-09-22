@@ -335,7 +335,7 @@ function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid) {
     }
 
     if (_existing_tid != -1) {
-        if (!is_undefined(tilemap_get_tile_width) && !is_undefined(tilemap_get_tile_height)) {
+        if (function_exists("tilemap_get_tile_width") && function_exists("tilemap_get_tile_height")) {
             var width = tilemap_get_tile_width(_existing_tid);
             var height = tilemap_get_tile_height(_existing_tid);
             if (width > 0 && height > 0) {
@@ -363,9 +363,14 @@ function dgLayerRequire(_name, _tileset) {
     }
     var tid = layer_tilemap_get_id(lid);
 
+    var has_tilemap_set_tile_width = function_exists("tilemap_set_tile_width");
+    var has_tilemap_set_tile_height = function_exists("tilemap_set_tile_height");
+    var has_tilemap_set_tileset = function_exists("tilemap_set_tileset");
+    var has_tilemap_get_tileset = function_exists("tilemap_get_tileset");
+
     var need_metrics = (tid == -1)
-        || (!is_undefined(tilemap_set_tile_width))
-        || (!is_undefined(tilemap_set_tile_height));
+        || has_tilemap_set_tile_width
+        || has_tilemap_set_tile_height;
     var metrics = undefined;
     if (need_metrics) {
         metrics = dgTilesetMetrics(tileset_id, _name, tid);
@@ -374,12 +379,12 @@ function dgLayerRequire(_name, _tileset) {
     if (tid == -1) {
         tid = layer_tilemap_create(lid, 0, 0, tileset_id, metrics.w, metrics.h);
     } else {
-        if (!is_undefined(tilemap_set_tileset)) {
+        if (has_tilemap_set_tileset) {
             tilemap_set_tileset(tid, tileset_id);
-            if (!is_undefined(tilemap_set_tile_width) && !is_undefined(metrics)) tilemap_set_tile_width(tid, metrics.w);
-            if (!is_undefined(tilemap_set_tile_height) && !is_undefined(metrics)) tilemap_set_tile_height(tid, metrics.h);
+            if (has_tilemap_set_tile_width && !is_undefined(metrics)) tilemap_set_tile_width(tid, metrics.w);
+            if (has_tilemap_set_tile_height && !is_undefined(metrics)) tilemap_set_tile_height(tid, metrics.h);
         } else {
-            if (!is_undefined(tilemap_get_tileset)) {
+            if (has_tilemap_get_tileset) {
                 var current_tileset = tilemap_get_tileset(tid);
                 if (current_tileset != tileset_id) {
                     dgConfigFail("layer '" + _name + "' is bound to an unexpected tileset and the runtime lacks tilemap_set_tileset().");
