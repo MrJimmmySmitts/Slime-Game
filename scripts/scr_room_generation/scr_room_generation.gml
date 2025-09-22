@@ -162,8 +162,8 @@ function dgLayoutBuild(_cfg) {
                 var node_cur = ds_map_find_value(graph, cur_key);
                 var node_new = ds_map_find_value(graph, k);
 
-                node_cur[? d.side] = k;
-                node_new[? d.opp] = cur_key;
+                variable_struct_set(node_cur, d.side, k);
+                variable_struct_set(node_new, d.opp, cur_key);
 
                 ds_list_add(stack, { gx: nx, gy: ny });
                 placed = true;
