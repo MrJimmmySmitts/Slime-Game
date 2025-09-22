@@ -55,5 +55,7 @@
     {"name":"spr_slime_3","order":13,"path":"sprites/spr_slime_3/spr_slime_3.yy",},
     {"name":"spr_slot","order":14,"path":"sprites/spr_slot/spr_slot.yy",},
     {"name":"spr_tileset","order":7,"path":"sprites/spr_tileset/spr_tileset.yy",},
+    {"name":"ts_coll","order":2,"path":"tilesets/ts_coll/ts_coll.yy",},
+    {"name":"ts_walk","order":1,"path":"tilesets/ts_walk/ts_walk.yy",},
   ],
 }
