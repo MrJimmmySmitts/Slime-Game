@@ -50,41 +50,41 @@ function dgRoomdbBuildExamples(_cfg) {
     var w = _cfg.room_cell_w;
     var h = _cfg.room_cell_h;
 
-    function make_room(_name, _exN, _exE, _exS, _exW) {
-        var walk = array_create(h);
-        for (var r = 0; r < h; r++) {
-            walk[r] = array_create(w, 1);
+    function make_room(_name, _exN, _exE, _exS, _exW, _w, _h) {
+        var walk = array_create(_h);
+        for (var r = 0; r < _h; r++) {
+            walk[r] = array_create(_w, 1);
         }
-        var coll = array_create(h);
-        for (var r = 0; r < h; r++) coll[r] = array_create(w, 0);
+        var coll = array_create(_h);
+        for (var r = 0; r < _h; r++) coll[r] = array_create(_w, 0);
 
         // walls around border
-        for (var c = 0; c < w; c++) { coll[0][c] = 2; coll[h-1][c] = 2; }
-        for (var r2 = 0; r2 < h; r2++) { coll[r2][0] = 2; coll[r2][w-1] = 2; }
+        for (var c = 0; c < _w; c++) { coll[0][c] = 2; coll[_h-1][c] = 2; }
+        for (var r2 = 0; r2 < _h; r2++) { coll[r2][0] = 2; coll[r2][_w-1] = 2; }
 
-        var midx = w div 2;
-        var midy = h div 2;
+        var midx = _w div 2;
+        var midy = _h div 2;
 
         if (_exN) coll[0][midx] = 0;
-        if (_exS) coll[h-1][midx] = 0;
+        if (_exS) coll[_h-1][midx] = 0;
         if (_exW) coll[midy][0] = 0;
-        if (_exE) coll[midy][w-1] = 0;
+        if (_exE) coll[midy][_w-1] = 0;
 
         return dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, walk, coll);
     }
 
     return [
-        make_room("Cross", true, true, true, true),
-        make_room("NS", true, false, true, false),
-        make_room("EW", false, true, false, true),
-        make_room("Corner_NE", true, true, false, false),
-        make_room("Corner_ES", false, true, true, false),
-        make_room("Corner_SW", false, false, true, true),
-        make_room("Corner_WN", true, false, false, true),
-        make_room("DeadN", true, false, false, false),
-        make_room("DeadE", false, true, false, false),
-        make_room("DeadS", false, false, true, false),
-        make_room("DeadW", false, false, false, true)
+        make_room("Cross", true, true, true, true, w, h),
+        make_room("NS", true, false, true, false, w, h),
+        make_room("EW", false, true, false, true, w, h),
+        make_room("Corner_NE", true, true, false, false, w, h),
+        make_room("Corner_ES", false, true, true, false, w, h),
+        make_room("Corner_SW", false, false, true, true, w, h),
+        make_room("Corner_WN", true, false, false, true, w, h),
+        make_room("DeadN", true, false, false, false, w, h),
+        make_room("DeadE", false, true, false, false, w, h),
+        make_room("DeadS", false, false, true, false, w, h),
+        make_room("DeadW", false, false, false, true, w, h)
     ];
 }
 /*
