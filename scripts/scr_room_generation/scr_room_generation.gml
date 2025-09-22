@@ -322,12 +322,23 @@ function dgLayerRequire(_name, _tileset) {
         layer_set_name(lid, _name);
     }
     var tid = layer_tilemap_get_id(lid);
+    var tile_w = tileset_get_tilewidth(tileset_id);
+    var tile_h = tileset_get_tileheight(tileset_id);
     if (tid == -1) {
-        var tile_w = tileset_get_tilewidth(tileset_id);
-        var tile_h = tileset_get_tileheight(tileset_id);
         tid = layer_tilemap_create(lid, 0, 0, tileset_id, tile_w, tile_h);
     } else {
-        tilemap_set_tileset(tid, tileset_id);
+        if (!is_undefined(tilemap_set_tileset)) {
+            tilemap_set_tileset(tid, tileset_id);
+            if (!is_undefined(tilemap_set_tile_width)) tilemap_set_tile_width(tid, tile_w);
+            if (!is_undefined(tilemap_set_tile_height)) tilemap_set_tile_height(tid, tile_h);
+        } else {
+            if (!is_undefined(tilemap_get_tileset)) {
+                var current_tileset = tilemap_get_tileset(tid);
+                if (current_tileset != tileset_id) {
+                    dgConfigFail("layer '" + _name + "' is bound to an unexpected tileset and the runtime lacks tilemap_set_tileset().");
+                }
+            }
+        }
     }
     return tid;
 }
