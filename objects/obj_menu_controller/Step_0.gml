@@ -12,7 +12,11 @@
 
     if (keyboard_check_pressed(vk_escape))
     {
-        if (global.invVisible)
+        if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open != -1)
+        {
+            menuDropdownClose();
+        }
+        else if (global.invVisible)
         {
             invHide();
         }
@@ -30,29 +34,44 @@
     {
         menuRebuildItems();
 
-        var _count = is_array(menu_items) ? array_length(menu_items) : 0;
-        if (_count > 0)
+        var _dropdown_index = (variable_instance_exists(id, "menu_dropdown_open")) ? menu_dropdown_open : -1;
+
+        if (_dropdown_index != -1)
         {
-            if (keyboard_check_pressed(vk_up))
+            if (keyboard_check_pressed(vk_up)) menuDropdownStep(-1);
+            if (keyboard_check_pressed(vk_down)) menuDropdownStep(1);
+            if (keyboard_check_pressed(vk_left)) menuDropdownStep(-1);
+            if (keyboard_check_pressed(vk_right)) menuDropdownStep(1);
+            if (keyboard_check_pressed(vk_enter)) menuDropdownConfirm();
+            if (keyboard_check_pressed(vk_backspace)) menuDropdownClose();
+        }
+        else
+        {
+            var _count = is_array(menu_items) ? array_length(menu_items) : 0;
+            if (_count > 0)
             {
-                sel = (sel - 1 + _count) mod _count;
+                if (keyboard_check_pressed(vk_up))
+                {
+                    sel = (sel - 1 + _count) mod _count;
+                }
+                if (keyboard_check_pressed(vk_down))
+                {
+                    sel = (sel + 1) mod _count;
+                }
+                if (keyboard_check_pressed(vk_left))
+                {
+                    menuAdjustSelection(-1);
+                }
+                if (keyboard_check_pressed(vk_right))
+                {
+                    menuAdjustSelection(1);
+                }
+                if (keyboard_check_pressed(vk_enter))
+                {
+                    menuActivateSelection();
+                }
             }
-            if (keyboard_check_pressed(vk_down))
-            {
-                sel = (sel + 1) mod _count;
-            }
-            if (keyboard_check_pressed(vk_left))
-            {
-                menuAdjustSelection(-1);
-            }
-            if (keyboard_check_pressed(vk_right))
-            {
-                menuAdjustSelection(1);
-            }
-            if (keyboard_check_pressed(vk_enter))
-            {
-                menuActivateSelection();
-            }
+
             if (keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
             {
                 menuCloseSettings();

@@ -57,6 +57,86 @@ function menuItemBounds(_index)
     return [_cx - _iw * 0.5, _base_y - _ih * 0.5, _cx + _iw * 0.5, _base_y + _ih * 0.5];
 }
 
+function menuGetItemRect(_index)
+{
+    var _L      = menuGetLayout();
+    var _cx     = _L.cx;
+    var _base_y = _L.start_y + _index * _L.gap;
+    var _half_w = _L.item_w * 0.5;
+    var _half_h = _L.item_h * 0.5;
+    return {
+        left:   _cx - _half_w,
+        right:  _cx + _half_w,
+        top:    _base_y - _half_h,
+        bottom: _base_y + _half_h,
+        y:      _base_y
+    };
+}
+
+function menuGetItemValueRect(_index)
+{
+    var _rect   = menuGetItemRect(_index);
+    var _L      = menuGetLayout();
+    var _pad    = 12;
+    var _valueL = _rect.left + _L.item_w * 0.45;
+    var _valueR = _rect.right - _pad;
+    if (_valueR < _valueL)
+    {
+        var _mid = (_valueL + _valueR) * 0.5;
+        _valueL = _mid;
+        _valueR = _mid;
+    }
+    return {
+        left:   _valueL,
+        right:  _valueR,
+        top:    _rect.top + 4,
+        bottom: _rect.bottom - 4,
+        y:      _rect.y
+    };
+}
+
+function menuGetSliderTrackRect(_index)
+{
+    var _value_rect = menuGetItemValueRect(_index);
+    var _track_h    = 6;
+    return {
+        left:   _value_rect.left,
+        right:  _value_rect.right,
+        top:    _value_rect.y - _track_h * 0.5,
+        bottom: _value_rect.y + _track_h * 0.5,
+        y:      _value_rect.y
+    };
+}
+
+function menuGetDropdownBaseRect(_index)
+{
+    var _value_rect = menuGetItemValueRect(_index);
+    return {
+        left:   _value_rect.left,
+        right:  _value_rect.right,
+        top:    _value_rect.top,
+        bottom: _value_rect.bottom,
+        y:      (_value_rect.top + _value_rect.bottom) * 0.5
+    };
+}
+
+function menuDropdownGetOptionRect(_index, _option_index)
+{
+    var _base      = menuGetDropdownBaseRect(_index);
+    var _L         = menuGetLayout();
+    var _gap       = 2;
+    var _option_h  = _L.item_h;
+    var _top       = _base.bottom + 4 + _option_index * (_option_h + _gap);
+    var _bottom    = _top + _option_h;
+    return {
+        left:   _base.left,
+        right:  _base.right,
+        top:    _top,
+        bottom: _bottom,
+        y:      (_top + _bottom) * 0.5
+    };
+}
+
 /*
 * Name: menuIndexAt
 * Description: Menu index under the GUI-space point, or -1 if none.
@@ -70,6 +150,310 @@ function menuIndexAt(_mx, _my)
         var _b = menuItemBounds(_i);
         if (_mx >= _b[0] && _mx <= _b[2] && _my >= _b[1] && _my <= _b[3]) return _i;
     }
+    return -1;
+}
+
+function menuSliderGetStep(_entry)
+{
+    if (!is_struct(_entry)) return 0.1;
+    if (variable_struct_exists(_entry, "step"))
+    {
+        var _step = _entry.step;
+        if (is_real(_step) && _step > 0) return _step;
+    }
+    return 0.1;
+}
+
+function menuSliderGetRange(_entry)
+{
+    var _min = variable_struct_exists(_entry, "min") ? _entry.min : 0;
+    var _max = variable_struct_exists(_entry, "max") ? _entry.max : 1;
+    if (!is_real(_min)) _min = 0;
+    if (!is_real(_max)) _max = 1;
+    if (_max < _min)
+    {
+        var _swap = _min;
+        _min = _max;
+        _max = _swap;
+    }
+    return [_min, _max];
+}
+
+function menuSliderClampValue(_entry, _value)
+{
+    var _range = menuSliderGetRange(_entry);
+    var _min   = _range[0];
+    var _max   = _range[1];
+    _value     = clamp(_value, _min, _max);
+
+    var _step = menuSliderGetStep(_entry);
+    if (_step > 0)
+    {
+        _value = round((_value - _min) / _step) * _step + _min;
+        _value = clamp(_value, _min, _max);
+    }
+
+    return _value;
+}
+
+function menuSliderGetValue(_entry)
+{
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+
+    if (_target == "volume")
+    {
+        if (!variable_global_exists("Settings")) return menuSliderClampValue(_entry, 1);
+        var _value = global.Settings.master_volume;
+        if (!is_real(_value)) _value = 1;
+        return menuSliderClampValue(_entry, _value);
+    }
+
+    return 0;
+}
+
+function menuSliderApplyValue(_entry, _value)
+{
+    _value = menuSliderClampValue(_entry, _value);
+
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+    if (_target == "volume")
+    {
+        if (!variable_global_exists("Settings")) return;
+        global.Settings.master_volume = _value;
+        audio_master_gain(global.Settings.master_volume);
+    }
+}
+
+function menuSliderValueFromMouse(_entry, _track, _mx)
+{
+    if (!is_struct(_track)) return menuSliderGetValue(_entry);
+
+    var _range = menuSliderGetRange(_entry);
+    var _min   = _range[0];
+    var _max   = _range[1];
+    var _span  = _track.right - _track.left;
+    if (_span == 0) return _min;
+
+    var _ratio = clamp((_mx - _track.left) / _span, 0, 1);
+    var _value = _min + (_max - _min) * _ratio;
+    return menuSliderClampValue(_entry, _value);
+}
+
+function menuMouseHandleSliderPress(_index, _entry, _mx, _my)
+{
+    if (!is_struct(_entry)) return false;
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return false;
+
+    var _track = menuGetSliderTrackRect(_index);
+    var _hit_t = _track.top - 8;
+    var _hit_b = _track.bottom + 8;
+
+    if (_mx < _track.left || _mx > _track.right || _my < _hit_t || _my > _hit_b) return false;
+
+    var _value = menuSliderValueFromMouse(_entry, _track, _mx);
+    menuSliderApplyValue(_entry, _value);
+
+    if (variable_instance_exists(id, "menu_slider_drag_index")) menu_slider_drag_index = _index;
+
+    return true;
+}
+
+function menuMouseHandleSliderDrag(_index, _entry, _mx)
+{
+    if (!is_struct(_entry)) return;
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return;
+
+    var _track = menuGetSliderTrackRect(_index);
+    var _value = menuSliderValueFromMouse(_entry, _track, _mx);
+    menuSliderApplyValue(_entry, _value);
+}
+
+function menuOptionGetCount(_entry)
+{
+    if (!is_struct(_entry)) return 0;
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+
+    if (_target == "screen_size")
+    {
+        return is_array(screen_size_options) ? array_length(screen_size_options) : 0;
+    }
+
+    return 0;
+}
+
+function menuOptionGetIndex(_entry)
+{
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return -1;
+
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+
+    if (_target == "screen_size")
+    {
+        settings_screen_index = clamp(settings_screen_index, 0, _count - 1);
+        return settings_screen_index;
+    }
+
+    return -1;
+}
+
+function menuOptionSetIndex(_entry, _index)
+{
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+
+    if (_target == "screen_size")
+    {
+        if (!is_array(screen_size_options)) return;
+        var _count = array_length(screen_size_options);
+        if (_count <= 0) return;
+
+        _index = clamp(_index, 0, _count - 1);
+        settings_screen_index = _index;
+        if (variable_global_exists("Settings")) global.Settings.screen_size_index = settings_screen_index;
+
+        var _option = screen_size_options[settings_screen_index];
+        menuApplyScreenSize(_option);
+    }
+}
+
+function menuOptionGetLabelForIndex(_entry, _index)
+{
+    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+
+    if (_target == "screen_size")
+    {
+        if (!is_array(screen_size_options) || array_length(screen_size_options) <= 0) return "(not available)";
+        _index = clamp(_index, 0, array_length(screen_size_options) - 1);
+        var _option = screen_size_options[_index];
+        if (is_struct(_option))
+        {
+            if (variable_struct_exists(_option, "label")) return _option.label;
+            if (variable_struct_exists(_option, "width") && variable_struct_exists(_option, "height"))
+            {
+                return string(_option.width) + " x " + string(_option.height);
+            }
+        }
+        return "(invalid)";
+    }
+
+    return "";
+}
+
+function menuOptionGetCurrentLabel(_entry)
+{
+    var _index = menuOptionGetIndex(_entry);
+    if (_index < 0) return "(not available)";
+    return menuOptionGetLabelForIndex(_entry, _index);
+}
+
+function menuDropdownOpen(_index)
+{
+    if (!is_array(menu_items)) return;
+    if (!variable_instance_exists(id, "menu_dropdown_open")) return;
+    if (_index < 0 || _index >= array_length(menu_items)) return;
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry)) return;
+    if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return;
+    if (_entry.kind != MenuItemKind.Option) return;
+
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return;
+
+    menu_dropdown_open = _index;
+    if (variable_instance_exists(id, "menu_dropdown_hover"))
+    {
+        menu_dropdown_hover = menuOptionGetIndex(_entry);
+        if (menu_dropdown_hover < 0) menu_dropdown_hover = 0;
+        menu_dropdown_hover = clamp(menu_dropdown_hover, 0, _count - 1);
+    }
+}
+
+function menuDropdownClose()
+{
+    if (variable_instance_exists(id, "menu_dropdown_open")) menu_dropdown_open = -1;
+    if (variable_instance_exists(id, "menu_dropdown_hover")) menu_dropdown_hover = -1;
+}
+
+function menuDropdownStep(_dir)
+{
+    if (_dir == 0) return;
+    if (!is_array(menu_items)) return;
+    if (!variable_instance_exists(id, "menu_dropdown_open")) return;
+    if (menu_dropdown_open == -1) return;
+
+    var _index = menu_dropdown_open;
+    if (_index < 0 || _index >= array_length(menu_items)) return;
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.Option) return;
+
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return;
+
+    if (variable_instance_exists(id, "menu_dropdown_hover"))
+    {
+        if (menu_dropdown_hover < 0) menu_dropdown_hover = menuOptionGetIndex(_entry);
+        if (menu_dropdown_hover < 0) menu_dropdown_hover = 0;
+        menu_dropdown_hover = (menu_dropdown_hover + _dir + _count) mod _count;
+    }
+}
+
+function menuDropdownConfirm()
+{
+    if (!is_array(menu_items)) return;
+    if (!variable_instance_exists(id, "menu_dropdown_open")) return;
+    if (menu_dropdown_open == -1) return;
+
+    var _index = menu_dropdown_open;
+    if (_index < 0 || _index >= array_length(menu_items))
+    {
+        menuDropdownClose();
+        return;
+    }
+
+    var _entry = menu_items[_index];
+    if (!is_struct(_entry) || _entry.kind != MenuItemKind.Option)
+    {
+        menuDropdownClose();
+        return;
+    }
+
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0)
+    {
+        menuDropdownClose();
+        return;
+    }
+
+    var _choice = variable_instance_exists(id, "menu_dropdown_hover") ? menu_dropdown_hover : -1;
+    if (_choice < 0) _choice = menuOptionGetIndex(_entry);
+    if (_choice < 0) _choice = 0;
+    _choice = clamp(_choice, 0, _count - 1);
+
+    menuOptionSetIndex(_entry, _choice);
+    menuDropdownClose();
+
+    if (menu_screen == MenuScreen.Settings) menuRebuildItems();
+}
+
+function menuDropdownOptionAtPosition(_index, _entry, _mx, _my)
+{
+    if (!is_struct(_entry)) return -1;
+    if (_entry.kind != MenuItemKind.Option) return -1;
+
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return -1;
+
+    for (var _i = 0; _i < _count; _i++)
+    {
+        var _rect = menuDropdownGetOptionRect(_index, _i);
+        if (_mx >= _rect.left && _mx <= _rect.right && _my >= _rect.top && _my <= _rect.bottom)
+        {
+            return _i;
+        }
+    }
+
     return -1;
 }
 
@@ -96,25 +480,20 @@ function menuRebuildItems()
 
         case MenuScreen.Settings:
         {
-            var _settings = variable_global_exists("Settings") ? global.Settings : undefined;
-            var _volume   = 1.0;
-            if (is_struct(_settings) && variable_struct_exists(_settings, "master_volume"))
-            {
-                _volume = clamp(_settings.master_volume, 0, 1);
-            }
-            var _volume_label = "Master Volume: " + string(round(_volume * 100)) + "%";
             var _slot = array_length(_items);
             _items[_slot] = {
-                label:   _volume_label,
+                label:   "Master Volume",
                 kind:    MenuItemKind.Slider,
                 target:  "volume",
                 step:    0.1,
+                min:     0,
+                max:     1,
                 enabled: true
             };
 
             _slot = array_length(_items);
             _items[_slot] = {
-                label:   menuGetScreenSizeLabel(),
+                label:   "Screen Size",
                 kind:    MenuItemKind.Option,
                 target:  "screen_size",
                 enabled: is_array(screen_size_options) && array_length(screen_size_options) > 0
@@ -200,6 +579,52 @@ function menuRebuildItems()
     var _count = array_length(menu_items);
     if (_count <= 0) sel = 0;
     else sel = clamp(sel, 0, _count - 1);
+
+    if (variable_instance_exists(id, "menu_dropdown_open"))
+    {
+        if (menu_dropdown_open != -1)
+        {
+            if (menu_dropdown_open >= _count)
+            {
+                menuDropdownClose();
+            }
+            else
+            {
+                var _dropdown_entry = menu_items[menu_dropdown_open];
+                if (!is_struct(_dropdown_entry) || _dropdown_entry.kind != MenuItemKind.Option)
+                {
+                    menuDropdownClose();
+                }
+                else if (variable_struct_exists(_dropdown_entry, "enabled") && !_dropdown_entry.enabled)
+                {
+                    menuDropdownClose();
+                }
+            }
+        }
+    }
+
+    if (variable_instance_exists(id, "menu_slider_drag_index"))
+    {
+        if (menu_slider_drag_index != -1)
+        {
+            if (menu_slider_drag_index >= _count)
+            {
+                menu_slider_drag_index = -1;
+            }
+            else
+            {
+                var _slider_entry = menu_items[menu_slider_drag_index];
+                if (!is_struct(_slider_entry) || _slider_entry.kind != MenuItemKind.Slider)
+                {
+                    menu_slider_drag_index = -1;
+                }
+                else if (variable_struct_exists(_slider_entry, "enabled") && !_slider_entry.enabled)
+                {
+                    menu_slider_drag_index = -1;
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -216,6 +641,8 @@ function menuActivateSelection()
     var _entry = menu_items[sel];
     if (!is_struct(_entry)) return;
     if (variable_struct_exists(_entry, "enabled") && !_entry.enabled) return;
+
+    if (_entry.kind != MenuItemKind.Option && variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
 
     switch (_entry.kind)
     {
@@ -254,10 +681,22 @@ function menuActivateSelection()
         }
 
         case MenuItemKind.Slider:
-        case MenuItemKind.Option:
         case MenuItemKind.DebugStat:
         {
             menuAdjustSelection(1);
+            break;
+        }
+
+        case MenuItemKind.Option:
+        {
+            if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open == sel)
+            {
+                menuDropdownConfirm();
+            }
+            else
+            {
+                menuDropdownOpen(sel);
+            }
             break;
         }
 
@@ -296,18 +735,154 @@ function menuMouseUpdate()
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
+    var _count = array_length(menu_items);
+
+    if (variable_instance_exists(id, "menu_slider_drag_index") && mouse_check_button_released(mb_left))
+    {
+        menu_slider_drag_index = -1;
+    }
+
+    var _dropdown_index = -1;
+    var _dropdown_entry = undefined;
+    if (variable_instance_exists(id, "menu_dropdown_open"))
+    {
+        _dropdown_index = menu_dropdown_open;
+        if (_dropdown_index != -1 && _dropdown_index < _count)
+        {
+            _dropdown_entry = menu_items[_dropdown_index];
+            if (!is_struct(_dropdown_entry) || _dropdown_entry.kind != MenuItemKind.Option)
+            {
+                _dropdown_index = -1;
+                _dropdown_entry = undefined;
+            }
+        }
+        else
+        {
+            _dropdown_index = -1;
+            _dropdown_entry = undefined;
+        }
+    }
+
+    if (_dropdown_index != -1 && is_struct(_dropdown_entry))
+    {
+        var _hover_option = menuDropdownOptionAtPosition(_dropdown_index, _dropdown_entry, _mx, _my);
+        if (_hover_option != -1 && variable_instance_exists(id, "menu_dropdown_hover"))
+        {
+            menu_dropdown_hover = _hover_option;
+        }
+    }
+
     var _idx = menuIndexAt(_mx, _my);
     if (_idx != -1) sel = _idx;
-    else return;
 
     if (mouse_check_button_pressed(mb_left))
     {
-        menuActivateSelection();
+        if (_dropdown_index != -1 && is_struct(_dropdown_entry))
+        {
+            var _selected_option = menuDropdownOptionAtPosition(_dropdown_index, _dropdown_entry, _mx, _my);
+            if (_selected_option != -1)
+            {
+                if (variable_instance_exists(id, "menu_dropdown_hover")) menu_dropdown_hover = _selected_option;
+                menuDropdownConfirm();
+                return;
+            }
+
+            var _base_rect = menuGetDropdownBaseRect(_dropdown_index);
+            if (point_in_rectangle(_mx, _my, _base_rect.left, _base_rect.top, _base_rect.right, _base_rect.bottom))
+            {
+                menuDropdownClose();
+                return;
+            }
+            else if (_idx != _dropdown_index)
+            {
+                menuDropdownClose();
+            }
+        }
+
+        if (_idx == -1)
+        {
+            if (variable_instance_exists(id, "menu_slider_drag_index")) menu_slider_drag_index = -1;
+            if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+            return;
+        }
+
+        var _entry = menu_items[_idx];
+        if (!is_struct(_entry)) return;
+
+        if (variable_struct_exists(_entry, "enabled") && !_entry.enabled)
+        {
+            if (variable_instance_exists(id, "menu_slider_drag_index")) menu_slider_drag_index = -1;
+            return;
+        }
+
+        switch (_entry.kind)
+        {
+            case MenuItemKind.Slider:
+            {
+                if (menuMouseHandleSliderPress(_idx, _entry, _mx, _my))
+                {
+                    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+                    return;
+                }
+                menuAdjustSelection(1);
+                return;
+            }
+
+            case MenuItemKind.Option:
+            {
+                var _base_rect = menuGetDropdownBaseRect(_idx);
+                if (point_in_rectangle(_mx, _my, _base_rect.left, _base_rect.top, _base_rect.right, _base_rect.bottom))
+                {
+                    if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open == _idx)
+                    {
+                        menuDropdownClose();
+                    }
+                    else
+                    {
+                        menuDropdownOpen(_idx);
+                    }
+                    return;
+                }
+                else
+                {
+                    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+                }
+                break;
+            }
+
+            default:
+            {
+                menuActivateSelection();
+                return;
+            }
+        }
     }
 
     if (mouse_check_button_pressed(mb_right))
     {
-        menuAdjustSelection(-1);
+        if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open != -1)
+        {
+            menuDropdownClose();
+        }
+        else
+        {
+            menuAdjustSelection(-1);
+        }
+    }
+
+    if (mouse_check_button(mb_left))
+    {
+        if (variable_instance_exists(id, "menu_slider_drag_index") && menu_slider_drag_index != -1)
+        {
+            if (menu_slider_drag_index < _count)
+            {
+                var _drag_entry = menu_items[menu_slider_drag_index];
+                if (is_struct(_drag_entry) && _drag_entry.kind == MenuItemKind.Slider)
+                {
+                    menuMouseHandleSliderDrag(menu_slider_drag_index, _drag_entry, _mx);
+                }
+            }
+        }
     }
 }
 
@@ -334,7 +909,14 @@ function menuAdjustSelection(_dir)
             break;
 
         case MenuItemKind.Option:
-            menuAdjustOption(_entry, _dir);
+            if (variable_instance_exists(id, "menu_dropdown_open") && menu_dropdown_open == sel)
+            {
+                menuDropdownStep(_dir);
+            }
+            else
+            {
+                menuAdjustOption(_entry, _dir);
+            }
             break;
 
         case MenuItemKind.Toggle:
@@ -386,24 +968,10 @@ function menuAdjustSlider(_entry, _dir)
     if (_dir == 0) return;
     if (!is_struct(_entry)) return;
 
-    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
-
-    if (_target == "volume")
-    {
-        if (!variable_global_exists("Settings")) return;
-
-        var _step = variable_struct_exists(_entry, "step") ? max(0.01, _entry.step) : 0.1;
-        var _value = global.Settings.master_volume + _dir * _step;
-        _value = clamp(_value, 0, 1);
-        if (_step > 0)
-        {
-            _value = round(_value / _step) * _step;
-        }
-        _value = clamp(_value, 0, 1);
-
-        global.Settings.master_volume = _value;
-        audio_master_gain(global.Settings.master_volume);
-    }
+    var _step = menuSliderGetStep(_entry);
+    var _value = menuSliderGetValue(_entry) + _dir * _step;
+    _value = menuSliderClampValue(_entry, _value);
+    menuSliderApplyValue(_entry, _value);
 }
 
 /*
@@ -415,20 +983,15 @@ function menuAdjustOption(_entry, _dir)
     if (_dir == 0) return;
     if (!is_struct(_entry)) return;
 
-    var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return;
 
-    if (_target == "screen_size")
-    {
-        if (!is_array(screen_size_options)) return;
-        var _count = array_length(screen_size_options);
-        if (_count <= 0) return;
+    var _index = menuOptionGetIndex(_entry);
+    if (_index < 0) _index = 0;
 
-        settings_screen_index = (settings_screen_index + _dir + _count) mod _count;
-        if (variable_global_exists("Settings")) global.Settings.screen_size_index = settings_screen_index;
+    _index = (_index + _dir + _count) mod _count;
 
-        var _option = screen_size_options[settings_screen_index];
-        menuApplyScreenSize(_option);
-    }
+    menuOptionSetIndex(_entry, _index);
 }
 
 /*
@@ -439,6 +1002,7 @@ function menuOpenSettings()
 {
     menu_screen = MenuScreen.Settings;
     sel = 0;
+    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
     menuRebuildItems();
 }
 
@@ -449,6 +1013,7 @@ function menuOpenSettings()
 function menuCloseSettings()
 {
     menu_screen = MenuScreen.Main;
+    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
     var _len = is_array(menu_main) ? array_length(menu_main) : 0;
     if (_len > 0)
     {
@@ -464,29 +1029,11 @@ function menuCloseSettings()
 */
 function menuGetScreenSizeLabel()
 {
-    if (!is_array(screen_size_options) || array_length(screen_size_options) <= 0)
-    {
-        return "Screen Size: (not available)";
-    }
+    var _entry = { target: "screen_size" };
+    var _count = menuOptionGetCount(_entry);
+    if (_count <= 0) return "Screen Size: (not available)";
 
-    var _count = array_length(screen_size_options);
-    settings_screen_index = clamp(settings_screen_index, 0, _count - 1);
-
-    var _option = screen_size_options[settings_screen_index];
-    var _label  = "";
-
-    if (is_struct(_option))
-    {
-        if (variable_struct_exists(_option, "label"))
-        {
-            _label = _option.label;
-        }
-        else if (variable_struct_exists(_option, "width") && variable_struct_exists(_option, "height"))
-        {
-            _label = string(_option.width) + " x " + string(_option.height);
-        }
-    }
-
+    var _label = menuOptionGetCurrentLabel(_entry);
     if (_label == "") _label = "(invalid)";
 
     return "Screen Size: " + _label;
