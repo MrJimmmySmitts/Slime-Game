@@ -154,6 +154,71 @@ else
                     draw_set_halign(fa_center);
                     continue;
                 }
+
+                case MenuItemKind.DebugStat:
+                {
+                    var _rect_num    = menuGetItemRect(_i);
+                    var _label_left2 = _rect_num.left + 16;
+                    var _rects       = menuGetNumberFieldRects(_i);
+                    var _field_rect  = _rects.field;
+                    var _minus_rect  = _rects.minus;
+                    var _plus_rect   = _rects.plus;
+                    var _range       = menuDebugGetStatRange(_item);
+                    var _value_text  = menuDebugGetStatDisplayValue(_item);
+                    var _min_text    = menuDebugFormatStatValue(_item, _range[0]);
+                    var _max_text    = menuDebugFormatStatValue(_item, _range[1]);
+                    var _suffix_txt  = variable_struct_exists(_item, "suffix") ? string(_item.suffix) : "";
+                    if (_suffix_txt != "")
+                    {
+                        if (_min_text != "--") _min_text = _min_text + _suffix_txt;
+                        if (_max_text != "--") _max_text = _max_text + _suffix_txt;
+                    }
+
+                    var _label_color2 = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
+                    draw_set_halign(fa_left);
+                    draw_set_color(_label_color2);
+                    draw_text(_label_left2, _rect_num.y, string(_label));
+
+                    var _field_bg     = _enabled ? make_color_rgb(36, 44, 68) : make_color_rgb(46, 46, 46);
+                    var _field_border = _enabled ? make_color_rgb(120, 130, 180) : make_color_rgb(70, 70, 70);
+                    if (_selected && _enabled) _field_border = _color_selected;
+
+                    var _button_bg    = _enabled ? make_color_rgb(28, 36, 60) : make_color_rgb(46, 46, 46);
+                    var _button_border = _field_border;
+
+                    draw_set_color(_button_bg);
+                    draw_rectangle(_minus_rect.left, _minus_rect.top, _minus_rect.right, _minus_rect.bottom, false);
+                    draw_rectangle(_plus_rect.left, _plus_rect.top, _plus_rect.right, _plus_rect.bottom, false);
+
+                    draw_set_color(_button_border);
+                    draw_rectangle(_minus_rect.left, _minus_rect.top, _minus_rect.right, _minus_rect.bottom, true);
+                    draw_rectangle(_plus_rect.left, _plus_rect.top, _plus_rect.right, _plus_rect.bottom, true);
+
+                    draw_set_color(_field_bg);
+                    draw_rectangle(_field_rect.left, _field_rect.top, _field_rect.right, _field_rect.bottom, false);
+                    draw_set_color(_field_border);
+                    draw_rectangle(_field_rect.left, _field_rect.top, _field_rect.right, _field_rect.bottom, true);
+
+                    var _value_color2 = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
+                    draw_set_color(_value_color2);
+                    draw_set_halign(fa_center);
+                    draw_text((_minus_rect.left + _minus_rect.right) * 0.5, _minus_rect.y, "-");
+                    draw_text((_plus_rect.left + _plus_rect.right) * 0.5, _plus_rect.y, "+");
+
+                    draw_text((_field_rect.left + _field_rect.right) * 0.5, _field_rect.y - 4, _value_text);
+
+                    var _minmax_color = _enabled ? make_color_rgb(180, 190, 230) : _color_disabled;
+                    draw_set_color(_minmax_color);
+                    draw_set_valign(fa_bottom);
+                    draw_set_halign(fa_left);
+                    draw_text(_field_rect.left + 6, _field_rect.bottom - 3, "Min: " + _min_text);
+                    draw_set_halign(fa_right);
+                    draw_text(_field_rect.right - 6, _field_rect.bottom - 3, "Max: " + _max_text);
+
+                    draw_set_valign(fa_middle);
+                    draw_set_halign(fa_center);
+                    continue;
+                }
             }
         }
 
