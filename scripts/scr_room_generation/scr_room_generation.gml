@@ -50,11 +50,11 @@ function dgRoomdbBuildExamples(_cfg) {
     var w = _cfg.room_cell_w;
     var h = _cfg.room_cell_h;
 
-    var ground = array_create(h);
-    for (var r = 0; r < h; r++) ground[r] = array_create(w, 1);
-
     function make_room(_name, _exN, _exE, _exS, _exW) {
-        var walk = ground;
+        var walk = array_create(h);
+        for (var r = 0; r < h; r++) {
+            walk[r] = array_create(w, 1);
+        }
         var coll = array_create(h);
         for (var r = 0; r < h; r++) coll[r] = array_create(w, 0);
 
