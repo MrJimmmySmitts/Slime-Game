@@ -6,6 +6,7 @@
   "inheritCreationOrder":false,
   "inheritLayers":false,
   "instanceCreationOrder":[
+    {"name":"inst_FLOORGEN","path":"rooms/rm_game/rm_game.yy",},
     {"name":"inst_PLAYERSPAWN","path":"rooms/rm_game/rm_game.yy",},
     {"name":"inst_7FFF7EB4","path":"rooms/rm_game/rm_game.yy",},
     {"name":"inst_13E439A6","path":"rooms/rm_game/rm_game.yy",},
@@ -15,6 +16,8 @@
   "isDnd":false,
   "layers":[
     {"$GMRInstanceLayer":"","%Name":"Instances","depth":0,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
+
+        {"$GMRInstance":"v2","%Name":"inst_FLOORGEN","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_FLOORGEN","objectId":{"name":"obj_floor_gen","path":"objects/obj_floor_gen/obj_floor_gen.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":0.0,},
 
         {"$GMRInstance":"v2","%Name":"inst_PLAYERSPAWN","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_PLAYERSPAWN","objectId":{"name":"obj_trigger_player_spawn","path":"objects/obj_trigger_player_spawn/obj_trigger_player_spawn.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":128.0,"y":256.0,},
 
@@ -29,8 +32,8 @@
           -48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,
           9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,
           11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,9,-48,0,2,11,17,-48,18,1,19,
-        ],"TileDataFormat":1,},"tilesetId":{"name":"ts_basic","path":"tilesets/ts_basic/ts_basic.yy",},"userdefinedDepth":false,"visible":true,"x":0,"y":0,},
-    {"$GMRTileLayer":"","%Name":"tm_floor","depth":200,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"name":"tm_floor","properties":[],"resourceType":"GMRTileLayer","resourceVersion":"2.0","tiles":{"SerialiseHeight":38,"SerialiseWidth":50,"TileCompressedData":[-1900,13,],"TileDataFormat":1,},"tilesetId":{"name":"ts_basic","path":"tilesets/ts_basic/ts_basic.yy",},"userdefinedDepth":false,"visible":true,"x":0,"y":0,},
+        ],"TileDataFormat":1,},"tilesetId":{"name":"ts_coll","path":"tilesets/ts_coll/ts_coll.yy",},"userdefinedDepth":false,"visible":true,"x":0,"y":0,},
+    {"$GMRTileLayer":"","%Name":"tm_floor","depth":200,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"name":"tm_floor","properties":[],"resourceType":"GMRTileLayer","resourceVersion":"2.0","tiles":{"SerialiseHeight":38,"SerialiseWidth":50,"TileCompressedData":[-1900,13,],"TileDataFormat":1,},"tilesetId":{"name":"ts_walk","path":"tilesets/ts_walk/ts_walk.yy",},"userdefinedDepth":false,"visible":true,"x":0,"y":0,},
     {"$GMRBackgroundLayer":"","%Name":"Background","animationFPS":30.0,"animationSpeedType":0,"colour":4294967295,"depth":300,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"hspeed":0.05,"htiled":true,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"name":"Background","properties":[],"resourceType":"GMRBackgroundLayer","resourceVersion":"2.0","spriteId":{"name":"spr_lava","path":"sprites/spr_lava/spr_lava.yy",},"stretch":false,"userdefinedAnimFPS":false,"userdefinedDepth":false,"visible":true,"vspeed":0.05,"vtiled":true,"x":0,"y":0,},
   ],
   "name":"rm_game",
