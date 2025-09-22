@@ -204,7 +204,7 @@
     
     <section class="card">
       <h2>Overview</h2>
-      <p>This reference covers <strong>202</strong> documented functions across <strong>16</strong> script assets.</p>
+      <p>This reference covers <strong>204</strong> documented functions across <strong>16</strong> script assets.</p>
       <nav aria-label="Function groups">
         <ul>
           <li><a href="#script-scr-boot">scr_boot <span class="badge">2</span></a></li>
@@ -219,7 +219,7 @@
 <li><a href="#script-scr-pickups">scr_pickups <span class="badge">10</span></a></li>
 <li><a href="#script-scr-player-stats">scr_player_stats <span class="badge">3</span></a></li>
 <li><a href="#script-scr-pmove">scr_pmove <span class="badge">4</span></a></li>
-<li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">19</span></a></li>
+<li><a href="#script-scr-room-generation">scr_room_generation <span class="badge">21</span></a></li>
 <li><a href="#script-scr-triggers">scr_triggers <span class="badge">17</span></a></li>
 <li><a href="#script-scr-utils">scr_utils <span class="badge">15</span></a></li>
 <li><a href="#script-scr-weapon">scr_weapon <span class="badge">2</span></a></li>
@@ -1760,7 +1760,7 @@
   <p><code>function dgAssignTemplates(_cfg, _graph, _roomdb)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:291</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:394</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1770,7 +1770,7 @@
   <p><code>function dgBuildFloorIntoRoom(_cfg, _graph, _roomdb)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_graph</code></li><li><code>_roomdb</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:413</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:527</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1790,7 +1790,7 @@
   <p><code>function dgConfigEnsureTilesetId(_value, _field_name)</code></p>
   <ul><li><code>_value</code></li><li><code>_field_name</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:37</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:140</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1810,7 +1810,17 @@
   <p><code>function dgConfigValidate(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:59</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:162</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgfunctionexists">
+  <h3>dgFunctionExists</h3>
+  <p>Compatibility wrapper for runtimes that lack function_exists().</p>
+  <p><code>function dgFunctionExists(_name)</code></p>
+  <ul><li><code>_name</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:37</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1820,7 +1830,7 @@
   <p><code>function dgGenerateFloor(_cfg_override)</code></p>
   <ul><li><code>_cfg_override</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:429</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:543</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1830,7 +1840,7 @@
   <p><code>function dgGraphAddNode(_map, _gx, _gy)</code></p>
   <ul><li><code>_map</code></li><li><code>_gx</code></li><li><code>_gy</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:200</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:303</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1840,7 +1850,7 @@
   <p><code>function dgGraphKey(_gx, _gy)</code></p>
   <ul><li><code>_gx</code></li><li><code>_gy</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:192</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:295</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1850,7 +1860,7 @@
   <p><code>function dgGraphNeighbors4()</code></p>
   <p class="empty">No parameters</p>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:217</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:320</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1860,7 +1870,7 @@
   <p><code>function dgLayerRequire(_name, _tileset)</code></p>
   <ul><li><code>_name</code></li><li><code>_tileset</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:357</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:466</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1870,7 +1880,7 @@
   <p><code>function dgLayoutBuild(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:229</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:332</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1880,7 +1890,7 @@
   <p><code>function dgRngInit(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:127</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:230</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1890,7 +1900,7 @@
   <p><code>function dgRoomdbBuildExamples(_cfg)</code></p>
   <ul><li><code>_cfg</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:147</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:250</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1900,7 +1910,7 @@
   <p><code>function dgRoomTemplateNew(_name, _exN, _exE, _exS, _exW, _walk_grid, _coll_grid)</code></p>
   <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li><li><code>_walk_grid</code></li><li><code>_coll_grid</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:135</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:238</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1910,7 +1920,7 @@
   <p><code>function dgTemplateMatches(_tmpl, _n, _e, _s, _w)</code></p>
   <ul><li><code>_tmpl</code></li><li><code>_n</code></li><li><code>_e</code></li><li><code>_s</code></li><li><code>_w</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:281</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:384</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1920,7 +1930,7 @@
   <p><code>function dgTilePaintRoom(_cfg, _node, _tmpl, _walk_tm, _coll_tm)</code></p>
   <ul><li><code>_cfg</code></li><li><code>_node</code></li><li><code>_tmpl</code></li><li><code>_walk_tm</code></li><li><code>_coll_tm</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:396</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:510</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1930,7 +1940,17 @@
   <p><code>function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid)</code></p>
   <ul><li><code>_tileset_id</code></li><li><code>_layer_name</code></li><li><code>_existing_tid</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:317</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:420</span>
+    <span title="Script asset">📄 scr_room_generation</span>
+  </div>
+</article>
+<article class="card" id="function-dgtilesetmetricsfallback">
+  <h3>dgTilesetMetricsFallback</h3>
+  <p>Provides manual tile dimensions when runtime queries are unavailable.</p>
+  <p><code>function dgTilesetMetricsFallback(_tileset_id)</code></p>
+  <ul><li><code>_tileset_id</code></li></ul>
+  <div class="meta">
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:87</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -1940,7 +1960,7 @@
   <p><code>function make_room(_name, _exN, _exE, _exS, _exW, _w, _h)</code></p>
   <ul><li><code>_name</code></li><li><code>_exN</code></li><li><code>_exE</code></li><li><code>_exS</code></li><li><code>_exW</code></li><li><code>_w</code></li><li><code>_h</code></li></ul>
   <div class="meta">
-    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:151</span>
+    <span title="Source path">📁 scripts/scr_room_generation/scr_room_generation.gml:254</span>
     <span title="Script asset">📄 scr_room_generation</span>
   </div>
 </article>
@@ -2295,7 +2315,7 @@
 </article>
 </section>
   
-    <footer>Generated on 2025-09-22T12:56:13.121Z</footer>
+    <footer>Generated on 2025-09-22T13:16:05.144Z</footer>
   </main>
 </body>
 </html>
