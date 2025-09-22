@@ -57,4 +57,8 @@ debug_stat_defs = [
     { label: "Bullet Damage",   stat: "bullet_damage",      base: "base_bullet_damage", step: 1,   min: 1,   max: 50,  decimals: 0 }
 ];
 
+menu_dropdown_open   = -1;
+menu_dropdown_hover  = -1;
+menu_slider_drag_index = -1;
+
 menuRebuildItems();
