@@ -322,8 +322,8 @@ function dgLayerRequire(_name, _tileset) {
         layer_set_name(lid, _name);
     }
     var tid = layer_tilemap_get_id(lid);
-    var tile_w = tileset_get_tilewidth(tileset_id);
-    var tile_h = tileset_get_tileheight(tileset_id);
+    var tile_w = tileset_get_tile_width(tileset_id);
+    var tile_h = tileset_get_tile_height(tileset_id);
     if (tid == -1) {
         tid = layer_tilemap_create(lid, 0, 0, tileset_id, tile_w, tile_h);
     } else {
