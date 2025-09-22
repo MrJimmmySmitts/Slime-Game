@@ -311,6 +311,46 @@ function dgAssignTemplates(_cfg, _graph, _roomdb) {
     }
 }
 /*
+* Name: dgTilesetMetrics
+* Description: Resolves and caches tile dimensions for a tileset.
+*/
+function dgTilesetMetrics(_tileset_id, _layer_name, _existing_tid) {
+    if (is_undefined(global.__dgTilesetMetrics)) {
+        global.__dgTilesetMetrics = {};
+    }
+
+    var key = string(_tileset_id);
+    if (variable_struct_exists(global.__dgTilesetMetrics, key)) {
+        return variable_struct_get(global.__dgTilesetMetrics, key);
+    }
+
+    if (function_exists("tileset_get_tile_width") && function_exists("tileset_get_tile_height")) {
+        var builtin_w = tileset_get_tile_width(_tileset_id);
+        var builtin_h = tileset_get_tile_height(_tileset_id);
+        if (builtin_w > 0 && builtin_h > 0) {
+            var metrics_builtin = { w: builtin_w, h: builtin_h };
+            variable_struct_set(global.__dgTilesetMetrics, key, metrics_builtin);
+            return metrics_builtin;
+        }
+    }
+
+    if (_existing_tid != -1) {
+        if (!is_undefined(tilemap_get_tile_width) && !is_undefined(tilemap_get_tile_height)) {
+            var width = tilemap_get_tile_width(_existing_tid);
+            var height = tilemap_get_tile_height(_existing_tid);
+            if (width > 0 && height > 0) {
+                var metrics_existing = { w: width, h: height };
+                variable_struct_set(global.__dgTilesetMetrics, key, metrics_existing);
+                return metrics_existing;
+            }
+        }
+    }
+
+    dgConfigFail("Unable to determine tile dimensions for tileset id " + string(_tileset_id)
+        + " while binding layer '" + _layer_name + "'. Ensure a tile layer exists in the room or use a runtime that provides tileset_get_tile_width().");
+    return { w: 0, h: 0 };
+}
+/*
 * Name: dgLayerRequire
 * Description: Ensures tile layer exists.
 */
@@ -322,15 +362,22 @@ function dgLayerRequire(_name, _tileset) {
         layer_set_name(lid, _name);
     }
     var tid = layer_tilemap_get_id(lid);
-    var tile_w = tileset_get_tile_width(tileset_id);
-    var tile_h = tileset_get_tile_height(tileset_id);
+
+    var need_metrics = (tid == -1)
+        || (!is_undefined(tilemap_set_tile_width))
+        || (!is_undefined(tilemap_set_tile_height));
+    var metrics = undefined;
+    if (need_metrics) {
+        metrics = dgTilesetMetrics(tileset_id, _name, tid);
+    }
+
     if (tid == -1) {
-        tid = layer_tilemap_create(lid, 0, 0, tileset_id, tile_w, tile_h);
+        tid = layer_tilemap_create(lid, 0, 0, tileset_id, metrics.w, metrics.h);
     } else {
         if (!is_undefined(tilemap_set_tileset)) {
             tilemap_set_tileset(tid, tileset_id);
-            if (!is_undefined(tilemap_set_tile_width)) tilemap_set_tile_width(tid, tile_w);
-            if (!is_undefined(tilemap_set_tile_height)) tilemap_set_tile_height(tid, tile_h);
+            if (!is_undefined(tilemap_set_tile_width) && !is_undefined(metrics)) tilemap_set_tile_width(tid, metrics.w);
+            if (!is_undefined(tilemap_set_tile_height) && !is_undefined(metrics)) tilemap_set_tile_height(tid, metrics.h);
         } else {
             if (!is_undefined(tilemap_get_tileset)) {
                 var current_tileset = tilemap_get_tileset(tid);
