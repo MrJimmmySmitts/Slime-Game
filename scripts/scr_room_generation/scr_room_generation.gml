@@ -191,9 +191,8 @@ function dgTemplateMatches(_tmpl, _n, _e, _s, _w) {
 * Description: Assigns templates to nodes based on exits.
 */
 function dgAssignTemplates(_cfg, _graph, _roomdb) {
-    var keys = ds_map_keys(_graph);
-    for (var i = 0; i < array_length(keys); i++) {
-        var key = keys[i];
+    var key = ds_map_find_first(_graph);
+    while (!is_undefined(key)) {
         var node = ds_map_find_value(_graph, key);
 
         var needN = is_string(node.N);
@@ -210,6 +209,7 @@ function dgAssignTemplates(_cfg, _graph, _roomdb) {
 
         if (array_length(options) == 0) options[0] = 0;
         node.tmpl_index = options[irandom(array_length(options)-1)];
+        key = ds_map_find_next(_graph, key);
     }
 }
 /*
@@ -255,11 +255,12 @@ function dgBuildFloorIntoRoom(_cfg, _graph, _roomdb) {
     var walk_tm = dgLayerRequire(_cfg.walk_layer_name, _cfg.walk_tileset);
     var coll_tm = dgLayerRequire(_cfg.coll_layer_name, _cfg.coll_tileset);
 
-    var keys = ds_map_keys(_graph);
-    for (var i = 0; i < array_length(keys); i++) {
-        var node = ds_map_find_value(_graph, keys[i]);
+    var key = ds_map_find_first(_graph);
+    while (!is_undefined(key)) {
+        var node = ds_map_find_value(_graph, key);
         var tmpl = _roomdb[node.tmpl_index];
         dgTilePaintRoom(_cfg, node, tmpl, walk_tm, coll_tm);
+        key = ds_map_find_next(_graph, key);
     }
 }
 /*
