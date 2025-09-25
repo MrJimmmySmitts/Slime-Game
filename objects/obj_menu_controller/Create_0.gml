@@ -50,8 +50,8 @@ settings_debug_rooms = [
 settings_load_index = 0;
 
 debug_stat_defs = [
-    { label: "Player Max HP",   stat: "hp_max",             base: "base_hp_max",        step: 1,   min: 1,   max: 50,  decimals: 0, current: "hp",   current_behaviour: "match" },
-    { label: "Player Max Ammo", stat: "ammo_max",           base: "base_ammo_max",      step: 5,   min: 0,   max: 999, decimals: 0, current: "ammo" },
+    { label: "Player Containers", stat: "hp_max",             base: "base_hp_max",              step: 1,   min: 1,   max: 50,  decimals: 0, current: "hp",   current_behaviour: "match" },
+    { label: "Essence Capacity",  stat: "essence_max",        base: "base_essence_max",         step: 5,   min: 0,   max: 999, decimals: 0, current: "essence" },
     { label: "Move Speed",      stat: "move_speed",         base: "base_move_speed",    step: 0.1, min: 0,   max: 10,  decimals: 2, suffix: " px/step" },
     { label: "Dash Distance",   stat: "dash_distance_total", base: "base_dash_distance", step: 4,   min: 0,   max: 512, decimals: 0, suffix: " px" },
     { label: "Bullet Damage",   stat: "bullet_damage",      base: "base_bullet_damage", step: 1,   min: 1,   max: 50,  decimals: 0 }

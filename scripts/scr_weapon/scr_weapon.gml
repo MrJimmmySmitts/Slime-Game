@@ -19,8 +19,8 @@ function weaponTickCooldown(inst)
 function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
 {
     if (owner.fire_cd > 0) return false;
-    if (!variable_instance_exists(owner, "ammo")) owner.ammo = 0;
-    if (owner.ammo <= 0) return false; // no ammo
+    if (!variable_instance_exists(owner, "essence")) owner.essence = 0;
+    if (owner.essence < ESSENCE_PROJECTILE_COST) return false; // not enough essence
 
     // Normalise incoming aim
     var n = vec2Norm(aim_dx, aim_dy);
@@ -68,8 +68,8 @@ function weaponTryFire(owner, origin_x, origin_y, aim_dx, aim_dy)
     b.spd       = bullet_speed;
     b.damage    = bullet_damage;
 
-    // Reset cooldown & ammo
+    // Reset cooldown & essence
     owner.fire_cd = cooldown_steps;
-    owner.ammo = max(0, owner.ammo - 1);
+    playerEssenceSpend(owner, ESSENCE_PROJECTILE_COST);
     return true;
 }

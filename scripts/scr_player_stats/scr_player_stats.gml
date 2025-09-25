@@ -11,8 +11,19 @@ function playerStatsEnsureBase(_inst)
     if (!instance_exists(_inst)) return;
     if (variable_instance_exists(_inst, "base_stats_initialised") && _inst.base_stats_initialised) return;
 
-    _inst.base_hp_max         = variable_instance_exists(_inst, "hp_max")   ? _inst.hp_max   : 3;
-    _inst.base_ammo_max       = variable_instance_exists(_inst, "ammo_max") ? _inst.ammo_max : 0;
+    _inst.base_hp_max         = variable_instance_exists(_inst, "hp_max")   ? _inst.hp_max   : PLAYER_START_CONTAINERS;
+    _inst.base_container_max  = variable_instance_exists(_inst, "base_container_max") ? _inst.base_container_max : _inst.base_hp_max;
+    _inst.base_essence_per_container = variable_instance_exists(_inst, "base_essence_per_container") ? _inst.base_essence_per_container : ESSENCE_PER_CONTAINER;
+
+    var _base_capacity = 0;
+    if (variable_instance_exists(_inst, "base_essence_max")) _base_capacity = _inst.base_essence_max;
+    else if (variable_instance_exists(_inst, "essence_max")) _base_capacity = _inst.essence_max;
+    else _base_capacity = _inst.base_container_max * _inst.base_essence_per_container;
+    _inst.base_essence_max = _base_capacity;
+
+    var _base_from_containers = _inst.base_container_max * _inst.base_essence_per_container;
+    if (variable_instance_exists(_inst, "base_essence_bonus")) _inst.base_essence_bonus = max(0, round(_inst.base_essence_bonus));
+    else _inst.base_essence_bonus = max(0, round(_base_capacity - _base_from_containers));
     _inst.base_move_speed     = PLAYER_MOVE_SPEED;
     _inst.base_dash_distance  = PLAYER_DASH_DISTANCE;
     _inst.base_dash_time      = PLAYER_DASH_TIME;
@@ -33,8 +44,11 @@ function playerStatsApplyBuff(_stats, _buff, _count)
     var _mult = max(0, _count);
     if (_mult <= 0) return;
 
-    if (variable_struct_exists(_buff, "hp_max"))        _stats.hp_max        += _buff.hp_max        * _mult;
-    if (variable_struct_exists(_buff, "ammo_max"))      _stats.ammo_max      += _buff.ammo_max      * _mult;
+    if (variable_struct_exists(_buff, "hp_max"))                _stats.container_max         += _buff.hp_max                * _mult;
+    if (variable_struct_exists(_buff, "essence_containers"))    _stats.container_max         += _buff.essence_containers    * _mult;
+    if (variable_struct_exists(_buff, "essence_per_container")) _stats.essence_per_container += _buff.essence_per_container * _mult;
+    if (variable_struct_exists(_buff, "ammo_max"))              _stats.essence_bonus         += _buff.ammo_max              * _mult;
+    if (variable_struct_exists(_buff, "essence_bonus"))         _stats.essence_bonus         += _buff.essence_bonus         * _mult;
     if (variable_struct_exists(_buff, "move_speed"))    _stats.move_speed    += _buff.move_speed    * _mult;
     if (variable_struct_exists(_buff, "dash_distance")) _stats.dash_distance += _buff.dash_distance * _mult;
     if (variable_struct_exists(_buff, "fire_cooldown")) _stats.fire_cooldown += _buff.fire_cooldown * _mult;
@@ -52,8 +66,9 @@ function playerStatsRecalculate(_inst)
     playerStatsEnsureBase(_inst);
 
     var _stats = {
-        hp_max:        _inst.base_hp_max,
-        ammo_max:      _inst.base_ammo_max,
+        container_max:         _inst.base_container_max,
+        essence_per_container: _inst.base_essence_per_container,
+        essence_bonus:         _inst.base_essence_bonus,
         move_speed:    _inst.base_move_speed,
         dash_distance: _inst.base_dash_distance,
         dash_time:     _inst.base_dash_time,
@@ -79,8 +94,9 @@ function playerStatsRecalculate(_inst)
     }
 
     // Clamp sane ranges
-    _stats.hp_max        = max(1, ceil(_stats.hp_max));
-    _stats.ammo_max      = max(0, floor(_stats.ammo_max));
+    _stats.container_max         = max(0, ceil(_stats.container_max));
+    _stats.essence_per_container = max(1, ceil(_stats.essence_per_container));
+    _stats.essence_bonus         = max(0, floor(_stats.essence_bonus));
     _stats.move_speed    = max(0, _stats.move_speed);
     _stats.dash_distance = max(0, _stats.dash_distance);
     _stats.dash_time     = max(1, ceil(_stats.dash_time));
@@ -89,18 +105,22 @@ function playerStatsRecalculate(_inst)
     _stats.bullet_damage = max(1, round(_stats.bullet_damage));
     _stats.bullet_speed  = max(0.25, _stats.bullet_speed);
 
-    _inst.hp_max = _stats.hp_max;
-    if (variable_instance_exists(_inst, "hp") && _inst.hp > _inst.hp_max) _inst.hp = _inst.hp_max;
-
-    _inst.ammo_max = _stats.ammo_max;
-    if (variable_instance_exists(_inst, "ammo") && _inst.ammo > _inst.ammo_max) _inst.ammo = _inst.ammo_max;
+    var _essence_capacity = _stats.container_max * _stats.essence_per_container + _stats.essence_bonus;
+    _inst.hp_max = _stats.container_max;
+    _inst.essence_per_container = _stats.essence_per_container;
+    _inst.essence_max = _essence_capacity;
+    if (!variable_instance_exists(_inst, "essence")) _inst.essence = _inst.essence_max;
+    playerEssenceClamp(_inst);
 
     _inst.move_speed        = _stats.move_speed;
     _inst.dash_distance_total = _stats.dash_distance;
     _inst.dash_duration_max   = _stats.dash_time;
     _inst.dash_cooldown_max   = _stats.dash_cooldown;
     _inst.fire_cooldown_steps = _stats.fire_cooldown;
-    _inst.bullet_damage       = _stats.bullet_damage;
+
+    var _base_damage = _stats.bullet_damage;
+    _inst.bullet_damage = _base_damage;
+    playerEssenceApplyDamageBuff(_inst, _base_damage);
     _inst.bullet_speed        = _stats.bullet_speed;
 }
 

@@ -8,7 +8,7 @@
 */
 enum PickupClass
 {
-    Stock    = 0,
+    Essence  = 0,
     Modifier = 1,
 }
 
@@ -96,15 +96,15 @@ function pickupCombineIntoSelf(_inst)
 }
 
 /*
-* Name: pickupConfigureStock
-* Description: Applies stock settings and merges duplicates.
+* Name: pickupConfigureEssence
+* Description: Applies essence settings and merges duplicates.
 */
-function pickupConfigureStock(_inst, _amount)
+function pickupConfigureEssence(_inst, _amount)
 {
     if (!instance_exists(_inst)) return undefined;
 
     if (!variable_instance_exists(_inst, "combine_radius")) _inst.combine_radius = 16;
-    _inst.pickup_kind = PickupClass.Stock;
+    _inst.pickup_kind = PickupClass.Essence;
     _inst.amount = pickupClampAmount(_amount);
 
     if (_inst.amount <= 0)
@@ -154,16 +154,16 @@ function pickupResolveLayer(_layer_name)
 }
 
 /*
-* Name: pickupSpawnStock
-* Description: Spawns a stock pickup instance with the given amount.
+* Name: pickupSpawnEssence
+* Description: Spawns an essence pickup instance with the given amount.
 */
-function pickupSpawnStock(_x, _y, _layer_name, _amount)
+function pickupSpawnEssence(_x, _y, _layer_name, _amount)
 {
     var _lyr = pickupResolveLayer(_layer_name);
-    var _inst = instance_create_layer(_x, _y, _lyr, obj_pickup_stock);
+    var _inst = instance_create_layer(_x, _y, _lyr, obj_pickup_essence);
     if (_inst != noone)
     {
-        pickupConfigureStock(_inst, _amount);
+        pickupConfigureEssence(_inst, _amount);
     }
     return _inst;
 }
@@ -225,15 +225,15 @@ function pickupPlayerCollect(_player, _pickup)
 
     switch (_pickup.pickup_kind)
     {
-        case PickupClass.Stock:
+        case PickupClass.Essence:
         {
-            if (!variable_instance_exists(_player, "ammo")) _player.ammo = 0;
-            if (!variable_instance_exists(_player, "ammo_max")) _player.ammo_max = 0;
-            var _need = max(0, _player.ammo_max - _player.ammo);
-            if (_need <= 0) return; // inventory full, leave on ground
+            if (!variable_instance_exists(_player, "essence")) _player.essence = 0;
+            if (!variable_instance_exists(_player, "essence_max")) _player.essence_max = 0;
+            var _need = max(0, _player.essence_max - _player.essence);
+            if (_need <= 0) return; // stores full, leave on ground
 
             var _take = min(_need, _amount);
-            _player.ammo += _take;
+            playerEssenceRestore(_player, _take);
             _pickup.amount = _amount - _take;
             if (_pickup.amount <= 0)
             {

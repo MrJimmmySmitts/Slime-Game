@@ -48,6 +48,12 @@ enum InvAnchor
 #macro PLAYER_DASH_COOLDOWN  30      // steps
 #macro PLAYER_HITBOX_INSET   2       // for corner sampling vs tilemap
 
+#macro ESSENCE_PER_CONTAINER        10   // units stored in each container
+#macro PLAYER_START_CONTAINERS      5    // starting number of filled containers
+#macro ESSENCE_PROJECTILE_COST      1    // essence consumed per projectile
+#macro ESSENCE_CONTAINER_DAMAGE_BONUS 1  // bonus damage per non-empty container
+#macro ENEMY_CONTACT_ESSENCE_DAMAGE 10   // essence lost when colliding with enemies
+
 #macro BULLET_SPEED          8.0
 #macro FIRE_COOLDOWN_STEPS   8       // autofire rate
 #macro BULLET_LAYER_NAME     "Instances"   // change if your bullet layer differs

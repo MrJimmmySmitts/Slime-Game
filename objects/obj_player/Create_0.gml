@@ -4,17 +4,22 @@
 input_locked = true;      // checked by input helpers
 alarm[0]     = 12;
 
-// --- Health & ammo init ---
-hp_max      = 3;
-hp          = hp_max;
+// --- Essence container & health init ---
+essence_per_container = ESSENCE_PER_CONTAINER;
+hp_max                = PLAYER_START_CONTAINERS;
+hp                    = hp_max;
+essence_max           = hp_max * essence_per_container;
+essence               = essence_max;
+playerEssenceClamp(id);
+
 damage_cd   = 0;          // damage cooldown timer
 flash_timer = 0;          // white flash timer when hit
 
-ammo_max    = 10;
-ammo        = ammo_max;
-
-base_hp_max        = hp_max;
-base_ammo_max      = ammo_max;
+base_hp_max              = hp_max;
+base_container_max       = hp_max;
+base_essence_per_container = essence_per_container;
+base_essence_bonus       = 0;
+base_essence_max         = essence_max;
 base_move_speed    = PLAYER_MOVE_SPEED;
 base_dash_distance = PLAYER_DASH_DISTANCE;
 base_dash_time     = PLAYER_DASH_TIME;

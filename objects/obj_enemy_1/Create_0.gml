@@ -16,8 +16,8 @@ enemy_activation_range = enemy_range;
 enemy_leash_range      = enemy_activation_range + 96;
 
 // Override drop configuration
-stock_drop_min_amount = 3;
-stock_drop_max_amount = 6;
+essence_drop_min_amount = 3;
+essence_drop_max_amount = 6;
 modifier_drop_min     = 1;
 modifier_drop_max     = 1;
 modifier_drop_id      = ItemId.ModVelocity;

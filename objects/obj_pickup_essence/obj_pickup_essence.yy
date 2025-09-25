@@ -1,9 +1,9 @@
 {
   "$GMObject":"",
-  "%Name":"obj_pickup_stock",
+  "%Name":"obj_pickup_essence",
   "eventList":[],
   "managed":true,
-  "name":"obj_pickup_stock",
+  "name":"obj_pickup_essence",
   "overriddenProperties":[],
   "parent":{
     "name":"Objects",
@@ -31,8 +31,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"spr_ammo",
-    "path":"sprites/spr_ammo/spr_ammo.yy",
+    "name":"spr_essence",
+    "path":"sprites/spr_essence/spr_essence.yy",
   },
   "spriteMaskId":null,
   "visible":true,

@@ -1,6 +1,6 @@
 /*
 * Name: obj_enemy.Create
-* Description: Initialise health and ammo drop configuration.
+* Description: Initialise health and essence drop configuration.
 */
 // (Optional) other shared init:
 // move_speed = 1.5;
@@ -21,8 +21,8 @@ enemy_flash_timer = 0;
 enemy_stun_timer  = 0;
 
 // Loot configuration
-stock_drop_min_amount = 6;   // minimum ammo units
-stock_drop_max_amount = 10;  // maximum ammo units
+essence_drop_min_amount = 6;   // minimum essence units
+essence_drop_max_amount = 10;  // maximum essence units
 modifier_drop_min     = 1;   // minimum modifier stack size
 modifier_drop_max     = 1;   // maximum modifier stack size
 modifier_drop_id      = ItemId.None; // random modifier when none specified
