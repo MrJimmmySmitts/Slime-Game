@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Procedural Room Template Authoring Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #1f2430;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #2a3d66, #403f7a);
+      color: #fff;
+      padding: 2.75rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.3rem;
+      letter-spacing: 0.03em;
+    }
+    header p {
+      margin: 0.85rem 0 0;
+      max-width: 72ch;
+    }
+    main {
+      max-width: 1080px;
+      margin: -3.25rem auto 3rem;
+      padding: 0 1.5rem 3rem;
+    }
+    section {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(64, 63, 122, 0.08);
+      padding: 2.25rem 2.5rem;
+      margin-top: 3.25rem;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: #2a3d66;
+    }
+    h3 {
+      margin-top: 2.5rem;
+      font-size: 1.3rem;
+      color: #403f7a;
+    }
+    p {
+      margin: 1rem 0;
+    }
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+    code {
+      font-family: 'Fira Code', 'Courier New', monospace;
+      background: rgba(64, 63, 122, 0.12);
+      color: #2a3d66;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    pre {
+      background: #1f2430;
+      color: #f8faff;
+      padding: 1.25rem 1.5rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .callout {
+      border-left: 4px solid #5b6dcd;
+      background: rgba(91, 109, 205, 0.12);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 25px rgba(31, 36, 48, 0.05);
+    }
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+    }
+    thead {
+      background: #e1e5f6;
+      color: #1f2430;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.85rem;
+    }
+    tbody tr:nth-child(even) {
+      background: #f5f6fa;
+    }
+    a {
+      color: #2a3d66;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(42, 61, 102, 0.35);
+    }
+    a:hover {
+      border-bottom-color: rgba(42, 61, 102, 0.6);
+    }
+    @media (max-width: 720px) {
+      section {
+        padding: 1.8rem 1.6rem;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      td {
+        position: relative;
+        padding-left: 55%;
+        min-height: 3.2rem;
+        border-bottom: 1px solid rgba(31, 36, 48, 0.08);
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 600;
+        color: #2a3d66;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Procedural Room Template Authoring Guide</h1>
+    <p>Learn how to create, validate, and integrate bespoke room templates into the Slime Game dungeon generator. This guide walks through the expected data shapes, tooling, and best practices so handcrafted rooms stitch cleanly into procedural layouts.</p>
+  </header>
+  <main>
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>The generator assembles floors by selecting templates whose exits align with neighbouring rooms. Each template provides two grids: a <em>walk</em> layer for visuals and a <em>coll</em> layer for collision. Templates are registered via <code>dgRoomdbBuildExamples()</code> inside <code>scripts/scr_room_generation/scr_room_generation.gml</code> and are consumed when <code>dgAssignTemplates()</code> matches exits.</p>
+      <div class="callout">
+        <strong>Tip:</strong> Regenerate documentation with <code>npm run generate-docs</code> after editing script headers so the function catalogue stays current.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Responsibility</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Component"><code>dgRoomTemplateNew()</code></td>
+            <td data-label="Responsibility">Wraps template metadata and tile grids into a struct expected by the generator.</td>
+          </tr>
+          <tr>
+            <td data-label="Component"><code>dgRoomdbBuildExamples()</code></td>
+            <td data-label="Responsibility">Factory that returns the array of available templates. Extend or replace this to register custom layouts.</td>
+          </tr>
+          <tr>
+            <td data-label="Component"><code>dgTemplateMatches()</code></td>
+            <td data-label="Responsibility">Ensures the chosen template has exits on every side that connects to another node in the layout graph.</td>
+          </tr>
+          <tr>
+            <td data-label="Component"><code>dgTilePaintRoom()</code></td>
+            <td data-label="Responsibility">Writes template tile indices into the room's walk and collision tilemaps.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="workflow">
+      <h2>Template Creation Workflow</h2>
+      <ol>
+        <li>
+          <strong>Confirm cell metrics.</strong> Read <code>dgConfigDefault()</code> to note <code>room_cell_w</code> and <code>room_cell_h</code>. Templates must produce arrays with these exact dimensions.
+        </li>
+        <li>
+          <strong>Draft walk &amp; collision arrays.</strong> Use <code>array_create()</code> loops (see the stock <code>make_room()</code> helper) to pre-fill walk tiles (visual indices) and collision tiles (0 for empty, &gt;0 for solid).
+        </li>
+        <li>
+          <strong>Open passages.</strong> Carve doors by zeroing collision entries along the border whenever <code>_exN</code>, <code>_exE</code>, <code>_exS</code>, or <code>_exW</code> is <code>true</code> so adjacent rooms connect.
+        </li>
+        <li>
+          <strong>Wrap in a template struct.</strong> Call <code>dgRoomTemplateNew()</code> with the exit booleans and tile arrays. Use a descriptive <code>name</code> field to help with debugging.
+        </li>
+        <li>
+          <strong>Register the template.</strong> Push the struct into the array returned by <code>dgRoomdbBuildExamples()</code> (or your custom factory). Maintain at least one template for every exit combination used by the generator.
+        </li>
+        <li>
+          <strong>Validate in-game.</strong> Run <code>dgGenerateFloor()</code> with logging or breakpoints to ensure the new template is selected and painted correctly.
+        </li>
+      </ol>
+    </section>
+
+    <section id="example">
+      <h2>Sample Template</h2>
+      <p>The snippet below introduces a T-shaped room with exits North, East, and West. Copy the pattern into <code>dgRoomdbBuildExamples()</code> to extend the stock set.</p>
+      <pre><code>var room_array = []; // start with stock entries or build a fresh list
+var w = _cfg.room_cell_w;
+var h = _cfg.room_cell_h;
+
+var tmplT = dgRoomTemplateNew(
+    "T_NEW", true, true, false, true,
+    function () {
+        var walk = array_create(h);
+        for (var r = 0; r &lt; h; r++) {
+            walk[r] = array_create(w, 1);
+        }
+        return walk;
+    }(),
+    function () {
+        var coll = array_create(h);
+        for (var r = 0; r &lt; h; r++) {
+            coll[r] = array_create(w, 0);
+        }
+        // solid borders
+        for (var c = 0; c &lt; w; c++) { coll[0][c] = 2; coll[h-1][c] = 2; }
+        for (var r2 = 0; r2 &lt; h; r2++) { coll[r2][0] = 2; coll[r2][w-1] = 2; }
+        // clear doorways
+        coll[0][w div 2] = 0;
+        coll[h div 2][0] = 0;
+        coll[h div 2][w-1] = 0;
+        // carve central chamber
+        for (var r3 = 1; r3 &lt; h-1; r3++) {
+            for (var c3 = 1; c3 &lt; w-1; c3++) {
+                coll[r3][c3] = 0;
+            }
+        }
+        return coll;
+    }()
+);
+array_push(room_array, tmplT);
+
+return room_array;</code></pre>
+      <p>Notice that the collision grid stays consistent with the walk grid dimensions and only clears passages in the directions the template advertises. Templates with mismatched exits will be filtered out by <code>dgTemplateMatches()</code>.</p>
+    </section>
+
+    <section id="quality">
+      <h2>Quality Checklist</h2>
+      <ul>
+        <li>Ensure every template name is unique for easier debugging in inspectors or logging.</li>
+        <li>Keep walk tile indices valid for the tileset configured in <code>dgLayerRequire()</code>. Out-of-range values render as empty tiles.</li>
+        <li>Guarantee parity between exits and carved doorways; mismatches create softlocks.</li>
+        <li>Prefer reusable helper functions (e.g. a <code>make_room()</code> factory) to minimise boilerplate and guarantee consistent borders.</li>
+        <li>Update automated tests or add new ones if templates introduce special traversal rules.</li>
+      </ul>
+    </section>
+
+    <section id="advanced">
+      <h2>Advanced Techniques</h2>
+      <h3>Rotating Templates</h3>
+      <p>If <code>cfg.allow_room_rotation</code> is <code>true</code>, consider generating rotated variants programmatically before pushing into the room database. Ensure you rotate both arrays and exit flags in sync.</p>
+      <h3>Weighted Selection</h3>
+      <p>To bias the generator toward certain rooms, store multiple copies of a template in the database or extend the struct with a <code>weight</code> field and modify <code>dgAssignTemplates()</code> to perform weighted random selection.</p>
+      <h3>Tile Decorators</h3>
+      <p>For richer visuals, append a post-processing pass that calls <code>dgTilePaintRoom()</code> followed by decorator scripts (e.g. spawn props or enemies) using the same template metadata.</p>
+    </section>
+
+    <section id="next-steps">
+      <h2>Next Steps</h2>
+      <p>After adding or updating templates, regenerate the documentation bundle with <code>npm run generate-docs</code> and capture before/after floor layouts to validate flow. Share noteworthy templates by linking directly to their definitions in <code>scr_room_generation.gml</code> within pull requests.</p>
+    </section>
+  </main>
+</body>
+</html>
