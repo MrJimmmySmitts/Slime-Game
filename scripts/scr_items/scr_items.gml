@@ -88,13 +88,13 @@ function itemDbInit() {
     });
 
     itemDbPut(ItemId.ModMunitions, {
-        name: "Munitions Pack",
+        name: "Essence Cache",
         max_stack: 3,
         merge_rules: [],
         icon_sprite: spr_slime_1,
         color_tint: make_color_rgb(240, 180, 64),
-        desc: "Compact ammo canister expanding your reserves.",
-        buffs: { ammo_max: 3 }
+        desc: "Condensed essence that crystallises into an extra container.",
+        buffs: { essence_containers: 1 }
     });
 
     itemDbPut(ItemId.ModVelocity, {

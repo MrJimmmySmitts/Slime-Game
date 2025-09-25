@@ -23,8 +23,8 @@ projectile_damage       = 1;
 projectile_range        = enemy_range;
 
 // Override drop configuration
-stock_drop_min_amount = 8;
-stock_drop_max_amount = 12;
+essence_drop_min_amount = 8;
+essence_drop_max_amount = 12;
 modifier_drop_min     = 1;
 modifier_drop_max     = 1;
 modifier_drop_id      = ItemId.ModCatalyst;

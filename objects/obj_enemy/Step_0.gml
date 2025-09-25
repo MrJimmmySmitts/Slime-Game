@@ -12,17 +12,17 @@ if (enemy_stun_timer  > 0) enemy_stun_timer  -= 1;
 
 enemySeekPlayerStep();
 
-// Die if hp <= 0 → drop ammo and slime
+// Die if hp <= 0 → drop essence and slime
 if (hp <= 0 && !is_dead) {
     is_dead = true;
 
-    // Spawn ammo pickups using configured range
+    // Spawn essence pickups using configured range
     var _layer_name = layer_get_name(layer);
 
-    // Spawn stock pickup with combined ammo amount
-    var _stock_amt = irandom_range(stock_drop_min_amount, stock_drop_max_amount);
-    if (_stock_amt > 0) {
-        pickupSpawnStock(x, y, _layer_name, _stock_amt);
+    // Spawn essence pickup with combined amount
+    var _essence_amt = irandom_range(essence_drop_min_amount, essence_drop_max_amount);
+    if (_essence_amt > 0) {
+        pickupSpawnEssence(x, y, _layer_name, _essence_amt);
     }
 
     // Spawn modifier pickup (respect preferred id if provided)
