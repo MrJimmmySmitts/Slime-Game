@@ -3,8 +3,11 @@
 * Description: Initialise health, archetype defaults, and essence drop configuration.
 */
 // Default archetype/tier can be overridden per instance before creation runs
-enemy_type      = EnemyType.Melee;
-enemy_toughness = EnemyToughness.Normal;
+if (!variable_instance_exists(id, "enemy_type"))
+    enemy_type = EnemyType.Melee;
+
+if (!variable_instance_exists(id, "enemy_toughness"))
+    enemy_toughness = EnemyToughness.Normal;
 
 hp_max  = ENEMY_MELEE_BASE_HP;
 hp      = hp_max;
