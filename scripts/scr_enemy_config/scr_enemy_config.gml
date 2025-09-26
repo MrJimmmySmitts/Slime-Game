@@ -115,6 +115,7 @@ function enemyConfigBaseStats(_type)
                 melee_duration        : 0,
                 melee_distance        : 0,
                 melee_extra_attacks   : 0,
+                melee_extra_spread    : 0,
             };
 
         case EnemyType.Melee:
