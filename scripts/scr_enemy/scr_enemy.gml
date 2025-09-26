@@ -374,10 +374,10 @@ function enemyRangedFireProjectiles(_target)
 
     var _base_dir = point_direction(x, y, _target.x, _target.y);
 
-    var function_spawn = function(_dir)
+    var function_spawn = function(_dir, _layer)
     {
         var _aim = vec2Norm(lengthdir_x(1, _dir), lengthdir_y(1, _dir));
-        var _bullet = instance_create_layer(x, y, _spawn_layer, obj_enemy_bullet);
+        var _bullet = instance_create_layer(x, y, _layer, obj_enemy_bullet);
         if (!instance_exists(_bullet)) return;
 
         _bullet.dirx   = _aim[0];
@@ -388,15 +388,15 @@ function enemyRangedFireProjectiles(_target)
         _bullet.life   = max(1, enemy_projectile_life);
     };
 
-    function_spawn(_base_dir);
+    function_spawn(_base_dir, _spawn_layer);
 
     if (enemy_toughness == EnemyToughness.Boss && enemy_projectile_boss_extra > 0)
     {
         for (var i = 1; i <= enemy_projectile_boss_extra; i++)
         {
             var _offset = enemy_projectile_boss_spread * i;
-            function_spawn(_base_dir + _offset);
-            function_spawn(_base_dir - _offset);
+            function_spawn(_base_dir + _offset, _spawn_layer);
+            function_spawn(_base_dir - _offset, _spawn_layer);
         }
     }
 
