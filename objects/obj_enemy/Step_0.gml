@@ -5,11 +5,8 @@ if (onPauseExit()) {
 
 /*
 * Name: obj_enemy.Step (behaviour)
-* Description: Handle timers, state transitions, and chasing logic.
+* Description: Handle timers, state transitions, and behaviour logic.
 */
-if (enemy_flash_timer > 0) enemy_flash_timer -= 1;
-if (enemy_stun_timer  > 0) enemy_stun_timer  -= 1;
-
 enemySeekPlayerStep();
 
 // Die if hp <= 0 → drop essence and slime
