@@ -354,6 +354,59 @@ function enemyPerformMeleeAttack(_target)
 }
 
 /*
+* Name: enemyResolveProjectileLayer
+* Description: Determine a safe layer for spawning enemy projectiles.
+*/
+function enemyResolveProjectileLayer()
+{
+    var _spawn_layer = BULLET_LAYER_NAME;
+    if (layer_exists(_spawn_layer)) return _spawn_layer;
+
+    // Try the enemy's current layer before falling back to depth 0.
+    var _self_layer_id = layer;
+    var _self_layer_name = undefined;
+    if (is_real(_self_layer_id))
+    {
+        _self_layer_name = layer_get_name(_self_layer_id);
+    }
+    else if (is_string(_self_layer_id))
+    {
+        _self_layer_name = _self_layer_id;
+    }
+
+    if (is_string(_self_layer_name) && layer_exists(_self_layer_name)) return _self_layer_name;
+
+    var _lid = layer_get_id_at_depth(0);
+    if (_lid != -1)
+    {
+        var _fallback = layer_get_name(_lid);
+        if (is_string(_fallback) && layer_exists(_fallback)) return _fallback;
+    }
+
+    return undefined;
+}
+
+/*
+* Name: enemySpawnProjectileInDirection
+* Description: Spawn a projectile aimed in the specified direction if possible.
+*/
+function enemySpawnProjectileInDirection(_origin_x, _origin_y, _dir, _spawn_layer)
+{
+    if (!layer_exists(_spawn_layer)) return;
+
+    var _aim = vec2Norm(lengthdir_x(1, _dir), lengthdir_y(1, _dir));
+    var _bullet = instance_create_layer(_origin_x, _origin_y, _spawn_layer, obj_enemy_bullet);
+    if (!instance_exists(_bullet)) return;
+
+    _bullet.dirx   = _aim[0];
+    _bullet.diry   = _aim[1];
+    _bullet.spd    = enemy_projectile_speed;
+    _bullet.damage = enemy_projectile_damage;
+    _bullet.owner  = id;
+    _bullet.life   = max(1, enemy_projectile_life);
+}
+
+/*
 * Name: enemyRangedFireProjectiles
 * Description: Fire projectiles at the target with optional boss spread.
 */
@@ -365,38 +418,19 @@ function enemyRangedFireProjectiles(_target)
     var _dist = point_distance(x, y, _target.x, _target.y);
     if (enemy_projectile_range > 0 && _dist > enemy_projectile_range) return;
 
-    var _spawn_layer = BULLET_LAYER_NAME;
-    if (!layer_exists(_spawn_layer))
-    {
-        var _lid = layer_get_id_at_depth(0);
-        if (_lid != -1) _spawn_layer = layer_get_name(_lid);
-    }
+    var _spawn_layer = enemyResolveProjectileLayer();
+    if (!is_string(_spawn_layer)) return;
 
     var _base_dir = point_direction(x, y, _target.x, _target.y);
-
-    var function_spawn = function(_dir, _layer)
-    {
-        var _aim = vec2Norm(lengthdir_x(1, _dir), lengthdir_y(1, _dir));
-        var _bullet = instance_create_layer(x, y, _layer, obj_enemy_bullet);
-        if (!instance_exists(_bullet)) return;
-
-        _bullet.dirx   = _aim[0];
-        _bullet.diry   = _aim[1];
-        _bullet.spd    = enemy_projectile_speed;
-        _bullet.damage = enemy_projectile_damage;
-        _bullet.owner  = id;
-        _bullet.life   = max(1, enemy_projectile_life);
-    };
-
-    function_spawn(_base_dir, _spawn_layer);
+    enemySpawnProjectileInDirection(x, y, _base_dir, _spawn_layer);
 
     if (enemy_toughness == EnemyToughness.Boss && enemy_projectile_boss_extra > 0)
     {
         for (var i = 1; i <= enemy_projectile_boss_extra; i++)
         {
             var _offset = enemy_projectile_boss_spread * i;
-            function_spawn(_base_dir + _offset, _spawn_layer);
-            function_spawn(_base_dir - _offset, _spawn_layer);
+            enemySpawnProjectileInDirection(x, y, _base_dir + _offset, _spawn_layer);
+            enemySpawnProjectileInDirection(x, y, _base_dir - _offset, _spawn_layer);
         }
     }
 
