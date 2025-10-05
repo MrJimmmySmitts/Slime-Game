@@ -19,8 +19,6 @@ if (hp <= 0) {
     exit;
 }
 
-playerStatsRecalculate(id);
-
 // ----- Gather input -----
 var mv  = inputGetMove();            // {dx,dy} WASD / arrows
 var aih = inputGetAimHeld();        // {dx,dy} IJKL held
@@ -28,6 +26,8 @@ var aip = inputGetAimPressed();     // {dx,dy} IJKL pressed this step
 var want_dash   = inputDashPressed();  // Space
 var fire_pressed = inputFirePressed();
 var fire_held    = inputFireHeld();
+var want_melee   = inputMeleePressed();
+var want_ability = inputAbilityPressed();
 
 // Ensure required instance fields exist
 if (!variable_instance_exists(id, "tilemap_id"))      tilemap_id      = layer_tilemap_get_id("tm_collision");
@@ -46,6 +46,27 @@ if (!variable_instance_exists(id, "dash_cooldown_max"))   dash_cooldown_max   = 
 if (!variable_instance_exists(id, "bullet_speed"))        bullet_speed        = BULLET_SPEED;
 if (!variable_instance_exists(id, "bullet_damage"))       bullet_damage       = PLAYER_BASE_BULLET_DAMAGE;
 if (!variable_instance_exists(id, "fire_cooldown_steps")) fire_cooldown_steps = FIRE_COOLDOWN_STEPS;
+if (!variable_instance_exists(id, "melee_cooldown"))      melee_cooldown      = 0;
+if (!variable_instance_exists(id, "melee_cooldown_max"))  melee_cooldown_max  = PLAYER_MELEE_COOLDOWN;
+if (!variable_instance_exists(id, "melee_range"))         melee_range         = PLAYER_MELEE_RANGE;
+if (!variable_instance_exists(id, "melee_life"))          melee_life          = PLAYER_MELEE_LIFE;
+if (!variable_instance_exists(id, "melee_cost"))          melee_cost          = PLAYER_MELEE_ESSENCE_COST;
+if (!variable_instance_exists(id, "ability_damage_timer"))        ability_damage_timer        = 0;
+if (!variable_instance_exists(id, "ability_damage_cooldown"))     ability_damage_cooldown     = 0;
+if (!variable_instance_exists(id, "ability_damage_duration"))     ability_damage_duration     = PLAYER_ABILITY_DURATION;
+if (!variable_instance_exists(id, "ability_damage_cooldown_max")) ability_damage_cooldown_max = PLAYER_ABILITY_COOLDOWN;
+if (!variable_instance_exists(id, "ability_damage_amount"))       ability_damage_amount       = PLAYER_ABILITY_DAMAGE_BONUS;
+if (!variable_instance_exists(id, "ability_damage_cost"))         ability_damage_cost         = PLAYER_ABILITY_ESSENCE_COST;
+if (!variable_instance_exists(id, "ability_damage_bonus"))        ability_damage_bonus        = 0;
+
+playerAbilityStep(id);
+playerMeleeStep(id);
+if (want_ability)
+{
+    playerAbilityTryActivate(id);
+}
+
+playerStatsRecalculate(id);
 
 // ----- Facing calculation -----
 var new_face = keepLastNonzeroVec(aih.dx, aih.dy, facing_x, facing_y);
@@ -59,40 +80,45 @@ if (approxZero(facing_x, 0.00001) && approxZero(facing_y, 0.00001))
     facing_y = new_face[1];
 }
 
+var melee_face = keepLastNonzeroVec(aih.dx, aih.dy, facing_x, facing_y);
+if (approxZero(melee_face[0], 0.00001) && approxZero(melee_face[1], 0.00001))
+{
+    melee_face = keepLastNonzeroVec(mv.dx, mv.dy, facing_x, facing_y);
+}
+
+if (want_melee)
+{
+    playerMeleeTryAttack(id, melee_face[0], melee_face[1]);
+}
+
 // ----- Sprite orientation -----
 // The player sprite should remain upright regardless of WASD input.
 // Remove rotation based on movement by keeping a constant angle.
 image_angle = 0;
 
 // ----- Dash -----
-if (dash_cooldown > 0) dash_cooldown -= 1;
-
-if (want_dash && !dash_active && dash_cooldown <= 0)
+var dash_face = [facing_x, facing_y];
+if (approxZero(dash_face[0], 0.00001) && approxZero(dash_face[1], 0.00001))
 {
-    // Dash in facing direction (or swap to mv if preferred)
-    var nd = vec2Norm(facing_x, facing_y);
-    var dash_total = dash_distance_total;
-    var dash_time_total = max(1, dash_duration_max);
-    dash_dx = nd[0] * (dash_total / dash_time_total);
-    dash_dy = nd[1] * (dash_total / dash_time_total);
-    dash_time     = dash_time_total;
-    dash_active   = true;
-    dash_cooldown = dash_cooldown_max;
+    var dash_fallback = keepLastNonzeroVec(mv.dx, mv.dy, 1, 0);
+    dash_face[0] = dash_fallback[0];
+    dash_face[1] = dash_fallback[1];
 }
+
+if (want_dash)
+{
+    playerDashTryStart(id, dash_face[0], dash_face[1]);
+}
+
+var dash_state = playerDashStep(id);
 
 var step_dx = 0;
 var step_dy = 0;
 
-if (dash_active)
+if (dash_state.active)
 {
-    step_dx = dash_dx;
-    step_dy = dash_dy;
-    dash_time -= 1;
-    if (dash_time <= 0)
-    {
-        dash_active = false;
-        dash_dx = dash_dy = 0;
-    }
+    step_dx = dash_state.dx;
+    step_dy = dash_state.dy;
 }
 else
 {

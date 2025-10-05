@@ -121,6 +121,10 @@ function playerStatsRecalculate(_inst)
     var _base_damage = _stats.bullet_damage;
     _inst.bullet_damage = _base_damage;
     playerEssenceApplyDamageBuff(_inst, _base_damage);
+    if (variable_instance_exists(_inst, "ability_damage_bonus"))
+    {
+        _inst.bullet_damage = max(1, round(_inst.bullet_damage + _inst.ability_damage_bonus));
+    }
     _inst.bullet_speed        = _stats.bullet_speed;
 }
 

@@ -16,6 +16,7 @@ enum MenuItemKind
     Toggle      = 3,
     DebugStat   = 4,
     DebugAction = 5,
+    Label       = 6,
 }
 
 /*
@@ -554,6 +555,20 @@ function menuDropdownOptionAtPosition(_index, _entry, _mx, _my)
     return -1;
 }
 
+function menuBuildKeyMappingItems()
+{
+    return [
+        { label: "Key Bindings", kind: MenuItemKind.Label, style: "header", enabled: false },
+        { label: "Move: WASD or Arrow Keys", kind: MenuItemKind.Label, enabled: false },
+        { label: "Aim: IJKL", kind: MenuItemKind.Label, enabled: false },
+        { label: "Dash: Space", kind: MenuItemKind.Label, enabled: false },
+        { label: "Primary Fire: Mouse Left", kind: MenuItemKind.Label, enabled: false },
+        { label: "Melee: Shift (uses essence)", kind: MenuItemKind.Label, enabled: false },
+        { label: "Ability: E (damage boost)", kind: MenuItemKind.Label, enabled: false },
+        { label: "Inventory: Tab", kind: MenuItemKind.Label, enabled: false },
+    ];
+}
+
 /*
 * Name: menuRebuildItems
 * Description: Build the current menu item list (main/settings/debug overlays).
@@ -595,6 +610,16 @@ function menuRebuildItems()
                 target:  "screen_size",
                 enabled: is_array(screen_size_options) && array_length(screen_size_options) > 0
             };
+
+            var _key_items = menuBuildKeyMappingItems();
+            if (is_array(_key_items))
+            {
+                var _key_count = array_length(_key_items);
+                for (var _k = 0; _k < _key_count; _k++)
+                {
+                    _items[array_length(_items)] = _key_items[_k];
+                }
+            }
 
             _slot = array_length(_items);
             _items[_slot] = {
@@ -822,6 +847,11 @@ function menuActivateSelection()
             if (_action == "spawn_enemy") menuDebugSpawnEnemy();
             break;
         }
+
+        case MenuItemKind.Label:
+        {
+            break;
+        }
     }
 
     if (menu_screen == MenuScreen.Settings) menuRebuildItems();
@@ -991,6 +1021,11 @@ function menuMouseUpdate()
                 return;
             }
 
+            case MenuItemKind.Label:
+            {
+                return;
+            }
+
             default:
             {
                 menuActivateSelection();
@@ -1073,6 +1108,9 @@ function menuAdjustSelection(_dir)
 
         case MenuItemKind.DebugStat:
             menuDebugAdjustStat(_entry, _dir);
+            break;
+
+        case MenuItemKind.Label:
             break;
     }
 

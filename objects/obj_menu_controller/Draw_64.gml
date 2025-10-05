@@ -48,6 +48,8 @@ else
     var _dropdown_index = (variable_instance_exists(id, "menu_dropdown_open")) ? menu_dropdown_open : -1;
     var _dropdown_entry = undefined;
 
+    draw_set_font(fnt_ui);
+
     if (_dropdown_index != -1 && _dropdown_index < _n)
     {
         _dropdown_entry = menu_items[_dropdown_index];
@@ -70,6 +72,27 @@ else
         {
             switch (_item.kind)
             {
+                case MenuItemKind.Label:
+                {
+                    var _rect_lbl   = menuGetItemRect(_i);
+                    var _label_left = _rect_lbl.left + 16;
+                    var _style      = variable_struct_exists(_item, "style") ? _item.style : "";
+                    draw_set_halign(fa_left);
+                    if (_style == "header")
+                    {
+                        draw_set_color(make_color_rgb(180, 210, 255));
+                        draw_set_font(fnt_menu);
+                    }
+                    else
+                    {
+                        draw_set_color(make_color_rgb(200, 200, 200));
+                    }
+                    draw_text(_label_left, _rect_lbl.y, string(_label));
+                    draw_set_font(fnt_ui);
+                    draw_set_halign(fa_center);
+                    continue;
+                }
+
                 case MenuItemKind.Slider:
                 {
                     var _rect      = menuGetItemRect(_i);

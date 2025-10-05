@@ -103,6 +103,22 @@ function playerEssenceRestore(_inst, _amount)
 }
 
 /*
+ * Name: playerEssenceCanSpend
+ * Description: Returns true if the instance has at least the requested essence available.
+ */
+function playerEssenceCanSpend(_inst, _amount)
+{
+    if (!instance_exists(_inst)) return false;
+    if (!variable_instance_exists(_inst, "essence")) return false;
+
+    var _cost = max(0, round(_amount));
+    if (_cost <= 0) return true;
+
+    var _current = max(0, round(_inst.essence));
+    return (_current >= _cost);
+}
+
+/*
  * Name: playerEssenceApplyDamageBuff
  * Description: Applies the damage buff based on active essence containers.
  */
