@@ -68,20 +68,9 @@ function dgFunctionExists(_name) {
     }
 
     var exists = false;
-    var resolved = false;
-
-    try {
-        exists = function_exists(_name);
-        resolved = true;
-    } catch (_err) {
-        resolved = false;
-    }
-
     if (!is_undefined(override)) {
         exists = override;
-        resolved = true;
-    }
-    else if (!resolved) {
+    } else {
         var idx = asset_get_index(_name);
         if (idx != -1 && script_exists(idx)) {
             exists = true;
