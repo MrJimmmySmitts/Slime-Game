@@ -1231,15 +1231,15 @@ function menuSettingsHandleMouseScroll(_mx, _my)
         var _step = max(24, menuSettingsGetPageScrollAmount() * 0.25);
         var _delta = 0;
 
-        if (function_exists("mouse_wheel_get_delta"))
+        if (dgFunctionExists("mouse_wheel_get_delta"))
         {
             _delta = mouse_wheel_get_delta();
         }
-        else if (function_exists("window_mouse_get_wheel_delta"))
+        else if (dgFunctionExists("window_mouse_get_wheel_delta"))
         {
             _delta = window_mouse_get_wheel_delta();
         }
-        else if (function_exists("device_mouse_wheel_get_delta"))
+        else if (dgFunctionExists("device_mouse_wheel_get_delta"))
         {
             _delta = device_mouse_wheel_get_delta(0);
         }
