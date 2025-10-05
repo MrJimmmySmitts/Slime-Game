@@ -1015,6 +1015,23 @@ function menuKeybindingStartCapture(_entry)
     if (menuDebugIsEditing()) menuDebugCancelEditing();
 }
 
+function menuKeybindingTryAppendKeyName(_list, _name)
+{
+    if (!is_array(_list)) return [];
+    if (!is_string(_name)) return _list;
+
+    if (variable_global_exists(_name))
+    {
+        var _value = variable_global_get(_name);
+        if (is_real(_value))
+        {
+            _list[array_length(_list)] = _value;
+        }
+    }
+
+    return _list;
+}
+
 function menuKeybindingAllCodes()
 {
     static _codes = undefined;
@@ -1045,8 +1062,10 @@ function menuKeybindingAllCodes()
             vk_numpad0, vk_numpad1, vk_numpad2, vk_numpad3, vk_numpad4,
             vk_numpad5, vk_numpad6, vk_numpad7, vk_numpad8, vk_numpad9,
             vk_numpad_add, vk_numpad_subtract, vk_numpad_multiply,
-            vk_numpad_divide, vk_numpad_decimal
+            vk_numpad_divide
         ];
+
+        _numpad = menuKeybindingTryAppendKeyName(_numpad, "vk_numpad_decimal");
 
         if (variable_global_exists("vk_numpad_enter"))
         {
