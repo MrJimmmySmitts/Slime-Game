@@ -1015,18 +1015,59 @@ function menuKeybindingStartCapture(_entry)
     if (menuDebugIsEditing()) menuDebugCancelEditing();
 }
 
+function menuKeybindingGetKeyCode(_name)
+{
+    static _cache = undefined;
+
+    if (!is_string(_name)) return undefined;
+
+    if (!is_struct(_cache))
+    {
+        _cache = {};
+    }
+
+    if (variable_struct_exists(_cache, _name))
+    {
+        return _cache[@ _name];
+    }
+
+    var _value = undefined;
+    if (variable_global_exists(_name))
+    {
+        var _raw = variable_global_get(_name);
+        if (is_real(_raw))
+        {
+            _value = _raw;
+        }
+    }
+
+    _cache[@ _name] = _value;
+    return _value;
+}
+
 function menuKeybindingTryAppendKeyName(_list, _name)
 {
     if (!is_array(_list)) return [];
     if (!is_string(_name)) return _list;
 
-    if (variable_global_exists(_name))
+    var _value = menuKeybindingGetKeyCode(_name);
+    if (is_real(_value))
     {
-        var _value = variable_global_get(_name);
-        if (is_real(_value))
-        {
-            _list[array_length(_list)] = _value;
-        }
+        _list[array_length(_list)] = _value;
+    }
+
+    return _list;
+}
+
+function menuKeybindingResolveKeyNames(_names)
+{
+    var _list = [];
+    if (!is_array(_names)) return _list;
+
+    var _len = array_length(_names);
+    for (var _i = 0; _i < _len; _i++)
+    {
+        _list = menuKeybindingTryAppendKeyName(_list, _names[_i]);
     }
 
     return _list;
@@ -1050,36 +1091,25 @@ function menuKeybindingAllCodes()
             _codes[_idx++] = _c;
         }
 
-        var _special = [
-            vk_space, vk_tab, vk_enter, vk_backspace,
-            vk_shift, vk_control, vk_alt,
-            vk_up, vk_down, vk_left, vk_right,
-            vk_home, vk_end, vk_pageup, vk_pagedown,
-            vk_delete, vk_insert
-        ];
+        var _special = menuKeybindingResolveKeyNames([
+            "vk_space", "vk_tab", "vk_enter", "vk_backspace",
+            "vk_shift", "vk_control", "vk_alt",
+            "vk_up", "vk_down", "vk_left", "vk_right",
+            "vk_home", "vk_end", "vk_pageup", "vk_pagedown",
+            "vk_delete", "vk_insert"
+        ]);
 
-        var _numpad = [
-            vk_numpad0, vk_numpad1, vk_numpad2, vk_numpad3, vk_numpad4,
-            vk_numpad5, vk_numpad6, vk_numpad7, vk_numpad8, vk_numpad9,
-            vk_numpad_add, vk_numpad_subtract, vk_numpad_multiply,
-            vk_numpad_divide
-        ];
+        var _numpad = menuKeybindingResolveKeyNames([
+            "vk_numpad0", "vk_numpad1", "vk_numpad2", "vk_numpad3", "vk_numpad4",
+            "vk_numpad5", "vk_numpad6", "vk_numpad7", "vk_numpad8", "vk_numpad9",
+            "vk_numpad_add", "vk_numpad_subtract", "vk_numpad_multiply",
+            "vk_numpad_divide", "vk_numpad_decimal", "vk_numpad_enter"
+        ]);
 
-        _numpad = menuKeybindingTryAppendKeyName(_numpad, "vk_numpad_decimal");
-
-        if (variable_global_exists("vk_numpad_enter"))
-        {
-            var _vk_numpad_enter = variable_global_get("vk_numpad_enter");
-            if (is_real(_vk_numpad_enter))
-            {
-                _numpad[array_length(_numpad)] = _vk_numpad_enter;
-            }
-        }
-
-        var _function = [
-            vk_f1, vk_f2, vk_f3, vk_f4, vk_f5, vk_f6,
-            vk_f7, vk_f8, vk_f9, vk_f10, vk_f11, vk_f12
-        ];
+        var _function = menuKeybindingResolveKeyNames([
+            "vk_f1", "vk_f2", "vk_f3", "vk_f4", "vk_f5", "vk_f6",
+            "vk_f7", "vk_f8", "vk_f9", "vk_f10", "vk_f11", "vk_f12"
+        ]);
 
         var _arrays = [_special, _numpad, _function];
         var _arr_count = array_length(_arrays);
@@ -1154,58 +1184,68 @@ function menuKeybindingFormatKey(_key)
     if (_key >= ord("A") && _key <= ord("Z")) return string(chr(_key));
     if (_key >= ord("0") && _key <= ord("9")) return string(chr(_key));
 
-    switch (_key)
+    static _named_keys = undefined;
+    if (!is_array(_named_keys))
     {
-        case vk_space:       return "Space";
-        case vk_tab:         return "Tab";
-        case vk_enter:       return "Enter";
-        case vk_backspace:   return "Backspace";
-        case vk_shift:       return "Shift";
-        case vk_control:     return "Ctrl";
-        case vk_alt:         return "Alt";
-        case vk_up:          return "Up Arrow";
-        case vk_down:        return "Down Arrow";
-        case vk_left:        return "Left Arrow";
-        case vk_right:       return "Right Arrow";
-        case vk_home:        return "Home";
-        case vk_end:         return "End";
-        case vk_pageup:      return "Page Up";
-        case vk_pagedown:    return "Page Down";
-        case vk_delete:      return "Delete";
-        case vk_insert:      return "Insert";
-        case vk_numpad0:     return "Numpad 0";
-        case vk_numpad1:     return "Numpad 1";
-        case vk_numpad2:     return "Numpad 2";
-        case vk_numpad3:     return "Numpad 3";
-        case vk_numpad4:     return "Numpad 4";
-        case vk_numpad5:     return "Numpad 5";
-        case vk_numpad6:     return "Numpad 6";
-        case vk_numpad7:     return "Numpad 7";
-        case vk_numpad8:     return "Numpad 8";
-        case vk_numpad9:     return "Numpad 9";
-        case vk_numpad_add:      return "Numpad +";
-        case vk_numpad_subtract: return "Numpad -";
-        case vk_numpad_multiply: return "Numpad *";
-        case vk_numpad_divide:   return "Numpad /";
-        case vk_numpad_decimal:  return "Numpad .";
-        case vk_f1:  return "F1";
-        case vk_f2:  return "F2";
-        case vk_f3:  return "F3";
-        case vk_f4:  return "F4";
-        case vk_f5:  return "F5";
-        case vk_f6:  return "F6";
-        case vk_f7:  return "F7";
-        case vk_f8:  return "F8";
-        case vk_f9:  return "F9";
-        case vk_f10: return "F10";
-        case vk_f11: return "F11";
-        case vk_f12: return "F12";
+        _named_keys = [
+            { name: "vk_space",       label: "Space" },
+            { name: "vk_tab",         label: "Tab" },
+            { name: "vk_enter",       label: "Enter" },
+            { name: "vk_backspace",   label: "Backspace" },
+            { name: "vk_shift",       label: "Shift" },
+            { name: "vk_control",     label: "Ctrl" },
+            { name: "vk_alt",         label: "Alt" },
+            { name: "vk_up",          label: "Up Arrow" },
+            { name: "vk_down",        label: "Down Arrow" },
+            { name: "vk_left",        label: "Left Arrow" },
+            { name: "vk_right",       label: "Right Arrow" },
+            { name: "vk_home",        label: "Home" },
+            { name: "vk_end",         label: "End" },
+            { name: "vk_pageup",      label: "Page Up" },
+            { name: "vk_pagedown",    label: "Page Down" },
+            { name: "vk_delete",      label: "Delete" },
+            { name: "vk_insert",      label: "Insert" },
+            { name: "vk_numpad0",     label: "Numpad 0" },
+            { name: "vk_numpad1",     label: "Numpad 1" },
+            { name: "vk_numpad2",     label: "Numpad 2" },
+            { name: "vk_numpad3",     label: "Numpad 3" },
+            { name: "vk_numpad4",     label: "Numpad 4" },
+            { name: "vk_numpad5",     label: "Numpad 5" },
+            { name: "vk_numpad6",     label: "Numpad 6" },
+            { name: "vk_numpad7",     label: "Numpad 7" },
+            { name: "vk_numpad8",     label: "Numpad 8" },
+            { name: "vk_numpad9",     label: "Numpad 9" },
+            { name: "vk_numpad_add",      label: "Numpad +" },
+            { name: "vk_numpad_subtract", label: "Numpad -" },
+            { name: "vk_numpad_multiply", label: "Numpad *" },
+            { name: "vk_numpad_divide",   label: "Numpad /" },
+            { name: "vk_numpad_decimal",  label: "Numpad ." },
+            { name: "vk_numpad_enter",    label: "Numpad Enter" },
+            { name: "vk_f1",  label: "F1" },
+            { name: "vk_f2",  label: "F2" },
+            { name: "vk_f3",  label: "F3" },
+            { name: "vk_f4",  label: "F4" },
+            { name: "vk_f5",  label: "F5" },
+            { name: "vk_f6",  label: "F6" },
+            { name: "vk_f7",  label: "F7" },
+            { name: "vk_f8",  label: "F8" },
+            { name: "vk_f9",  label: "F9" },
+            { name: "vk_f10", label: "F10" },
+            { name: "vk_f11", label: "F11" },
+            { name: "vk_f12", label: "F12" }
+        ];
     }
 
-    if (variable_global_exists("vk_numpad_enter"))
+    var _len = array_length(_named_keys);
+    for (var _i = 0; _i < _len; _i++)
     {
-        var _vk_numpad_enter = variable_global_get("vk_numpad_enter");
-        if (is_real(_vk_numpad_enter) && _key == _vk_numpad_enter) return "Numpad Enter";
+        var _entry = _named_keys[_i];
+        if (!is_struct(_entry)) continue;
+        var _code = menuKeybindingGetKeyCode(_entry.name);
+        if (is_real(_code) && _key == _code)
+        {
+            return _entry.label;
+        }
     }
 
     return "Key " + string(_key);
