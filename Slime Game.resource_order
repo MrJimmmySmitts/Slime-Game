@@ -1,6 +1,10 @@
 {
   "FolderOrderSettings":[],
   "ResourceOrderSettings":[
+    {"name":"rm_sample","order":1,"path":"rooms/rm_sample/rm_sample.yy",},
+    {"name":"Room13","order":2,"path":"rooms/Room13/Room13.yy",},
     {"name":"spr_grass","order":1,"path":"sprites/spr_grass/spr_grass.yy",},
+    {"name":"spr_tilest_2","order":2,"path":"sprites/spr_tilest_2/spr_tilest_2.yy",},
+    {"name":"spr_trigger","order":3,"path":"sprites/spr_trigger/spr_trigger.yy",},
   ],
 }

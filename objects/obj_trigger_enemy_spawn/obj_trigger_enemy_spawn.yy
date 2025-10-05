@@ -39,7 +39,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"spr_trigger",
+    "path":"sprites/spr_trigger/spr_trigger.yy",
+  },
   "spriteMaskId":null,
-  "visible":true,
+  "visible":false,
 }

@@ -1,7 +1,9 @@
 {
   "$GMTileSet":"v1",
   "%Name":"ts_walk",
-  "autoTileSets":[],
+  "autoTileSets":[
+    {"$GMAutoTileSet":"","%Name":"test","closed_edge":false,"name":"test","resourceType":"GMAutoTileSet","resourceVersion":"2.0","tiles":[13,22,20,21,6,14,13,4,4,13,12,6,21,20,22,13,],},
+  ],
   "macroPageTiles":{
     "SerialiseHeight":0,
     "SerialiseWidth":0,
