@@ -1323,6 +1323,23 @@ function menuSettingsHandleMouseScroll(_mx, _my)
             var _magnitude = max(1, round(abs(_delta) / 120));
             menuSettingsScrollBy(_direction * _step * _magnitude);
         }
+        else
+        {
+            var _wheel_up = mouse_check_button_pressed(mb_wheelup);
+            var _wheel_down = mouse_check_button_pressed(mb_wheeldown);
+
+            if (_wheel_up || _wheel_down)
+            {
+                var _direction = 0;
+                if (_wheel_up) _direction -= 1;
+                if (_wheel_down) _direction += 1;
+
+                if (_direction != 0)
+                {
+                    menuSettingsScrollBy(_direction * _step);
+                }
+            }
+        }
     }
 }
 
