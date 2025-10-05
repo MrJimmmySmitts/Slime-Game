@@ -49,6 +49,8 @@ function inputGetAimPressed()
 */
 function inputDashPressed()
 {
+    var _locked = variable_instance_exists(id, "input_locked") && input_locked;
+    if (_locked) return false;
     return keyboard_check_pressed(vk_space);
 }
 /*
@@ -86,4 +88,26 @@ function inputFireHeld() {
     var _locked = variable_instance_exists(id, "input_locked") && input_locked;
     if (_locked) return false;
     return mouse_check_button(mb_left);
+}
+
+/*
+ * Name: inputMeleePressed
+ * Description: True on the frame the melee key (Shift) is pressed while input is unlocked.
+ */
+function inputMeleePressed()
+{
+    var _locked = variable_instance_exists(id, "input_locked") && input_locked;
+    if (_locked) return false;
+    return keyboard_check_pressed(vk_shift);
+}
+
+/*
+ * Name: inputAbilityPressed
+ * Description: True on the frame the ability key (E) is pressed while input is unlocked.
+ */
+function inputAbilityPressed()
+{
+    var _locked = variable_instance_exists(id, "input_locked") && input_locked;
+    if (_locked) return false;
+    return keyboard_check_pressed(ord("E"));
 }

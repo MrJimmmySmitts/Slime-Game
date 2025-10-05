@@ -48,6 +48,16 @@ enum InvAnchor
 #macro PLAYER_DASH_COOLDOWN  30      // steps
 #macro PLAYER_HITBOX_INSET   2       // for corner sampling vs tilemap
 
+#macro PLAYER_MELEE_RANGE            42      // spawn offset for melee slash
+#macro PLAYER_MELEE_LIFE             8       // lifetime of melee attack hitbox
+#macro PLAYER_MELEE_COOLDOWN         18      // steps before melee can be used again
+#macro PLAYER_MELEE_ESSENCE_COST     5       // essence spent per melee strike
+
+#macro PLAYER_ABILITY_DAMAGE_BONUS   8       // flat damage added while the ability is active
+#macro PLAYER_ABILITY_DURATION       240     // steps the ability stays active
+#macro PLAYER_ABILITY_COOLDOWN       600     // steps before the ability can be triggered again
+#macro PLAYER_ABILITY_ESSENCE_COST   10      // essence spent to activate the ability
+
 #macro ESSENCE_PER_CONTAINER        10   // units stored in each container
 #macro PLAYER_START_CONTAINERS      5    // starting number of filled containers
 #macro ESSENCE_PROJECTILE_COST      1    // essence consumed per projectile

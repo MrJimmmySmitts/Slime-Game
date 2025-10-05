@@ -36,3 +36,17 @@ fire_cooldown_steps = base_fire_cooldown;
 bullet_damage       = base_bullet_damage;
 bullet_speed        = base_bullet_speed;
 
+melee_cooldown      = 0;
+melee_cooldown_max  = PLAYER_MELEE_COOLDOWN;
+melee_range         = PLAYER_MELEE_RANGE;
+melee_life          = PLAYER_MELEE_LIFE;
+melee_cost          = PLAYER_MELEE_ESSENCE_COST;
+
+ability_damage_timer        = 0;
+ability_damage_cooldown     = 0;
+ability_damage_duration     = PLAYER_ABILITY_DURATION;
+ability_damage_cooldown_max = PLAYER_ABILITY_COOLDOWN;
+ability_damage_amount       = PLAYER_ABILITY_DAMAGE_BONUS;
+ability_damage_cost         = PLAYER_ABILITY_ESSENCE_COST;
+ability_damage_bonus        = 0;
+
