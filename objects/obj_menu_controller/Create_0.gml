@@ -22,6 +22,15 @@ for (var _i = 0; _i < _main_len; _i++)
 sel        = 0;
 menu_items = [];
 
+settings_pending = {};
+settings_applied = {};
+menu_settings_dirty = false;
+menu_settings_scroll = 0;
+menu_settings_scroll_max = 0;
+menu_settings_view_height = 0;
+menu_settings_content_height = 0;
+menu_keybinding_capture = undefined;
+
 settings_debug_visible = false;
 
 screen_size_options = [
@@ -31,15 +40,12 @@ screen_size_options = [
 ];
 
 settings_screen_index = 0;
-if (variable_global_exists("Settings"))
-{
-    settings_screen_index = clamp(global.Settings.screen_size_index, 0, max(0, array_length(screen_size_options) - 1));
-    global.Settings.screen_size_index = settings_screen_index;
-}
+menuSettingsLoadFromGlobal();
 
 if (is_array(screen_size_options) && array_length(screen_size_options) > 0)
 {
-    menuApplyScreenSize(screen_size_options[settings_screen_index]);
+    var _initial_index = clamp(settings_screen_index, 0, array_length(screen_size_options) - 1);
+    menuApplyScreenSize(screen_size_options[_initial_index]);
 }
 
 settings_debug_rooms = [

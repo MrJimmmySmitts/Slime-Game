@@ -17,6 +17,94 @@ enum MenuItemKind
     DebugStat   = 4,
     DebugAction = 5,
     Label       = 6,
+    KeyBinding  = 7,
+}
+
+function menuSettingsGetScroll()
+{
+    if (!variable_instance_exists(id, "menu_settings_scroll")) return 0;
+    var _scroll = menu_settings_scroll;
+    if (!is_real(_scroll)) _scroll = 0;
+    var _max = (variable_instance_exists(id, "menu_settings_scroll_max")) ? max(0, menu_settings_scroll_max) : 0;
+    return clamp(_scroll, 0, _max);
+}
+
+function menuSettingsSetScroll(_value)
+{
+    if (!is_real(_value)) _value = 0;
+    var _max = (variable_instance_exists(id, "menu_settings_scroll_max")) ? max(0, menu_settings_scroll_max) : 0;
+    menu_settings_scroll = clamp(_value, 0, _max);
+}
+
+function menuSettingsScrollTo(_value)
+{
+    menuSettingsSetScroll(_value);
+}
+
+function menuSettingsScrollBy(_amount)
+{
+    if (!is_real(_amount) || _amount == 0) return;
+    var _current = menuSettingsGetScroll();
+    menuSettingsSetScroll(_current + _amount);
+}
+
+function menuSettingsGetPanelRect()
+{
+    var _gui_w = display_get_gui_width();
+    var _gui_h = display_get_gui_height();
+
+    var _margin = 32;
+    var _available_w = max(160, _gui_w - _margin * 2);
+    var _available_h = max(160, _gui_h - _margin * 2);
+
+    var _target_w = clamp(_gui_w * 0.6, min(480, _available_w), _available_w);
+    var _target_h = clamp(_gui_h * 0.75, min(520, _available_h), _available_h);
+
+    var _left = (_gui_w - _target_w) * 0.5;
+    var _top  = (_gui_h - _target_h) * 0.5;
+
+    return {
+        left:   _left,
+        right:  _left + _target_w,
+        top:    _top,
+        bottom: _top + _target_h
+    };
+}
+
+function menuSettingsGetContentRect()
+{
+    var _panel   = menuSettingsGetPanelRect();
+    var _pad_x   = 24;
+    var _title_h = 64;
+    var _footer_h= 64;
+
+    var _left  = _panel.left + _pad_x;
+    var _right = _panel.right - _pad_x;
+    if (_right < _left)
+    {
+        var _mid = (_left + _right) * 0.5;
+        _left = _mid;
+        _right = _mid;
+    }
+
+    var _top    = _panel.top + _title_h;
+    var _bottom = _panel.bottom - _footer_h;
+    if (_bottom < _top) _bottom = _top;
+
+    return {
+        left:   _left,
+        right:  _right,
+        top:    _top,
+        bottom: _bottom
+    };
+}
+
+function menuSettingsGetPageScrollAmount()
+{
+    if (!variable_instance_exists(id, "menu_settings_view_height")) return 160;
+    var _view = max(0, menu_settings_view_height);
+    if (_view <= 0) return 160;
+    return max(48, _view * 0.85);
 }
 
 /*
@@ -30,16 +118,29 @@ function menuGetLayout()
     var _mode  = MenuScreen.Main;
     if (variable_instance_exists(id, "menu_screen")) _mode = menu_screen;
 
-    var _start_y = (_mode == MenuScreen.Settings) ? _gui_h * 0.30 : _gui_h * 0.40;
-    var _gap     = (_mode == MenuScreen.Settings) ? 26 : 28;
-    var _item_w  = (_mode == MenuScreen.Settings) ? 420 : 360;
+    if (_mode == MenuScreen.Settings)
+    {
+        var _content = menuSettingsGetContentRect();
+        var _item_h  = 26;
+        var _gap     = 28;
+        var _scroll  = menuSettingsGetScroll();
+        var _item_w  = max(0, _content.right - _content.left);
+
+        return {
+            cx:       (_content.left + _content.right) * 0.5,
+            start_y:  _content.top + _item_h * 0.5 - _scroll,
+            gap:      _gap,
+            item_w:   _item_w,
+            item_h:   _item_h
+        };
+    }
 
     return {
         cx:       _gui_w * 0.5,
-        start_y:  _start_y, // MUST match Draw layout
-        gap:      _gap,     // MUST match Draw spacing
-        item_w:   _item_w,  // clickable width (centered on cx)
-        item_h:   26        // clickable height
+        start_y:  _gui_h * 0.40, // MUST match Draw layout
+        gap:      28,            // MUST match Draw spacing
+        item_w:   360,           // clickable width (centered on cx)
+        item_h:   26             // clickable height
     };
 }
 
@@ -254,9 +355,7 @@ function menuSliderGetValue(_entry)
 
     if (_target == "volume")
     {
-        if (!variable_global_exists("Settings")) return menuSliderClampValue(_entry, 1);
-        var _value = global.Settings.master_volume;
-        if (!is_real(_value)) _value = 1;
+        var _value = menuSettingsGetVolume();
         return menuSliderClampValue(_entry, _value);
     }
 
@@ -270,9 +369,7 @@ function menuSliderApplyValue(_entry, _value)
     var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
     if (_target == "volume")
     {
-        if (!variable_global_exists("Settings")) return;
-        global.Settings.master_volume = _value;
-        audio_master_gain(global.Settings.master_volume);
+        menuSettingsSetVolume(_value);
     }
 }
 
@@ -366,8 +463,7 @@ function menuOptionGetIndex(_entry)
 
     if (_target == "screen_size")
     {
-        settings_screen_index = clamp(settings_screen_index, 0, _count - 1);
-        return settings_screen_index;
+        return menuSettingsGetScreenIndex();
     }
 
     if (_target == "debug_room")
@@ -390,11 +486,7 @@ function menuOptionSetIndex(_entry, _index)
         if (_count <= 0) return;
 
         _index = clamp(_index, 0, _count - 1);
-        settings_screen_index = _index;
-        if (variable_global_exists("Settings")) global.Settings.screen_size_index = settings_screen_index;
-
-        var _option = screen_size_options[settings_screen_index];
-        menuApplyScreenSize(_option);
+        menuSettingsSetScreenIndex(_index);
     }
     else if (_target == "debug_room")
     {
@@ -555,18 +647,618 @@ function menuDropdownOptionAtPosition(_index, _entry, _mx, _my)
     return -1;
 }
 
+function menuSettingsCloneStruct(_source)
+{
+    var _clone = {
+        volume:            1,
+        screen_size_index: 0,
+        key_bindings:      inputBindingsClone(inputCreateDefaultBindings())
+    };
+
+    if (is_struct(_source))
+    {
+        if (variable_struct_exists(_source, "volume"))
+            _clone.volume = clamp(_source.volume, 0, 1);
+
+        if (variable_struct_exists(_source, "screen_size_index"))
+            _clone.screen_size_index = max(0, floor(_source.screen_size_index));
+
+        if (variable_struct_exists(_source, "key_bindings"))
+            _clone.key_bindings = inputBindingsClone(_source.key_bindings);
+    }
+
+    return _clone;
+}
+
+function menuSettingsUpdateDirty()
+{
+    menu_settings_dirty = menuSettingsComputeDirty();
+}
+
+function menuSettingsComputeDirty()
+{
+    if (!is_struct(settings_pending) || !is_struct(settings_applied)) return false;
+
+    var _vol_pending  = variable_struct_exists(settings_pending, "volume") ? settings_pending.volume : 1;
+    var _vol_applied  = variable_struct_exists(settings_applied, "volume") ? settings_applied.volume : 1;
+    if (abs(_vol_pending - _vol_applied) > 0.0001) return true;
+
+    var _screen_pending = variable_struct_exists(settings_pending, "screen_size_index") ? settings_pending.screen_size_index : 0;
+    var _screen_applied = variable_struct_exists(settings_applied, "screen_size_index") ? settings_applied.screen_size_index : 0;
+    if (_screen_pending != _screen_applied) return true;
+
+    var _bindings_pending = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : undefined;
+    var _bindings_applied = variable_struct_exists(settings_applied, "key_bindings") ? settings_applied.key_bindings : undefined;
+    if (!inputBindingsEqual(_bindings_pending, _bindings_applied)) return true;
+
+    return false;
+}
+
+function menuSettingsGetVolume()
+{
+    if (!is_struct(settings_pending)) return 1;
+    var _value = variable_struct_exists(settings_pending, "volume") ? settings_pending.volume : 1;
+    return clamp(_value, 0, 1);
+}
+
+function menuSettingsSetVolume(_value)
+{
+    if (!is_struct(settings_pending)) settings_pending = {};
+    settings_pending.volume = clamp(_value, 0, 1);
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsGetScreenIndex()
+{
+    if (!is_struct(settings_pending)) return 0;
+    var _index = variable_struct_exists(settings_pending, "screen_size_index") ? settings_pending.screen_size_index : 0;
+    if (!is_array(screen_size_options) || array_length(screen_size_options) <= 0)
+    {
+        settings_pending.screen_size_index = 0;
+        settings_screen_index = 0;
+        return 0;
+    }
+
+    _index = clamp(_index, 0, array_length(screen_size_options) - 1);
+    settings_pending.screen_size_index = _index;
+    settings_screen_index = _index;
+    return _index;
+}
+
+function menuSettingsSetScreenIndex(_index)
+{
+    if (!is_array(screen_size_options) || array_length(screen_size_options) <= 0)
+    {
+        _index = 0;
+    }
+    else
+    {
+        _index = clamp(_index, 0, array_length(screen_size_options) - 1);
+    }
+
+    if (!is_struct(settings_pending)) settings_pending = {};
+    settings_pending.screen_size_index = _index;
+    settings_screen_index = _index;
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsLoadFromGlobal()
+{
+    var _volume       = 1;
+    var _screen_index = 0;
+    var _bindings     = inputCreateDefaultBindings();
+
+    if (variable_global_exists("Settings"))
+    {
+        if (variable_struct_exists(global.Settings, "master_volume"))
+        {
+            _volume = clamp(global.Settings.master_volume, 0, 1);
+            global.Settings.master_volume = _volume;
+        }
+
+        if (variable_struct_exists(global.Settings, "screen_size_index"))
+        {
+            var _count = is_array(screen_size_options) ? array_length(screen_size_options) : 0;
+            _screen_index = clamp(global.Settings.screen_size_index, 0, max(0, _count - 1));
+            global.Settings.screen_size_index = _screen_index;
+        }
+
+        if (variable_struct_exists(global.Settings, "key_bindings") && is_struct(global.Settings.key_bindings))
+        {
+            _bindings = inputBindingsEnsureDefaults(global.Settings.key_bindings);
+        }
+    }
+    else
+    {
+        var _count_default = is_array(screen_size_options) ? array_length(screen_size_options) : 0;
+        _screen_index = clamp(_screen_index, 0, max(0, _count_default - 1));
+    }
+
+    settings_pending = {
+        volume:            _volume,
+        screen_size_index: _screen_index,
+        key_bindings:      inputBindingsClone(_bindings)
+    };
+
+    settings_applied = menuSettingsCloneStruct(settings_pending);
+    settings_screen_index = _screen_index;
+    menuSettingsSetScroll(0);
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsApplyPending()
+{
+    if (!is_struct(settings_pending)) return;
+
+    var _volume = menuSettingsGetVolume();
+    if (variable_global_exists("Settings"))
+    {
+        global.Settings.master_volume = _volume;
+    }
+    audio_master_gain(_volume);
+
+    var _screen_index = menuSettingsGetScreenIndex();
+    if (variable_global_exists("Settings"))
+    {
+        global.Settings.screen_size_index = _screen_index;
+    }
+
+    if (is_array(screen_size_options) && array_length(screen_size_options) > 0)
+    {
+        var _option = screen_size_options[_screen_index];
+        menuApplyScreenSize(_option);
+    }
+
+    var _bindings = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : inputCreateDefaultBindings();
+    if (variable_global_exists("Settings"))
+    {
+        global.Settings.key_bindings = inputBindingsClone(_bindings);
+    }
+
+    settings_applied = menuSettingsCloneStruct(settings_pending);
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsRevertPending()
+{
+    settings_pending = menuSettingsCloneStruct(settings_applied);
+    settings_screen_index = menuSettingsGetScreenIndex();
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsSetKeyBinding(_action, _slot, _key)
+{
+    if (!is_string(_action)) return;
+    if (!is_struct(settings_pending)) settings_pending = {};
+
+    var _bindings = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : inputCreateDefaultBindings();
+    _bindings = inputBindingsEnsureDefaults(_bindings);
+
+    var _def = inputBindingFindDefinition(_action);
+    if (!is_struct(_def)) return;
+    var _defaults = _def.default;
+    var _slot_count = array_length(_defaults);
+    if (_slot_count <= 0) _slot_count = 1;
+    _slot = clamp(_slot, 0, _slot_count - 1);
+
+    var _keys = variable_struct_exists(_bindings, _action) ? variable_struct_get(_bindings, _action) : inputArrayClone(_defaults);
+    if (!is_array(_keys) || array_length(_keys) != _slot_count)
+    {
+        _keys = inputArrayClone(_defaults);
+    }
+
+    _keys[_slot] = _key;
+    variable_struct_set(_bindings, _action, _keys);
+
+    settings_pending.key_bindings = _bindings;
+    menuSettingsUpdateDirty();
+}
+
+function menuSettingsDescribeKeyBinding(_action, _slot)
+{
+    if (!is_struct(settings_pending)) return "(unassigned)";
+    if (!variable_struct_exists(settings_pending, "key_bindings")) return "(unassigned)";
+
+    var _bindings = settings_pending.key_bindings;
+    if (!is_struct(_bindings)) return "(unassigned)";
+
+    if (!variable_struct_exists(_bindings, _action)) return "(unassigned)";
+    var _keys = variable_struct_get(_bindings, _action);
+    if (!is_array(_keys)) return "(unassigned)";
+
+    if (_slot < 0 || _slot >= array_length(_keys)) return "(unassigned)";
+
+    return menuKeybindingFormatKey(_keys[_slot]);
+}
+
 function menuBuildKeyMappingItems()
 {
-    return [
-        { label: "Key Bindings", kind: MenuItemKind.Label, style: "header", enabled: false },
-        { label: "Move: WASD or Arrow Keys", kind: MenuItemKind.Label, enabled: false },
-        { label: "Aim: IJKL", kind: MenuItemKind.Label, enabled: false },
-        { label: "Dash: Space", kind: MenuItemKind.Label, enabled: false },
-        { label: "Primary Fire: Mouse Left", kind: MenuItemKind.Label, enabled: false },
-        { label: "Melee: Shift (uses essence)", kind: MenuItemKind.Label, enabled: false },
-        { label: "Ability: E (damage boost)", kind: MenuItemKind.Label, enabled: false },
-        { label: "Inventory: Tab", kind: MenuItemKind.Label, enabled: false },
-    ];
+    var _items = [];
+
+    _items[array_length(_items)] = { label: "Key Bindings", kind: MenuItemKind.Label, style: "header", enabled: false };
+
+    var _defs = inputBindingActionDefinitions();
+    var _count = array_length(_defs);
+    var _current_group = "";
+
+    for (var _i = 0; _i < _count; _i++)
+    {
+        var _def   = _defs[_i];
+        var _group = variable_struct_exists(_def, "group") ? string(_def.group) : "";
+
+        if (_group != "" && _group != _current_group)
+        {
+            _current_group = _group;
+            _items[array_length(_items)] = { label: _group, kind: MenuItemKind.Label, style: "section", enabled: false };
+        }
+
+        var _slots = variable_struct_exists(_def, "slots") ? _def.slots : ["Primary"];
+        var _slot_count = array_length(_slots);
+        if (_slot_count <= 0) _slot_count = 1;
+
+        for (var _s = 0; _s < _slot_count; _s++)
+        {
+            var _slot_label = (_slot_count > 1) ? string(_slots[_s]) : string(_slots[_s]);
+            var _label = string(_def.label);
+            if (_slot_count > 1 && _slot_label != "")
+            {
+                _label = _label + " (" + _slot_label + ")";
+            }
+            else if (_slot_count <= 1 && _slot_label != "" && _slot_label != "Primary")
+            {
+                _label = _label + " - " + _slot_label;
+            }
+
+            _items[array_length(_items)] = {
+                label:   _label,
+                kind:    MenuItemKind.KeyBinding,
+                binding: { action: _def.name, slot: _s },
+                enabled: true
+            };
+        }
+    }
+
+    return _items;
+}
+
+function menuKeybindingIsCapturing()
+{
+    if (!variable_instance_exists(id, "menu_keybinding_capture")) return false;
+    return is_struct(menu_keybinding_capture);
+}
+
+function menuKeybindingCancelCapture()
+{
+    if (variable_instance_exists(id, "menu_keybinding_capture")) menu_keybinding_capture = undefined;
+}
+
+function menuKeybindingCaptureSnapshot()
+{
+    var _pressed = [];
+    var _codes   = menuKeybindingAllCodes();
+    var _count   = array_length(_codes);
+    var _idx     = 0;
+
+    for (var _i = 0; _i < _count; _i++)
+    {
+        var _code = _codes[_i];
+        if (keyboard_check(_code))
+        {
+            _pressed[_idx++] = _code;
+        }
+    }
+
+    return _pressed;
+}
+
+function menuKeybindingCapturePruneIgnore()
+{
+    if (!menuKeybindingIsCapturing()) return;
+
+    var _capture = menu_keybinding_capture;
+    if (!is_struct(_capture)) return;
+
+    var _list = variable_struct_exists(_capture, "ignore_codes") ? _capture.ignore_codes : [];
+    if (!is_array(_list) || array_length(_list) <= 0)
+    {
+        _capture.ignore_codes = [];
+        return;
+    }
+
+    var _kept = [];
+    var _idx  = 0;
+    var _len  = array_length(_list);
+    for (var _i = 0; _i < _len; _i++)
+    {
+        var _code = _list[_i];
+        if (keyboard_check(_code))
+        {
+            _kept[_idx++] = _code;
+        }
+    }
+
+    _capture.ignore_codes = _kept;
+}
+
+function menuKeybindingCaptureShouldIgnore(_capture, _code)
+{
+    if (!is_struct(_capture)) return false;
+    if (!variable_struct_exists(_capture, "ignore_codes")) return false;
+
+    var _list = _capture.ignore_codes;
+    if (!is_array(_list)) return false;
+
+    var _len = array_length(_list);
+    for (var _i = 0; _i < _len; _i++)
+    {
+        if (_list[_i] == _code) return true;
+    }
+
+    return false;
+}
+
+function menuKeybindingStartCapture(_entry)
+{
+    if (!is_struct(_entry)) return;
+    if (!variable_struct_exists(_entry, "binding")) return;
+    var _binding = _entry.binding;
+    if (!is_struct(_binding)) return;
+    if (!variable_struct_exists(_binding, "action")) return;
+    if (!variable_struct_exists(_binding, "slot")) return;
+
+    menu_keybinding_capture = {
+        action: _binding.action,
+        slot:   _binding.slot,
+        ignore_codes: menuKeybindingCaptureSnapshot()
+    };
+
+    if (menuDebugIsEditing()) menuDebugCancelEditing();
+}
+
+function menuKeybindingAllCodes()
+{
+    static _codes = undefined;
+    if (!is_array(_codes))
+    {
+        _codes = [];
+        var _idx = 0;
+
+        for (var _k = ord("0"); _k <= ord("9"); _k++)
+        {
+            _codes[_idx++] = _k;
+        }
+
+        for (var _c = ord("A"); _c <= ord("Z"); _c++)
+        {
+            _codes[_idx++] = _c;
+        }
+
+        var _special = [
+            vk_space, vk_tab, vk_enter, vk_backspace,
+            vk_shift, vk_control, vk_alt,
+            vk_up, vk_down, vk_left, vk_right,
+            vk_home, vk_end, vk_pageup, vk_pagedown,
+            vk_delete, vk_insert
+        ];
+
+        var _numpad = [
+            vk_numpad0, vk_numpad1, vk_numpad2, vk_numpad3, vk_numpad4,
+            vk_numpad5, vk_numpad6, vk_numpad7, vk_numpad8, vk_numpad9,
+            vk_numpad_add, vk_numpad_subtract, vk_numpad_multiply,
+            vk_numpad_divide, vk_numpad_decimal, vk_numpad_enter
+        ];
+
+        var _function = [
+            vk_f1, vk_f2, vk_f3, vk_f4, vk_f5, vk_f6,
+            vk_f7, vk_f8, vk_f9, vk_f10, vk_f11, vk_f12
+        ];
+
+        var _arrays = [_special, _numpad, _function];
+        var _arr_count = array_length(_arrays);
+        for (var _a = 0; _a < _arr_count; _a++)
+        {
+            var _list = _arrays[_a];
+            var _len  = array_length(_list);
+            for (var _i = 0; _i < _len; _i++)
+            {
+                _codes[_idx++] = _list[_i];
+            }
+        }
+    }
+
+    return _codes;
+}
+
+function menuKeybindingDetectNextKey(_capture)
+{
+    var _codes = menuKeybindingAllCodes();
+    var _count = array_length(_codes);
+    for (var _i = 0; _i < _count; _i++)
+    {
+        var _code = _codes[_i];
+        if (keyboard_check_pressed(_code))
+        {
+            if (!menuKeybindingCaptureShouldIgnore(_capture, _code)) return _code;
+        }
+    }
+    return -1;
+}
+
+function menuKeybindingHandleCaptureInput()
+{
+    if (!menuKeybindingIsCapturing()) return;
+
+    menuKeybindingCapturePruneIgnore();
+    if (!menuKeybindingIsCapturing()) return;
+
+    var _capture = menu_keybinding_capture;
+    var _key = menuKeybindingDetectNextKey(_capture);
+    if (_key != -1)
+    {
+        var _capture = menu_keybinding_capture;
+        menuSettingsSetKeyBinding(_capture.action, _capture.slot, _key);
+        menuKeybindingCancelCapture();
+    }
+}
+
+function menuKeybindingIsCapturingEntry(_entry)
+{
+    if (!menuKeybindingIsCapturing()) return false;
+    if (!is_struct(_entry) || !variable_struct_exists(_entry, "binding")) return false;
+    var _binding = _entry.binding;
+    if (!is_struct(_binding)) return false;
+    var _capture = menu_keybinding_capture;
+    return (_binding.action == _capture.action) && (_binding.slot == _capture.slot);
+}
+
+function menuKeybindingIsCapturingIndex(_index)
+{
+    if (!menuKeybindingIsCapturing()) return false;
+    if (!is_array(menu_items)) return false;
+    if (_index < 0 || _index >= array_length(menu_items)) return false;
+    return menuKeybindingIsCapturingEntry(menu_items[_index]);
+}
+
+function menuKeybindingFormatKey(_key)
+{
+    if (!is_real(_key)) return "(unassigned)";
+
+    if (_key >= ord("A") && _key <= ord("Z")) return string(chr(_key));
+    if (_key >= ord("0") && _key <= ord("9")) return string(chr(_key));
+
+    switch (_key)
+    {
+        case vk_space:       return "Space";
+        case vk_tab:         return "Tab";
+        case vk_enter:       return "Enter";
+        case vk_backspace:   return "Backspace";
+        case vk_shift:       return "Shift";
+        case vk_control:     return "Ctrl";
+        case vk_alt:         return "Alt";
+        case vk_up:          return "Up Arrow";
+        case vk_down:        return "Down Arrow";
+        case vk_left:        return "Left Arrow";
+        case vk_right:       return "Right Arrow";
+        case vk_home:        return "Home";
+        case vk_end:         return "End";
+        case vk_pageup:      return "Page Up";
+        case vk_pagedown:    return "Page Down";
+        case vk_delete:      return "Delete";
+        case vk_insert:      return "Insert";
+        case vk_numpad0:     return "Numpad 0";
+        case vk_numpad1:     return "Numpad 1";
+        case vk_numpad2:     return "Numpad 2";
+        case vk_numpad3:     return "Numpad 3";
+        case vk_numpad4:     return "Numpad 4";
+        case vk_numpad5:     return "Numpad 5";
+        case vk_numpad6:     return "Numpad 6";
+        case vk_numpad7:     return "Numpad 7";
+        case vk_numpad8:     return "Numpad 8";
+        case vk_numpad9:     return "Numpad 9";
+        case vk_numpad_add:      return "Numpad +";
+        case vk_numpad_subtract: return "Numpad -";
+        case vk_numpad_multiply: return "Numpad *";
+        case vk_numpad_divide:   return "Numpad /";
+        case vk_numpad_decimal:  return "Numpad .";
+        case vk_numpad_enter:    return "Numpad Enter";
+        case vk_f1:  return "F1";
+        case vk_f2:  return "F2";
+        case vk_f3:  return "F3";
+        case vk_f4:  return "F4";
+        case vk_f5:  return "F5";
+        case vk_f6:  return "F6";
+        case vk_f7:  return "F7";
+        case vk_f8:  return "F8";
+        case vk_f9:  return "F9";
+        case vk_f10: return "F10";
+        case vk_f11: return "F11";
+        case vk_f12: return "F12";
+    }
+
+    return "Key " + string(_key);
+}
+
+function menuSettingsUpdateScrollMetrics()
+{
+    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings)
+    {
+        menu_settings_view_height = 0;
+        menu_settings_content_height = 0;
+        menu_settings_scroll_max = 0;
+        menuSettingsSetScroll(0);
+        return;
+    }
+
+    var _view_rect = menuSettingsGetContentRect();
+    var _view_h    = max(0, _view_rect.bottom - _view_rect.top);
+    var _count     = is_array(menu_items) ? array_length(menu_items) : 0;
+    var _content_h = 0;
+
+    if (_count > 0)
+    {
+        var _layout = menuGetLayout();
+        _content_h = _layout.item_h + (_count - 1) * _layout.gap;
+    }
+
+    menu_settings_view_height = _view_h;
+    menu_settings_content_height = _content_h;
+    menu_settings_scroll_max = max(0, _content_h - _view_h);
+    menuSettingsSetScroll(menuSettingsGetScroll());
+}
+
+function menuSettingsHandleKeyboardScroll()
+{
+    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+
+    var _page = menuSettingsGetPageScrollAmount();
+    if (keyboard_check_pressed(vk_pageup)) menuSettingsScrollBy(-_page);
+    if (keyboard_check_pressed(vk_pagedown)) menuSettingsScrollBy(_page);
+    if (keyboard_check_pressed(vk_home)) menuSettingsScrollTo(0);
+    if (keyboard_check_pressed(vk_end))
+    {
+        var _max = (variable_instance_exists(id, "menu_settings_scroll_max")) ? max(0, menu_settings_scroll_max) : 0;
+        menuSettingsScrollTo(_max);
+    }
+}
+
+function menuSettingsHandleMouseScroll(_mx, _my)
+{
+    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+
+    var _view = menuSettingsGetContentRect();
+    if (_mx >= _view.left && _mx <= _view.right && _my >= _view.top && _my <= _view.bottom)
+    {
+        var _step = max(24, menuSettingsGetPageScrollAmount() * 0.25);
+        var _delta = mouse_wheel_get_delta();
+        if (_delta != 0)
+        {
+            var _direction = -sign(_delta);
+            var _magnitude = max(1, round(abs(_delta) / 120));
+            menuSettingsScrollBy(_direction * _step * _magnitude);
+        }
+    }
+}
+
+function menuSettingsEnsureSelectionVisible()
+{
+    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+    if (!is_array(menu_items)) return;
+
+    var _count = array_length(menu_items);
+    if (_count <= 0) return;
+    if (sel < 0 || sel >= _count) return;
+
+    var _rect = menuGetItemRect(sel);
+    var _view = menuSettingsGetContentRect();
+
+    if (_rect.top < _view.top)
+    {
+        menuSettingsScrollBy(_rect.top - _view.top);
+    }
+    else if (_rect.bottom > _view.bottom)
+    {
+        menuSettingsScrollBy(_rect.bottom - _view.bottom);
+    }
 }
 
 /*
@@ -609,6 +1301,24 @@ function menuRebuildItems()
                 kind:    MenuItemKind.Option,
                 target:  "screen_size",
                 enabled: is_array(screen_size_options) && array_length(screen_size_options) > 0
+            };
+
+            _slot = array_length(_items);
+            _items[_slot] = {
+                label:   "Apply Changes",
+                kind:    MenuItemKind.Action,
+                action:  "apply_settings",
+                enabled: menu_settings_dirty,
+                style:   menu_settings_dirty ? "primary" : ""
+            };
+
+            _slot = array_length(_items);
+            _items[_slot] = {
+                label:   "Back",
+                kind:    MenuItemKind.Action,
+                action:  "back",
+                enabled: true,
+                style:   "secondary"
             };
 
             var _key_items = menuBuildKeyMappingItems();
@@ -685,19 +1395,17 @@ function menuRebuildItems()
                     enabled: is_array(settings_debug_rooms) && array_length(settings_debug_rooms) > 0
                 };
             }
-
-            _slot = array_length(_items);
-            _items[_slot] = {
-                label:   "Back",
-                kind:    MenuItemKind.Action,
-                action:  "back",
-                enabled: true
-            };
             break;
         }
     }
 
     menu_items = _items;
+
+    if (menu_screen == MenuScreen.Settings)
+    {
+        menuSettingsUpdateScrollMetrics();
+        menuSettingsEnsureSelectionVisible();
+    }
 
     var _count = array_length(menu_items);
     if (_count <= 0) sel = 0;
@@ -792,6 +1500,11 @@ function menuActivateSelection()
             {
                 menuOpenSettings();
             }
+            else if (_choice == "apply_settings")
+            {
+                menuSettingsApplyPending();
+                menuRebuildItems();
+            }
             else if (_choice == "back")
             {
                 menuCloseSettings();
@@ -806,6 +1519,12 @@ function menuActivateSelection()
         case MenuItemKind.Slider:
         {
             menuAdjustSelection(1);
+            break;
+        }
+
+        case MenuItemKind.KeyBinding:
+        {
+            menuKeybindingStartCapture(_entry);
             break;
         }
 
@@ -869,6 +1588,22 @@ function menuMouseUpdate()
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
+    if (menu_screen == MenuScreen.Settings) menuSettingsHandleMouseScroll(_mx, _my);
+
+    var _capturing = menuKeybindingIsCapturing();
+    if (_capturing)
+    {
+        if (mouse_check_button_pressed(mb_left) || mouse_check_button_pressed(mb_right))
+        {
+            menuKeybindingCancelCapture();
+            _capturing = false;
+        }
+        else
+        {
+            return;
+        }
+    }
+
     if (mouse_check_button_pressed(mb_left) && menuDebugIsEditing())
     {
         var _edit_index = menu_number_edit_index;
@@ -930,7 +1665,11 @@ function menuMouseUpdate()
         {
             if (menuDebugIsEditingIndex(_idx)) sel = _idx;
         }
-        else sel = _idx;
+        else
+        {
+            sel = _idx;
+            if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+        }
     }
 
     if (mouse_check_button_pressed(mb_left))
@@ -1006,6 +1745,14 @@ function menuMouseUpdate()
                     if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
                 }
                 break;
+            }
+
+            case MenuItemKind.KeyBinding:
+            {
+                menuKeybindingStartCapture(_entry);
+                if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+                if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+                return;
             }
 
             case MenuItemKind.DebugStat:
@@ -1183,6 +1930,8 @@ function menuAdjustOption(_entry, _dir)
 function menuOpenSettings()
 {
     menu_screen = MenuScreen.Settings;
+    menuKeybindingCancelCapture();
+    menuSettingsLoadFromGlobal();
     sel = 0;
     if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
     menuRebuildItems();
@@ -1194,6 +1943,8 @@ function menuOpenSettings()
 */
 function menuCloseSettings()
 {
+    menuKeybindingCancelCapture();
+    menuSettingsRevertPending();
     menu_screen = MenuScreen.Main;
     if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
     var _len = is_array(menu_main) ? array_length(menu_main) : 0;

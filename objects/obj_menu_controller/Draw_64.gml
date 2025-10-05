@@ -28,18 +28,18 @@ if (menu_screen == MenuScreen.Main)
 }
 else
 {
-    var _panel_x1 = _W * 0.2;
-    var _panel_y1 = _H * 0.15;
-    var _panel_x2 = _W * 0.8;
-    var _panel_y2 = _H * 0.90;
+    var _panel = menuSettingsGetPanelRect();
+    var _view  = menuSettingsGetContentRect();
 
     draw_set_alpha(0.75);
     draw_set_color(make_color_rgb(20, 28, 52));
-    draw_rectangle(_panel_x1, _panel_y1, _panel_x2, _panel_y2, false);
+    draw_rectangle(_panel.left, _panel.top, _panel.right, _panel.bottom, false);
     draw_set_alpha(1);
 
     draw_set_color(c_white);
-    draw_text(_W * 0.5, _H * 0.2, "Settings");
+    draw_set_font(fnt_menu);
+    draw_text((_panel.left + _panel.right) * 0.5, _panel.top + 32, "Settings");
+    draw_set_font(fnt_ui);
 
     var _L = menuGetLayout();
     var _n = is_array(menu_items) ? array_length(menu_items) : 0;
@@ -47,8 +47,6 @@ else
     var _color_selected = make_color_rgb(255, 230, 120);
     var _dropdown_index = (variable_instance_exists(id, "menu_dropdown_open")) ? menu_dropdown_open : -1;
     var _dropdown_entry = undefined;
-
-    draw_set_font(fnt_ui);
 
     if (_dropdown_index != -1 && _dropdown_index < _n)
     {
@@ -65,8 +63,10 @@ else
         var _item    = menu_items[_i];
         var _label   = is_struct(_item) && variable_struct_exists(_item, "label") ? _item.label : string(_item);
         var _enabled = !is_struct(_item) || !variable_struct_exists(_item, "enabled") || _item.enabled;
-        var _y       = _L.start_y + _i * _L.gap;
+        var _rect    = menuGetItemRect(_i);
         var _selected = (_i == sel && _enabled);
+
+        if (_rect.bottom < _view.top - _L.item_h || _rect.top > _view.bottom + _L.item_h) continue;
 
         if (is_struct(_item))
         {
@@ -74,20 +74,23 @@ else
             {
                 case MenuItemKind.Label:
                 {
-                    var _rect_lbl   = menuGetItemRect(_i);
-                    var _label_left = _rect_lbl.left + 16;
-                    var _style      = variable_struct_exists(_item, "style") ? _item.style : "";
+                    var _label_left = _rect.left + 16;
+                    var _style      = variable_struct_exists(_item, "style") ? string(_item.style) : "";
                     draw_set_halign(fa_left);
                     if (_style == "header")
                     {
                         draw_set_color(make_color_rgb(180, 210, 255));
                         draw_set_font(fnt_menu);
                     }
+                    else if (_style == "section")
+                    {
+                        draw_set_color(make_color_rgb(160, 180, 220));
+                    }
                     else
                     {
                         draw_set_color(make_color_rgb(200, 200, 200));
                     }
-                    draw_text(_label_left, _rect_lbl.y, string(_label));
+                    draw_text(_label_left, _rect.y, string(_label));
                     draw_set_font(fnt_ui);
                     draw_set_halign(fa_center);
                     continue;
@@ -95,7 +98,6 @@ else
 
                 case MenuItemKind.Slider:
                 {
-                    var _rect      = menuGetItemRect(_i);
                     var _track     = menuGetSliderTrackRect(_i);
                     var _range     = menuSliderGetRange(_item);
                     var _value     = menuSliderGetValue(_item);
@@ -139,15 +141,14 @@ else
 
                 case MenuItemKind.Option:
                 {
-                    var _rect_opt   = menuGetItemRect(_i);
                     var _base       = menuGetDropdownBaseRect(_i);
-                    var _label_left = _rect_opt.left + 16;
+                    var _label_left = _rect.left + 16;
                     var _value_lbl  = menuOptionGetCurrentLabel(_item);
                     if (_value_lbl == "") _value_lbl = "(not available)";
 
                     draw_set_halign(fa_left);
                     draw_set_color(_enabled ? (_selected ? _color_selected : c_white) : _color_disabled);
-                    draw_text(_label_left, _rect_opt.y, string(_label));
+                    draw_text(_label_left, _rect.y, string(_label));
 
                     var _bg_color    = _enabled ? make_color_rgb(36, 44, 68) : make_color_rgb(46, 46, 46);
                     var _border_col  = _enabled ? make_color_rgb(120, 130, 180) : make_color_rgb(70, 70, 70);
@@ -165,12 +166,12 @@ else
 
                     var _value_color = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
                     draw_set_color(_value_color);
-                    draw_text(_base.left + 10, _rect_opt.y, _value_lbl);
+                    draw_text(_base.left + 10, _rect.y, _value_lbl);
 
                     var _arrow_color = _enabled ? _value_color : _color_disabled;
                     if (_enabled && _dropdown_index == _i) _arrow_color = _color_selected;
                     var _arrow_x = _base.right - 12;
-                    var _arrow_y = _rect_opt.y + 1;
+                    var _arrow_y = _rect.y + 1;
                     draw_set_color(_arrow_color);
                     draw_triangle(_arrow_x - 6, _arrow_y - 3, _arrow_x + 6, _arrow_y - 3, _arrow_x, _arrow_y + 4, false);
 
@@ -178,10 +179,47 @@ else
                     continue;
                 }
 
+                case MenuItemKind.KeyBinding:
+                {
+                    var _binding = variable_struct_exists(_item, "binding") ? _item.binding : undefined;
+                    var _action  = (is_struct(_binding) && variable_struct_exists(_binding, "action")) ? _binding.action : "";
+                    var _slot    = (is_struct(_binding) && variable_struct_exists(_binding, "slot")) ? _binding.slot : 0;
+                    var _value_lbl = menuSettingsDescribeKeyBinding(_action, _slot);
+                    var _is_capture = menuKeybindingIsCapturingEntry(_item);
+                    if (_is_capture) _value_lbl = "Press a key...";
+
+                    var _value_rect = menuGetItemValueRect(_i);
+                    var _label_left = _rect.left + 16;
+
+                    draw_set_halign(fa_left);
+                    draw_set_color(_enabled ? (_selected ? _color_selected : c_white) : _color_disabled);
+                    draw_text(_label_left, _rect.y, string(_label));
+
+                    var _bg_color = _enabled ? make_color_rgb(36, 44, 68) : make_color_rgb(46, 46, 46);
+                    var _border_col = _enabled ? make_color_rgb(120, 130, 180) : make_color_rgb(70, 70, 70);
+                    if (_selected && _enabled) _border_col = _color_selected;
+                    if (_is_capture)
+                    {
+                        _bg_color   = make_color_rgb(48, 60, 96);
+                        _border_col = make_color_rgb(150, 190, 255);
+                    }
+
+                    draw_set_color(_bg_color);
+                    draw_rectangle(_value_rect.left, _value_rect.top, _value_rect.right, _value_rect.bottom, false);
+                    draw_set_color(_border_col);
+                    draw_rectangle(_value_rect.left, _value_rect.top, _value_rect.right, _value_rect.bottom, true);
+
+                    var _value_color = _enabled ? (_selected || _is_capture ? _color_selected : c_white) : _color_disabled;
+                    if (_is_capture) _value_color = make_color_rgb(200, 230, 255);
+                    draw_set_color(_value_color);
+                    draw_set_halign(fa_center);
+                    draw_text((_value_rect.left + _value_rect.right) * 0.5, _value_rect.y, _value_lbl);
+                    draw_set_halign(fa_center);
+                    continue;
+                }
+
                 case MenuItemKind.DebugStat:
                 {
-                    var _rect_num    = menuGetItemRect(_i);
-                    var _label_left2 = _rect_num.left + 16;
                     var _rects       = menuGetNumberFieldRects(_i);
                     var _field_rect  = _rects.field;
                     var _min_rect    = _rects.min;
@@ -203,7 +241,7 @@ else
                     var _label_color2 = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
                     draw_set_halign(fa_left);
                     draw_set_color(_label_color2);
-                    draw_text(_label_left2, _rect_num.y, string(_label));
+                    draw_text(_rect.left + 16, _rect.y, string(_label));
 
                     var _field_bg     = _enabled ? make_color_rgb(36, 44, 68) : make_color_rgb(46, 46, 46);
                     var _field_border = _enabled ? make_color_rgb(120, 130, 180) : make_color_rgb(70, 70, 70);
@@ -243,6 +281,11 @@ else
         var _text = string(_label);
         if (_selected) _text = "> " + _text + " <";
 
+        var _style = is_struct(_item) && variable_struct_exists(_item, "style") ? string(_item.style) : "";
+        var _base_color = c_white;
+        if (_style == "primary" && _enabled) _base_color = make_color_rgb(180, 240, 180);
+        else if (_style == "secondary" && _enabled) _base_color = make_color_rgb(190, 210, 255);
+
         if (!_enabled)
         {
             draw_set_color(_color_disabled);
@@ -253,11 +296,11 @@ else
         }
         else
         {
-            draw_set_color(c_white);
+            draw_set_color(_base_color);
         }
 
         draw_set_halign(fa_center);
-        draw_text(_L.cx, _y, _text);
+        draw_text(_L.cx, _rect.y, _text);
     }
 
     if (_dropdown_index != -1 && is_struct(_dropdown_entry))
@@ -310,7 +353,33 @@ else
         }
     }
 
-    draw_set_color(c_white);
+    var _content_h = menu_settings_content_height;
+    var _view_h = menu_settings_view_height;
+    if (_content_h > _view_h + 1)
+    {
+        var _bar_left  = _panel.right - 12;
+        var _bar_right = _panel.right - 6;
+        var _scroll    = menuSettingsGetScroll();
+        var _max_scroll = max(1, menu_settings_scroll_max);
+        var _thumb_height = max(24, (_view_h / _content_h) * _view_h);
+        var _thumb_top = _view.top + (_view_h - _thumb_height) * (_scroll / _max_scroll);
+        var _thumb_bottom = _thumb_top + _thumb_height;
+
+        draw_set_color(make_color_rgb(32, 40, 64));
+        draw_rectangle(_bar_left, _view.top, _bar_right, _view.bottom, false);
+        draw_set_color(make_color_rgb(120, 180, 255));
+        draw_rectangle(_bar_left, _thumb_top, _bar_right, _thumb_bottom, false);
+        draw_set_color(make_color_rgb(16, 24, 40));
+        draw_rectangle(_bar_left, _thumb_top, _bar_right, _thumb_bottom, true);
+    }
+
     draw_set_halign(fa_center);
-    draw_text(_W * 0.5, _H * 0.88, "Use Arrow Keys / Mouse to adjust. Enter to activate.");
+    draw_set_color(menu_settings_dirty ? make_color_rgb(255, 220, 160) : make_color_rgb(190, 200, 220));
+    draw_text((_panel.left + _panel.right) * 0.5, _panel.bottom - 28, menu_settings_dirty ? "Unsaved changes • Press Apply to confirm" : "Adjust settings then press Apply to save changes");
+
+    if (menuKeybindingIsCapturing())
+    {
+        draw_set_color(make_color_rgb(255, 200, 160));
+        draw_text((_panel.left + _panel.right) * 0.5, _panel.bottom - 52, "Press a key to set the binding or click to cancel");
+    }
 }

@@ -25,6 +25,15 @@ function gameInit()
         if (!variable_struct_exists(global.Settings, "debug_god_mode"))    global.Settings.debug_god_mode   = false;
     }
 
+    if (!variable_struct_exists(global.Settings, "key_bindings") || !is_struct(global.Settings.key_bindings))
+    {
+        global.Settings.key_bindings = inputCreateDefaultBindings();
+    }
+    else
+    {
+        global.Settings.key_bindings = inputBindingsEnsureDefaults(global.Settings.key_bindings);
+    }
+
     global.Settings.master_volume = clamp(global.Settings.master_volume, 0, 1);
     audio_master_gain(global.Settings.master_volume);
     recomputePauseState(); 
