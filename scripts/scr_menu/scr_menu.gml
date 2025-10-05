@@ -1045,8 +1045,17 @@ function menuKeybindingAllCodes()
             vk_numpad0, vk_numpad1, vk_numpad2, vk_numpad3, vk_numpad4,
             vk_numpad5, vk_numpad6, vk_numpad7, vk_numpad8, vk_numpad9,
             vk_numpad_add, vk_numpad_subtract, vk_numpad_multiply,
-            vk_numpad_divide, vk_numpad_decimal, vk_numpad_enter
+            vk_numpad_divide, vk_numpad_decimal
         ];
+
+        if (variable_global_exists("vk_numpad_enter"))
+        {
+            var _vk_numpad_enter = variable_global_get("vk_numpad_enter");
+            if (is_real(_vk_numpad_enter))
+            {
+                _numpad[array_length(_numpad)] = _vk_numpad_enter;
+            }
+        }
 
         var _function = [
             vk_f1, vk_f2, vk_f3, vk_f4, vk_f5, vk_f6,
@@ -1160,7 +1169,6 @@ function menuKeybindingFormatKey(_key)
         case vk_numpad_multiply: return "Numpad *";
         case vk_numpad_divide:   return "Numpad /";
         case vk_numpad_decimal:  return "Numpad .";
-        case vk_numpad_enter:    return "Numpad Enter";
         case vk_f1:  return "F1";
         case vk_f2:  return "F2";
         case vk_f3:  return "F3";
@@ -1173,6 +1181,12 @@ function menuKeybindingFormatKey(_key)
         case vk_f10: return "F10";
         case vk_f11: return "F11";
         case vk_f12: return "F12";
+    }
+
+    if (variable_global_exists("vk_numpad_enter"))
+    {
+        var _vk_numpad_enter = variable_global_get("vk_numpad_enter");
+        if (is_real(_vk_numpad_enter) && _key == _vk_numpad_enter) return "Numpad Enter";
     }
 
     return "Key " + string(_key);
