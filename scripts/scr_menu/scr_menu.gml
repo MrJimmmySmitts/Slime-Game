@@ -1325,8 +1325,8 @@ function menuSettingsHandleMouseScroll(_mx, _my)
         }
         else
         {
-            var _wheel_up = mouse_check_button_pressed(mb_wheelup);
-            var _wheel_down = mouse_check_button_pressed(mb_wheeldown);
+            var _wheel_up = mouse_check_button_pressed(mb_wheel_up);
+            var _wheel_down = mouse_check_button_pressed(mb_wheel_down);
 
             if (_wheel_up || _wheel_down)
             {
