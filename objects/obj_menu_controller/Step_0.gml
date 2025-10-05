@@ -5,7 +5,7 @@
 {
     var _in_game = (room != rm_start);
 
-    if (!global.menuVisible && keyboard_check_pressed(vk_tab))
+    if (!global.menuVisible && inputBindingCheckPressed("inventory"))
     {
         invToggle();
     }
@@ -17,7 +17,11 @@
 
     if (keyboard_check_pressed(vk_escape))
     {
-        if (menuDebugIsEditing())
+        if (menuKeybindingIsCapturing())
+        {
+            menuKeybindingCancelCapture();
+        }
+        else if (menuDebugIsEditing())
         {
             menuDebugCancelEditing();
         }
@@ -45,6 +49,12 @@
 
         menuDebugEnsureEditingEntryValid();
         if (menu_screen != MenuScreen.Settings && menuDebugIsEditing()) menuDebugCancelEditing();
+        if (menu_screen != MenuScreen.Settings && menuKeybindingIsCapturing()) menuKeybindingCancelCapture();
+
+        var _capturing = menuKeybindingIsCapturing();
+        if (_capturing) menuKeybindingHandleCaptureInput();
+        _capturing = menuKeybindingIsCapturing();
+        if (_capturing && menuDebugIsEditing()) menuDebugCancelEditing();
 
         var _dropdown_index = (variable_instance_exists(id, "menu_dropdown_open")) ? menu_dropdown_open : -1;
 
@@ -52,43 +62,50 @@
         if (_editing) menuDebugHandleEditingInput();
         _editing = menuDebugIsEditing();
 
+        if (menu_screen == MenuScreen.Settings && !_editing && !_capturing)
+        {
+            menuSettingsHandleKeyboardScroll();
+        }
+
         if (_dropdown_index != -1)
         {
-            if (!_editing && keyboard_check_pressed(vk_up)) menuDropdownStep(-1);
-            if (!_editing && keyboard_check_pressed(vk_down)) menuDropdownStep(1);
-            if (!_editing && keyboard_check_pressed(vk_left)) menuDropdownStep(-1);
-            if (!_editing && keyboard_check_pressed(vk_right)) menuDropdownStep(1);
-            if (!_editing && keyboard_check_pressed(vk_enter)) menuDropdownConfirm();
-            if (!_editing && keyboard_check_pressed(vk_backspace)) menuDropdownClose();
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_up)) menuDropdownStep(-1);
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_down)) menuDropdownStep(1);
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_left)) menuDropdownStep(-1);
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_right)) menuDropdownStep(1);
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_enter)) menuDropdownConfirm();
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_backspace)) menuDropdownClose();
         }
         else
         {
             var _count = is_array(menu_items) ? array_length(menu_items) : 0;
             if (_count > 0)
             {
-                if (!_editing && keyboard_check_pressed(vk_up))
+                if (!_editing && !_capturing && keyboard_check_pressed(vk_up))
                 {
                     sel = (sel - 1 + _count) mod _count;
+                    if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
                 }
-                if (!_editing && keyboard_check_pressed(vk_down))
+                if (!_editing && !_capturing && keyboard_check_pressed(vk_down))
                 {
                     sel = (sel + 1) mod _count;
+                    if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
                 }
-                if (!_editing && keyboard_check_pressed(vk_left))
+                if (!_editing && !_capturing && keyboard_check_pressed(vk_left))
                 {
                     menuAdjustSelection(-1);
                 }
-                if (!_editing && keyboard_check_pressed(vk_right))
+                if (!_editing && !_capturing && keyboard_check_pressed(vk_right))
                 {
                     menuAdjustSelection(1);
                 }
-                if (!_editing && keyboard_check_pressed(vk_enter))
+                if (!_editing && !_capturing && keyboard_check_pressed(vk_enter))
                 {
                     menuActivateSelection();
                 }
             }
 
-            if (!_editing && keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
             {
                 menuCloseSettings();
             }
