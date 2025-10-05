@@ -50,7 +50,7 @@ else if (!playerEssenceCanSpend(id, ability_cost))
 }
 
 var melee_cd   = variable_instance_exists(id, "melee_cooldown") ? melee_cooldown : 0;
-var melee_cost = variable_instance_exists(id, "melee_cost") ? melee_cost : PLAYER_MELEE_ESSENCE_COST;
+var melee_cost = variable_instance_exists(id, "melee_cost") ? id.melee_cost : PLAYER_MELEE_ESSENCE_COST;
 var melee_text = "Melee (Shift): Ready (Cost " + string(melee_cost) + ")";
 
 if (melee_cd > 0)
