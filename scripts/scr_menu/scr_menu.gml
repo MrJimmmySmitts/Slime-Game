@@ -1028,7 +1028,7 @@ function menuKeybindingGetKeyCode(_name)
 
     if (variable_struct_exists(_cache, _name))
     {
-        return _cache[@ _name];
+        return variable_struct_get(_cache, _name);
     }
 
     var _value = undefined;
@@ -1041,7 +1041,7 @@ function menuKeybindingGetKeyCode(_name)
         }
     }
 
-    _cache[@ _name] = _value;
+    variable_struct_set(_cache, _name, _value);
     return _value;
 }
 
