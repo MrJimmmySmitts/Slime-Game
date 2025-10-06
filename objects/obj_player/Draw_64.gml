@@ -65,3 +65,22 @@ else if (!playerEssenceCanSpend(id, melee_cost))
 
 draw_text(text_x, text_y + 32, ability_text);
 draw_text(text_x, text_y + 48, melee_text);
+
+if (inputControlSchemeGet() == ControlScheme.KeyboardMouse)
+{
+    var _mx_gui = device_mouse_x_to_gui(0);
+    var _my_gui = device_mouse_y_to_gui(0);
+    var _reticle_color = make_color_rgb(255, 220, 120);
+
+    draw_set_color(_reticle_color);
+    draw_line(_mx_gui - 8, _my_gui, _mx_gui + 8, _my_gui);
+    draw_line(_mx_gui, _my_gui - 8, _mx_gui, _my_gui + 8);
+
+    draw_set_color(c_white);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    var _mouse_text = "mouse_x: " + string_format(mouse_x, 0, 2) + "\nmouse_y: " + string_format(mouse_y, 0, 2);
+    draw_text(_mx_gui + 10, _my_gui + 10, _mouse_text);
+    draw_set_valign(fa_top);
+    draw_set_halign(fa_left);
+}

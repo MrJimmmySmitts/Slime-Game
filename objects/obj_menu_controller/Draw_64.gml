@@ -38,7 +38,8 @@ else
 
     draw_set_color(c_white);
     draw_set_font(fnt_menu);
-    draw_text((_panel.left + _panel.right) * 0.5, _panel.top + 32, "Settings");
+    var _title = (menu_screen == MenuScreen.SettingsControls) ? "Settings -> Controls" : "Settings";
+    draw_text((_panel.left + _panel.right) * 0.5, _panel.top + 32, _title);
     draw_set_font(fnt_ui);
 
     var _L = menuGetLayout();
@@ -57,6 +58,8 @@ else
             _dropdown_entry = undefined;
         }
     }
+
+    var _current_scheme = menuSettingsGetControlScheme();
 
     for (var _i = 0; _i < _n; _i++)
     {
@@ -184,7 +187,8 @@ else
                     var _binding = variable_struct_exists(_item, "binding") ? _item.binding : undefined;
                     var _action  = (is_struct(_binding) && variable_struct_exists(_binding, "action")) ? _binding.action : "";
                     var _slot    = (is_struct(_binding) && variable_struct_exists(_binding, "slot")) ? _binding.slot : 0;
-                    var _value_lbl = menuSettingsDescribeKeyBinding(_action, _slot);
+                    var _scheme   = (is_struct(_binding) && variable_struct_exists(_binding, "scheme")) ? _binding.scheme : menuSettingsGetControlScheme();
+                    var _value_lbl = menuSettingsDescribeKeyBinding(_action, _slot, _scheme);
                     var _is_capture = menuKeybindingIsCapturingEntry(_item);
                     if (_is_capture) _value_lbl = "Press a key...";
 
@@ -214,6 +218,34 @@ else
                     draw_set_color(_value_color);
                     draw_set_halign(fa_center);
                     draw_text((_value_rect.left + _value_rect.right) * 0.5, _value_rect.y, _value_lbl);
+                    draw_set_halign(fa_center);
+                    continue;
+                }
+
+                case MenuItemKind.Radio:
+                {
+                    var _value = variable_struct_exists(_item, "value") ? inputControlSchemeClamp(_item.value) : ControlScheme.KeyboardMouse;
+                    var _is_checked = (_value == _current_scheme);
+                    var _circle_x = _rect.left + 16;
+                    var _circle_y = _rect.y;
+                    var _radius   = 8;
+
+                    var _outline_col = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
+                    draw_set_color(_outline_col);
+                    draw_circle(_circle_x, _circle_y, _radius, true);
+
+                    if (_is_checked)
+                    {
+                        var _fill_color = _enabled ? make_color_rgb(120, 180, 255) : make_color_rgb(80, 80, 80);
+                        draw_set_color(_fill_color);
+                        draw_circle(_circle_x, _circle_y, max(2, _radius - 3), false);
+                    }
+
+                    var _label_left = _circle_x + 16;
+                    var _text_color = _enabled ? (_selected ? _color_selected : c_white) : _color_disabled;
+                    draw_set_halign(fa_left);
+                    draw_set_color(_text_color);
+                    draw_text(_label_left, _circle_y, string(_label));
                     draw_set_halign(fa_center);
                     continue;
                 }

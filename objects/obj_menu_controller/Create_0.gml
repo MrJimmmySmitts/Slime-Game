@@ -30,6 +30,7 @@ menu_settings_scroll_max = 0;
 menu_settings_view_height = 0;
 menu_settings_content_height = 0;
 menu_keybinding_capture = undefined;
+menu_controls_bindings_visible = false;
 
 settings_debug_visible = false;
 
