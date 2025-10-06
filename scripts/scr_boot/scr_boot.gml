@@ -16,6 +16,7 @@ function gameInit()
             master_volume:    1.0,
             screen_size_index:0,
             debug_god_mode:   false,
+            control_scheme:   ControlScheme.KeyboardMouse,
         };
     }
     else
@@ -23,6 +24,10 @@ function gameInit()
         if (!variable_struct_exists(global.Settings, "master_volume"))    global.Settings.master_volume    = 1.0;
         if (!variable_struct_exists(global.Settings, "screen_size_index")) global.Settings.screen_size_index = 0;
         if (!variable_struct_exists(global.Settings, "debug_god_mode"))    global.Settings.debug_god_mode   = false;
+        if (!variable_struct_exists(global.Settings, "control_scheme"))
+            global.Settings.control_scheme = ControlScheme.KeyboardMouse;
+        else
+            global.Settings.control_scheme = inputControlSchemeClamp(global.Settings.control_scheme);
     }
 
     if (!variable_struct_exists(global.Settings, "key_bindings") || !is_struct(global.Settings.key_bindings))

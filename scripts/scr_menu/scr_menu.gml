@@ -4,8 +4,9 @@
 
 enum MenuScreen
 {
-    Main     = 0,
-    Settings = 1,
+    Main             = 0,
+    Settings         = 1,
+    SettingsControls = 2,
 }
 
 enum MenuItemKind
@@ -18,6 +19,13 @@ enum MenuItemKind
     DebugAction = 5,
     Label       = 6,
     KeyBinding  = 7,
+    Radio       = 8,
+}
+
+function menuIsSettingsPanel()
+{
+    if (!variable_instance_exists(id, "menu_screen")) return false;
+    return (menu_screen == MenuScreen.Settings) || (menu_screen == MenuScreen.SettingsControls);
 }
 
 function menuSettingsGetScroll()
@@ -118,7 +126,7 @@ function menuGetLayout()
     var _mode  = MenuScreen.Main;
     if (variable_instance_exists(id, "menu_screen")) _mode = menu_screen;
 
-    if (_mode == MenuScreen.Settings)
+    if (_mode == MenuScreen.Settings || _mode == MenuScreen.SettingsControls)
     {
         var _content = menuSettingsGetContentRect();
         var _item_h  = 26;
@@ -624,7 +632,7 @@ function menuDropdownConfirm()
     menuOptionSetIndex(_entry, _choice);
     menuDropdownClose();
 
-    if (menu_screen == MenuScreen.Settings) menuRebuildItems();
+    if (menuIsSettingsPanel()) menuRebuildItems();
 }
 
 function menuDropdownOptionAtPosition(_index, _entry, _mx, _my)
@@ -652,6 +660,7 @@ function menuSettingsCloneStruct(_source)
     var _clone = {
         volume:            1,
         screen_size_index: 0,
+        control_scheme:    ControlScheme.KeyboardMouse,
         key_bindings:      inputBindingsClone(inputCreateDefaultBindings())
     };
 
@@ -662,6 +671,9 @@ function menuSettingsCloneStruct(_source)
 
         if (variable_struct_exists(_source, "screen_size_index"))
             _clone.screen_size_index = max(0, floor(_source.screen_size_index));
+
+        if (variable_struct_exists(_source, "control_scheme"))
+            _clone.control_scheme = inputControlSchemeClamp(_source.control_scheme);
 
         if (variable_struct_exists(_source, "key_bindings"))
             _clone.key_bindings = inputBindingsClone(_source.key_bindings);
@@ -686,6 +698,10 @@ function menuSettingsComputeDirty()
     var _screen_pending = variable_struct_exists(settings_pending, "screen_size_index") ? settings_pending.screen_size_index : 0;
     var _screen_applied = variable_struct_exists(settings_applied, "screen_size_index") ? settings_applied.screen_size_index : 0;
     if (_screen_pending != _screen_applied) return true;
+
+    var _scheme_pending = variable_struct_exists(settings_pending, "control_scheme") ? inputControlSchemeClamp(settings_pending.control_scheme) : ControlScheme.KeyboardMouse;
+    var _scheme_applied = variable_struct_exists(settings_applied, "control_scheme") ? inputControlSchemeClamp(settings_applied.control_scheme) : ControlScheme.KeyboardMouse;
+    if (_scheme_pending != _scheme_applied) return true;
 
     var _bindings_pending = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : undefined;
     var _bindings_applied = variable_struct_exists(settings_applied, "key_bindings") ? settings_applied.key_bindings : undefined;
@@ -742,10 +758,28 @@ function menuSettingsSetScreenIndex(_index)
     menuSettingsUpdateDirty();
 }
 
+function menuSettingsGetControlScheme()
+{
+    if (!is_struct(settings_pending)) return ControlScheme.KeyboardMouse;
+    var _scheme = variable_struct_exists(settings_pending, "control_scheme") ? settings_pending.control_scheme : ControlScheme.KeyboardMouse;
+    return inputControlSchemeClamp(_scheme);
+}
+
+function menuSettingsSetControlScheme(_scheme)
+{
+    _scheme = inputControlSchemeClamp(_scheme);
+    if (!is_struct(settings_pending)) settings_pending = {};
+    settings_pending.control_scheme = _scheme;
+    menuSettingsUpdateDirty();
+    menuKeybindingCancelCapture();
+    if (menuIsSettingsPanel()) menuRebuildItems();
+}
+
 function menuSettingsLoadFromGlobal()
 {
     var _volume       = 1;
     var _screen_index = 0;
+    var _scheme       = ControlScheme.KeyboardMouse;
     var _bindings     = inputCreateDefaultBindings();
 
     if (variable_global_exists("Settings"))
@@ -763,6 +797,12 @@ function menuSettingsLoadFromGlobal()
             global.Settings.screen_size_index = _screen_index;
         }
 
+        if (variable_struct_exists(global.Settings, "control_scheme"))
+        {
+            _scheme = inputControlSchemeClamp(global.Settings.control_scheme);
+            global.Settings.control_scheme = _scheme;
+        }
+
         if (variable_struct_exists(global.Settings, "key_bindings") && is_struct(global.Settings.key_bindings))
         {
             _bindings = inputBindingsEnsureDefaults(global.Settings.key_bindings);
@@ -777,6 +817,7 @@ function menuSettingsLoadFromGlobal()
     settings_pending = {
         volume:            _volume,
         screen_size_index: _screen_index,
+        control_scheme:    _scheme,
         key_bindings:      inputBindingsClone(_bindings)
     };
 
@@ -809,7 +850,14 @@ function menuSettingsApplyPending()
         menuApplyScreenSize(_option);
     }
 
+    var _scheme = menuSettingsGetControlScheme();
+    if (variable_global_exists("Settings"))
+    {
+        global.Settings.control_scheme = _scheme;
+    }
+
     var _bindings = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : inputCreateDefaultBindings();
+    _bindings = inputBindingsEnsureDefaults(_bindings);
     if (variable_global_exists("Settings"))
     {
         global.Settings.key_bindings = inputBindingsClone(_bindings);
@@ -826,7 +874,7 @@ function menuSettingsRevertPending()
     menuSettingsUpdateDirty();
 }
 
-function menuSettingsSetKeyBinding(_action, _slot, _key)
+function menuSettingsSetKeyBinding(_action, _slot, _key, _scheme)
 {
     if (!is_string(_action)) return;
     if (!is_struct(settings_pending)) settings_pending = {};
@@ -834,50 +882,66 @@ function menuSettingsSetKeyBinding(_action, _slot, _key)
     var _bindings = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : inputCreateDefaultBindings();
     _bindings = inputBindingsEnsureDefaults(_bindings);
 
-    var _def = inputBindingFindDefinition(_action);
+    if (!is_real(_scheme)) _scheme = menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
+
+    var _scheme_key = inputControlSchemeKey(_scheme);
+    var _map = variable_struct_exists(_bindings, _scheme_key) ? variable_struct_get(_bindings, _scheme_key) : {};
+    if (!is_struct(_map)) _map = {};
+
+    var _def = inputBindingFindDefinition(_action, _scheme);
     if (!is_struct(_def)) return;
     var _defaults = _def.default;
     var _slot_count = array_length(_defaults);
     if (_slot_count <= 0) _slot_count = 1;
     _slot = clamp(_slot, 0, _slot_count - 1);
 
-    var _keys = variable_struct_exists(_bindings, _action) ? variable_struct_get(_bindings, _action) : inputArrayClone(_defaults);
+    var _keys = variable_struct_exists(_map, _action) ? variable_struct_get(_map, _action) : inputArrayClone(_defaults);
     if (!is_array(_keys) || array_length(_keys) != _slot_count)
     {
         _keys = inputArrayClone(_defaults);
     }
 
     _keys[_slot] = _key;
-    variable_struct_set(_bindings, _action, _keys);
-
+    variable_struct_set(_map, _action, _keys);
+    variable_struct_set(_bindings, _scheme_key, _map);
     settings_pending.key_bindings = _bindings;
     menuSettingsUpdateDirty();
 }
 
-function menuSettingsDescribeKeyBinding(_action, _slot)
+function menuSettingsDescribeKeyBinding(_action, _slot, _scheme)
 {
     if (!is_struct(settings_pending)) return "(unassigned)";
     if (!variable_struct_exists(settings_pending, "key_bindings")) return "(unassigned)";
 
-    var _bindings = settings_pending.key_bindings;
-    if (!is_struct(_bindings)) return "(unassigned)";
+    var _bindings = inputBindingsEnsureDefaults(settings_pending.key_bindings);
+    if (!is_real(_scheme)) _scheme = menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
 
-    if (!variable_struct_exists(_bindings, _action)) return "(unassigned)";
-    var _keys = variable_struct_get(_bindings, _action);
+    var _scheme_key = inputControlSchemeKey(_scheme);
+    if (!variable_struct_exists(_bindings, _scheme_key)) return "(unassigned)";
+    var _map = variable_struct_get(_bindings, _scheme_key);
+    if (!is_struct(_map)) return "(unassigned)";
+
+    if (!variable_struct_exists(_map, _action)) return "(unassigned)";
+    var _keys = variable_struct_get(_map, _action);
     if (!is_array(_keys)) return "(unassigned)";
 
     if (_slot < 0 || _slot >= array_length(_keys)) return "(unassigned)";
 
-    return menuKeybindingFormatKey(_keys[_slot]);
+    return menuKeybindingFormatKey(_keys[_slot], _scheme);
 }
 
-function menuBuildKeyMappingItems()
+function menuBuildKeyMappingItems(_scheme)
 {
     var _items = [];
 
     _items[array_length(_items)] = { label: "Key Bindings", kind: MenuItemKind.Label, style: "header", enabled: false };
 
-    var _defs = inputBindingActionDefinitions();
+    if (!is_real(_scheme)) _scheme = menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
+
+    var _defs = inputBindingActionDefinitions(_scheme);
     var _count = array_length(_defs);
     var _current_group = "";
 
@@ -912,7 +976,7 @@ function menuBuildKeyMappingItems()
             _items[array_length(_items)] = {
                 label:   _label,
                 kind:    MenuItemKind.KeyBinding,
-                binding: { action: _def.name, slot: _s },
+                binding: { action: _def.name, slot: _s, scheme: _scheme },
                 enabled: true
             };
         }
@@ -932,16 +996,40 @@ function menuKeybindingCancelCapture()
     if (variable_instance_exists(id, "menu_keybinding_capture")) menu_keybinding_capture = undefined;
 }
 
-function menuKeybindingCaptureSnapshot()
+function menuKeybindingCaptureSnapshot(_scheme)
 {
     var _pressed = [];
-    var _codes   = menuKeybindingAllCodes();
-    var _count   = array_length(_codes);
-    var _idx     = 0;
+    if (!is_real(_scheme)) _scheme = menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
 
-    for (var _i = 0; _i < _count; _i++)
+    if (_scheme == ControlScheme.Controller)
     {
-        var _code = _codes[_i];
+        var _pad = inputGamepadGetActive();
+        if (_pad == -1) return _pressed;
+
+        var _buttons = inputGamepadAllButtons();
+        var _count   = array_length(_buttons);
+        var _idx     = 0;
+
+        for (var _i = 0; _i < _count; _i++)
+        {
+            var _button = _buttons[_i];
+            if (inputGamepadButtonCheck(_pad, _button))
+            {
+                _pressed[_idx++] = _button;
+            }
+        }
+
+        return _pressed;
+    }
+
+    var _codes = menuKeybindingAllCodes();
+    var _count = array_length(_codes);
+    var _idx   = 0;
+
+    for (var _j = 0; _j < _count; _j++)
+    {
+        var _code = _codes[_j];
         if (keyboard_check(_code))
         {
             _pressed[_idx++] = _code;
@@ -958,10 +1046,11 @@ function menuKeybindingCapturePruneIgnore()
     var _capture = menu_keybinding_capture;
     if (!is_struct(_capture)) return;
 
+    var _scheme = variable_struct_exists(_capture, "scheme") ? _capture.scheme : menuSettingsGetControlScheme();
     var _list = variable_struct_exists(_capture, "ignore_codes") ? _capture.ignore_codes : [];
     if (!is_array(_list) || array_length(_list) <= 0)
     {
-        _capture.ignore_codes = [];
+        _capture.ignore_codes = menuKeybindingCaptureSnapshot(_scheme);
         return;
     }
 
@@ -971,7 +1060,18 @@ function menuKeybindingCapturePruneIgnore()
     for (var _i = 0; _i < _len; _i++)
     {
         var _code = _list[_i];
-        if (keyboard_check(_code))
+        var _held = false;
+        if (inputControlSchemeClamp(_scheme) == ControlScheme.Controller)
+        {
+            var _pad = inputGamepadGetActive();
+            if (_pad != -1) _held = inputGamepadButtonCheck(_pad, _code);
+        }
+        else
+        {
+            _held = keyboard_check(_code);
+        }
+
+        if (_held)
         {
             _kept[_idx++] = _code;
         }
@@ -1006,10 +1106,14 @@ function menuKeybindingStartCapture(_entry)
     if (!variable_struct_exists(_binding, "action")) return;
     if (!variable_struct_exists(_binding, "slot")) return;
 
+    var _scheme = variable_struct_exists(_binding, "scheme") ? _binding.scheme : menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
+
     menu_keybinding_capture = {
         action: _binding.action,
         slot:   _binding.slot,
-        ignore_codes: menuKeybindingCaptureSnapshot()
+        scheme: _scheme,
+        ignore_codes: menuKeybindingCaptureSnapshot(_scheme)
     };
 
     if (menuDebugIsEditing()) menuDebugCancelEditing();
@@ -1129,11 +1233,35 @@ function menuKeybindingAllCodes()
 
 function menuKeybindingDetectNextKey(_capture)
 {
+    if (!is_struct(_capture)) return -1;
+
+    var _scheme = variable_struct_exists(_capture, "scheme") ? _capture.scheme : menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
+
+    if (_scheme == ControlScheme.Controller)
+    {
+        var _pad = inputGamepadGetActive();
+        if (_pad == -1) return -1;
+
+        var _buttons = inputGamepadAllButtons();
+        var _count   = array_length(_buttons);
+        for (var _i = 0; _i < _count; _i++)
+        {
+            var _button = _buttons[_i];
+            if (inputGamepadButtonCheckPressed(_pad, _button))
+            {
+                if (!menuKeybindingCaptureShouldIgnore(_capture, _button)) return _button;
+            }
+        }
+
+        return -1;
+    }
+
     var _codes = menuKeybindingAllCodes();
     var _count = array_length(_codes);
-    for (var _i = 0; _i < _count; _i++)
+    for (var _j = 0; _j < _count; _j++)
     {
-        var _code = _codes[_i];
+        var _code = _codes[_j];
         if (keyboard_check_pressed(_code))
         {
             if (!menuKeybindingCaptureShouldIgnore(_capture, _code)) return _code;
@@ -1154,7 +1282,8 @@ function menuKeybindingHandleCaptureInput()
     if (_key != -1)
     {
         var _capture = menu_keybinding_capture;
-        menuSettingsSetKeyBinding(_capture.action, _capture.slot, _key);
+        var _scheme = variable_struct_exists(_capture, "scheme") ? _capture.scheme : menuSettingsGetControlScheme();
+        menuSettingsSetKeyBinding(_capture.action, _capture.slot, _key, _scheme);
         menuKeybindingCancelCapture();
     }
 }
@@ -1166,7 +1295,9 @@ function menuKeybindingIsCapturingEntry(_entry)
     var _binding = _entry.binding;
     if (!is_struct(_binding)) return false;
     var _capture = menu_keybinding_capture;
-    return (_binding.action == _capture.action) && (_binding.slot == _capture.slot);
+    var _scheme_entry = variable_struct_exists(_binding, "scheme") ? inputControlSchemeClamp(_binding.scheme) : menuSettingsGetControlScheme();
+    var _scheme_capture = variable_struct_exists(_capture, "scheme") ? inputControlSchemeClamp(_capture.scheme) : menuSettingsGetControlScheme();
+    return (_binding.action == _capture.action) && (_binding.slot == _capture.slot) && (_scheme_entry == _scheme_capture);
 }
 
 function menuKeybindingIsCapturingIndex(_index)
@@ -1177,8 +1308,16 @@ function menuKeybindingIsCapturingIndex(_index)
     return menuKeybindingIsCapturingEntry(menu_items[_index]);
 }
 
-function menuKeybindingFormatKey(_key)
+function menuKeybindingFormatKey(_key, _scheme)
 {
+    if (!is_real(_scheme)) _scheme = menuSettingsGetControlScheme();
+    _scheme = inputControlSchemeClamp(_scheme);
+
+    if (_scheme == ControlScheme.Controller)
+    {
+        return inputGamepadButtonLabel(_key);
+    }
+
     if (!is_real(_key)) return "(unassigned)";
 
     if (_key >= ord("A") && _key <= ord("Z")) return string(chr(_key));
@@ -1253,7 +1392,7 @@ function menuKeybindingFormatKey(_key)
 
 function menuSettingsUpdateScrollMetrics()
 {
-    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings)
+    if (!menuIsSettingsPanel())
     {
         menu_settings_view_height = 0;
         menu_settings_content_height = 0;
@@ -1281,7 +1420,7 @@ function menuSettingsUpdateScrollMetrics()
 
 function menuSettingsHandleKeyboardScroll()
 {
-    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+    if (!menuIsSettingsPanel()) return;
 
     var _page = menuSettingsGetPageScrollAmount();
     if (keyboard_check_pressed(vk_pageup)) menuSettingsScrollBy(-_page);
@@ -1296,7 +1435,7 @@ function menuSettingsHandleKeyboardScroll()
 
 function menuSettingsHandleMouseScroll(_mx, _my)
 {
-    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+    if (!menuIsSettingsPanel()) return;
 
     var _view = menuSettingsGetContentRect();
     if (_mx >= _view.left && _mx <= _view.right && _my >= _view.top && _my <= _view.bottom)
@@ -1345,7 +1484,7 @@ function menuSettingsHandleMouseScroll(_mx, _my)
 
 function menuSettingsEnsureSelectionVisible()
 {
-    if (!variable_instance_exists(id, "menu_screen") || menu_screen != MenuScreen.Settings) return;
+    if (!menuIsSettingsPanel()) return;
     if (!is_array(menu_items)) return;
 
     var _count = array_length(menu_items);
@@ -1409,6 +1548,14 @@ function menuRebuildItems()
 
             _slot = array_length(_items);
             _items[_slot] = {
+                label:   "Controls",
+                kind:    MenuItemKind.Action,
+                action:  "controls",
+                enabled: true
+            };
+
+            _slot = array_length(_items);
+            _items[_slot] = {
                 label:   "Apply Changes",
                 kind:    MenuItemKind.Action,
                 action:  "apply_settings",
@@ -1424,16 +1571,6 @@ function menuRebuildItems()
                 enabled: true,
                 style:   "secondary"
             };
-
-            var _key_items = menuBuildKeyMappingItems();
-            if (is_array(_key_items))
-            {
-                var _key_count = array_length(_key_items);
-                for (var _k = 0; _k < _key_count; _k++)
-                {
-                    _items[array_length(_items)] = _key_items[_k];
-                }
-            }
 
             _slot = array_length(_items);
             _items[_slot] = {
@@ -1501,11 +1638,78 @@ function menuRebuildItems()
             }
             break;
         }
+
+        case MenuScreen.SettingsControls:
+        {
+            var _scheme = menuSettingsGetControlScheme();
+
+            var _slot = array_length(_items);
+            _items[_slot] = { label: "Control Scheme", kind: MenuItemKind.Label, style: "header", enabled: false };
+
+            var _radio_options = [
+                { label: "Keyboard and Mouse", value: ControlScheme.KeyboardMouse },
+                { label: "Controller",         value: ControlScheme.Controller },
+                { label: "Only Keyboard",      value: ControlScheme.KeyboardOnly }
+            ];
+
+            var _radio_count = array_length(_radio_options);
+            for (var _r = 0; _r < _radio_count; _r++)
+            {
+                var _option = _radio_options[_r];
+                _items[array_length(_items)] = {
+                    label:   _option.label,
+                    kind:    MenuItemKind.Radio,
+                    target:  "control_scheme",
+                    value:   _option.value,
+                    enabled: true
+                };
+            }
+
+            _slot = array_length(_items);
+            _items[_slot] = {
+                label:   menu_controls_bindings_visible ? "Hide Key Bindings" : "Key Bindings",
+                kind:    MenuItemKind.Toggle,
+                target:  "controls_bindings",
+                enabled: true
+            };
+
+            if (menu_controls_bindings_visible)
+            {
+                var _control_items = menuBuildKeyMappingItems(_scheme);
+                if (is_array(_control_items))
+                {
+                    var _c_count = array_length(_control_items);
+                    for (var _ci = 0; _ci < _c_count; _ci++)
+                    {
+                        _items[array_length(_items)] = _control_items[_ci];
+                    }
+                }
+            }
+
+            _slot = array_length(_items);
+            _items[_slot] = {
+                label:   "Apply Changes",
+                kind:    MenuItemKind.Action,
+                action:  "apply_settings",
+                enabled: menu_settings_dirty,
+                style:   menu_settings_dirty ? "primary" : ""
+            };
+
+            _slot = array_length(_items);
+            _items[_slot] = {
+                label:   "Back",
+                kind:    MenuItemKind.Action,
+                action:  "controls_back",
+                enabled: true,
+                style:   "secondary"
+            };
+            break;
+        }
     }
 
     menu_items = _items;
 
-    if (menu_screen == MenuScreen.Settings)
+    if (menuIsSettingsPanel())
     {
         menuSettingsUpdateScrollMetrics();
         menuSettingsEnsureSelectionVisible();
@@ -1613,6 +1817,14 @@ function menuActivateSelection()
             {
                 menuCloseSettings();
             }
+            else if (_choice == "controls")
+            {
+                menuOpenControls();
+            }
+            else if (_choice == "controls_back")
+            {
+                menuCloseControls();
+            }
             else if (_choice == "quit")
             {
                 game_end();
@@ -1664,6 +1876,16 @@ function menuActivateSelection()
             break;
         }
 
+        case MenuItemKind.Radio:
+        {
+            if (variable_struct_exists(_entry, "target") && _entry.target == "control_scheme")
+            {
+                var _value = variable_struct_exists(_entry, "value") ? _entry.value : ControlScheme.KeyboardMouse;
+                menuSettingsSetControlScheme(_value);
+            }
+            break;
+        }
+
         case MenuItemKind.DebugAction:
         {
             var _action = variable_struct_exists(_entry, "action") ? _entry.action : "";
@@ -1677,7 +1899,7 @@ function menuActivateSelection()
         }
     }
 
-    if (menu_screen == MenuScreen.Settings) menuRebuildItems();
+    if (menuIsSettingsPanel()) menuRebuildItems();
 }
 
 /*
@@ -1692,7 +1914,7 @@ function menuMouseUpdate()
     var _mx = device_mouse_x_to_gui(0);
     var _my = device_mouse_y_to_gui(0);
 
-    if (menu_screen == MenuScreen.Settings) menuSettingsHandleMouseScroll(_mx, _my);
+    if (menuIsSettingsPanel()) menuSettingsHandleMouseScroll(_mx, _my);
 
     var _capturing = menuKeybindingIsCapturing();
     if (_capturing)
@@ -1772,7 +1994,7 @@ function menuMouseUpdate()
         else
         {
             sel = _idx;
-            if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+            if (menuIsSettingsPanel()) menuSettingsEnsureSelectionVisible();
         }
     }
 
@@ -1855,7 +2077,7 @@ function menuMouseUpdate()
             {
                 menuKeybindingStartCapture(_entry);
                 if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
-                if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+            if (menuIsSettingsPanel()) menuSettingsEnsureSelectionVisible();
                 return;
             }
 
@@ -1965,7 +2187,7 @@ function menuAdjustSelection(_dir)
             break;
     }
 
-    if (menu_screen == MenuScreen.Settings) menuRebuildItems();
+    if (menuIsSettingsPanel()) menuRebuildItems();
 }
 
 /*
@@ -1988,8 +2210,13 @@ function menuToggleEntry(_entry)
             global.Settings.debug_god_mode = !global.Settings.debug_god_mode;
         }
     }
+    else if (_target == "controls_bindings")
+    {
+        menu_controls_bindings_visible = !menu_controls_bindings_visible;
+        if (!menu_controls_bindings_visible) menuKeybindingCancelCapture();
+    }
 
-    if (menu_screen == MenuScreen.Settings) menuRebuildItems();
+    if (menuIsSettingsPanel()) menuRebuildItems();
 }
 
 /*
@@ -2041,6 +2268,17 @@ function menuOpenSettings()
     menuRebuildItems();
 }
 
+function menuOpenControls()
+{
+    menuKeybindingCancelCapture();
+    menu_screen = MenuScreen.SettingsControls;
+    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+    menu_controls_bindings_visible = false;
+    menuSettingsSetScroll(0);
+    sel = 0;
+    menuRebuildItems();
+}
+
 /*
 * Name: menuCloseSettings
 * Description: Return to the main menu screen and rebuild entries.
@@ -2057,6 +2295,15 @@ function menuCloseSettings()
         sel = clamp(menu_settings_index, 0, _len - 1);
     }
     else sel = 0;
+    menuRebuildItems();
+}
+
+function menuCloseControls()
+{
+    menuKeybindingCancelCapture();
+    menu_screen = MenuScreen.Settings;
+    if (variable_instance_exists(id, "menu_dropdown_open")) menuDropdownClose();
+    sel = 0;
     menuRebuildItems();
 }
 

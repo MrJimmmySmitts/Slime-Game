@@ -37,6 +37,10 @@
         {
             menuCloseSettings();
         }
+        else if (global.menuVisible && menu_screen == MenuScreen.SettingsControls)
+        {
+            menuCloseControls();
+        }
         else if (_in_game)
         {
             menuToggle();
@@ -48,8 +52,8 @@
         menuRebuildItems();
 
         menuDebugEnsureEditingEntryValid();
-        if (menu_screen != MenuScreen.Settings && menuDebugIsEditing()) menuDebugCancelEditing();
-        if (menu_screen != MenuScreen.Settings && menuKeybindingIsCapturing()) menuKeybindingCancelCapture();
+        if (!menuIsSettingsPanel() && menuDebugIsEditing()) menuDebugCancelEditing();
+        if (!menuIsSettingsPanel() && menuKeybindingIsCapturing()) menuKeybindingCancelCapture();
 
         var _capturing = menuKeybindingIsCapturing();
         if (_capturing) menuKeybindingHandleCaptureInput();
@@ -62,7 +66,7 @@
         if (_editing) menuDebugHandleEditingInput();
         _editing = menuDebugIsEditing();
 
-        if (menu_screen == MenuScreen.Settings && !_editing && !_capturing)
+        if (menuIsSettingsPanel() && !_editing && !_capturing)
         {
             menuSettingsHandleKeyboardScroll();
         }
@@ -84,12 +88,12 @@
                 if (!_editing && !_capturing && keyboard_check_pressed(vk_up))
                 {
                     sel = (sel - 1 + _count) mod _count;
-                    if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+                    if (menuIsSettingsPanel()) menuSettingsEnsureSelectionVisible();
                 }
                 if (!_editing && !_capturing && keyboard_check_pressed(vk_down))
                 {
                     sel = (sel + 1) mod _count;
-                    if (menu_screen == MenuScreen.Settings) menuSettingsEnsureSelectionVisible();
+                    if (menuIsSettingsPanel()) menuSettingsEnsureSelectionVisible();
                 }
                 if (!_editing && !_capturing && keyboard_check_pressed(vk_left))
                 {
@@ -105,9 +109,10 @@
                 }
             }
 
-            if (!_editing && !_capturing && keyboard_check_pressed(vk_backspace) && menu_screen == MenuScreen.Settings)
+            if (!_editing && !_capturing && keyboard_check_pressed(vk_backspace))
             {
-                menuCloseSettings();
+                if (menu_screen == MenuScreen.Settings) menuCloseSettings();
+                else if (menu_screen == MenuScreen.SettingsControls) menuCloseControls();
             }
         }
 
