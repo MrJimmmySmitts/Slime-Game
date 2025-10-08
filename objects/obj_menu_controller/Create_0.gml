@@ -41,6 +41,7 @@ screen_size_options = [
 ];
 
 settings_screen_index = 0;
+settings_control_scheme = ControlScheme.KeyboardMouse;
 menuSettingsLoadFromGlobal();
 
 if (is_array(screen_size_options) && array_length(screen_size_options) > 0)
