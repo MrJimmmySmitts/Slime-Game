@@ -699,7 +699,7 @@ function menuSettingsComputeDirty()
     var _screen_applied = variable_struct_exists(settings_applied, "screen_size_index") ? settings_applied.screen_size_index : 0;
     if (_screen_pending != _screen_applied) return true;
 
-    var _scheme_pending = variable_struct_exists(settings_pending, "control_scheme") ? inputControlSchemeClamp(settings_pending.control_scheme) : ControlScheme.KeyboardMouse;
+    var _scheme_pending = menuSettingsGetControlScheme();
     var _scheme_applied = variable_struct_exists(settings_applied, "control_scheme") ? inputControlSchemeClamp(settings_applied.control_scheme) : ControlScheme.KeyboardMouse;
     if (_scheme_pending != _scheme_applied) return true;
 
@@ -760,16 +760,43 @@ function menuSettingsSetScreenIndex(_index)
 
 function menuSettingsGetControlScheme()
 {
-    if (!is_struct(settings_pending)) return ControlScheme.KeyboardMouse;
-    var _scheme = variable_struct_exists(settings_pending, "control_scheme") ? settings_pending.control_scheme : ControlScheme.KeyboardMouse;
-    return inputControlSchemeClamp(_scheme);
+    if (!is_struct(settings_pending)) settings_pending = {};
+
+    var _scheme = ControlScheme.KeyboardMouse;
+
+    if (variable_instance_exists(id, "settings_control_scheme"))
+    {
+        _scheme = settings_control_scheme;
+    }
+
+    if (variable_struct_exists(settings_pending, "control_scheme"))
+    {
+        _scheme = settings_pending.control_scheme;
+    }
+
+    _scheme = inputControlSchemeClamp(_scheme);
+    settings_control_scheme = _scheme;
+    settings_pending.control_scheme = _scheme;
+    return _scheme;
 }
 
 function menuSettingsSetControlScheme(_scheme)
 {
     _scheme = inputControlSchemeClamp(_scheme);
-    if (!is_struct(settings_pending)) settings_pending = {};
-    settings_pending.control_scheme = _scheme;
+
+    var _current = menuSettingsGetControlScheme();
+
+    if (_scheme != _current)
+    {
+        if (!is_struct(settings_pending)) settings_pending = {};
+        settings_pending.control_scheme = _scheme;
+        settings_control_scheme = _scheme;
+    }
+    else
+    {
+        settings_control_scheme = _current;
+    }
+
     menuSettingsUpdateDirty();
     menuKeybindingCancelCapture();
     if (menuIsSettingsPanel()) menuRebuildItems();
@@ -847,6 +874,7 @@ function menuSettingsLoadFromGlobal()
         key_bindings:      inputBindingsClone(_bindings)
     };
 
+    settings_control_scheme = _scheme;
     settings_applied = menuSettingsCloneStruct(settings_pending);
     settings_screen_index = _screen_index;
     menuSettingsSetScroll(0);
@@ -882,6 +910,7 @@ function menuSettingsApplyPending()
         global.Settings.control_scheme = _scheme;
     }
 
+    settings_control_scheme = _scheme;
     var _bindings = variable_struct_exists(settings_pending, "key_bindings") ? settings_pending.key_bindings : inputCreateDefaultBindings();
     _bindings = inputBindingsEnsureDefaults(_bindings);
     if (variable_global_exists("Settings"))
@@ -897,6 +926,7 @@ function menuSettingsRevertPending()
 {
     settings_pending = menuSettingsCloneStruct(settings_applied);
     settings_screen_index = menuSettingsGetScreenIndex();
+    settings_control_scheme = menuSettingsGetControlScheme();
     menuSettingsUpdateDirty();
 }
 
