@@ -775,6 +775,32 @@ function menuSettingsSetControlScheme(_scheme)
     if (menuIsSettingsPanel()) menuRebuildItems();
 }
 
+function menuSettingsStepControlScheme(_dir)
+{
+    if (!is_real(_dir) || _dir == 0) return;
+
+    var _options = inputControlSchemeList();
+    if (!is_array(_options)) return;
+
+    var _count = array_length(_options);
+    if (_count <= 0) return;
+
+    var _current = menuSettingsGetControlScheme();
+    var _index = 0;
+
+    for (var _i = 0; _i < _count; _i++)
+    {
+        if (_options[_i] == _current)
+        {
+            _index = _i;
+            break;
+        }
+    }
+
+    _index = (_index + _dir + _count) mod _count;
+    menuSettingsSetControlScheme(_options[_index]);
+}
+
 function menuSettingsLoadFromGlobal()
 {
     var _volume       = 1;
@@ -2185,6 +2211,13 @@ function menuAdjustSelection(_dir)
 
         case MenuItemKind.Label:
             break;
+
+        case MenuItemKind.Radio:
+        {
+            var _target = variable_struct_exists(_entry, "target") ? _entry.target : "";
+            if (_target == "control_scheme") menuSettingsStepControlScheme(_dir);
+            break;
+        }
     }
 
     if (menuIsSettingsPanel()) menuRebuildItems();
