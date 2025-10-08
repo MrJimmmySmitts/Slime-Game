@@ -5,6 +5,7 @@
 damage = 8;
 life   = 8;
 owner  = noone;
+has_triggered = false; // ensure we only damage targets once per hitbox
 
 var _resolved_sprite = enemyConfigResolveAttackSprite();
 if (_resolved_sprite != -1)

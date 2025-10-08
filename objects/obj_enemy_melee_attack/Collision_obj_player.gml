@@ -2,6 +2,13 @@
 * Name: obj_enemy_melee_attack.Collision[obj_player]
 * Description: Damage the player when the slash connects and then expire.
 */
+if (has_triggered)
+{
+    exit;
+}
+
+has_triggered = true;
+
 if (other.damage_cd <= 0)
 {
     other.hp = max(0, other.hp - max(1, damage));
