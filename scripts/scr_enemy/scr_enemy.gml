@@ -626,7 +626,7 @@ function tmRectHitsSolid(_tm, _x, _y, _w, _h)
 /*
 * Name: moveAxisWithTilemap
 * Description: Axis-separated movement with tilemap collision that supports fractional speeds
-*              via per-instance accumulators (enemy_move_rx / enemy_move_ry). No overshoot.
+*              via per-instance accumulators (enemy_move_rx / enemy_move_ry) and blocks the player.
 */
 function moveAxisWithTilemap(_tm, _axis, _amount, _w, _h)
 {
@@ -641,16 +641,27 @@ function moveAxisWithTilemap(_tm, _axis, _amount, _w, _h)
     var _steps = floor(abs(_total));
     var _moved = 0;
     var _hit   = false;
+    var _block_player = object_exists(obj_player);
 
     // Step pixel-by-pixel; stop if we hit a solid
     for (var _i = 0; _i < _steps; _i++)
     {
+        var _prev_x = x;
+        var _prev_y = y;
         if (_axis == 0) x += _dir; else y += _dir;
 
-        if (tmRectHitsSolid(_tm, x, y, _w, _h))
+        var _blocked = tmRectHitsSolid(_tm, x, y, _w, _h);
+        if (!_blocked && _block_player)
+        {
+            var _player_hit = instance_place(x, y, obj_player);
+            _blocked = (_player_hit != noone);
+        }
+
+        if (_blocked)
         {
             // undo the last step; we are blocked
-            if (_axis == 0) x -= _dir; else y -= _dir;
+            x = _prev_x;
+            y = _prev_y;
             _hit = true;
             break;
         }

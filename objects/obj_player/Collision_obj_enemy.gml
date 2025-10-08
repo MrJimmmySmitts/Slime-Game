@@ -1,11 +1,5 @@
 /*
 * Name: obj_player.Collision[obj_enemy]
-* Description: Apply damage with cooldown when touching enemies.
+* Description: Collision damage is disabled; physical separation handled in movement helpers.
 */
-if (damage_cd <= 0)
-{
-    if (variable_global_exists("Settings") && is_struct(global.Settings) && global.Settings.debug_god_mode) exit;
-    playerEssenceSpend(id, ENEMY_CONTACT_ESSENCE_DAMAGE);
-    damage_cd = 60;    // invulnerability frames
-    flash_timer = 15;  // flash white for a short time
-}
+// Intentionally empty — contact with enemies should no longer deal damage.

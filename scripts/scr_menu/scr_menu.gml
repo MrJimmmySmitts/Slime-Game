@@ -764,19 +764,22 @@ function menuSettingsGetControlScheme()
 
     var _scheme = ControlScheme.KeyboardMouse;
 
-    if (variable_instance_exists(id, "settings_control_scheme"))
-    {
-        _scheme = settings_control_scheme;
-    }
-
     if (variable_struct_exists(settings_pending, "control_scheme"))
     {
         _scheme = settings_pending.control_scheme;
     }
+    else if (variable_instance_exists(id, "settings_control_scheme"))
+    {
+        _scheme = settings_control_scheme;
+    }
+    else if (variable_global_exists("Settings") && variable_struct_exists(global.Settings, "control_scheme"))
+    {
+        _scheme = global.Settings.control_scheme;
+    }
 
     _scheme = inputControlSchemeClamp(_scheme);
-    settings_control_scheme = _scheme;
     settings_pending.control_scheme = _scheme;
+    settings_control_scheme = _scheme;
     return _scheme;
 }
 
