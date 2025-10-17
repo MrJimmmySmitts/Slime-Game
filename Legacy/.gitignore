@@ -1,0 +1,40 @@
+# GameMaker Studio 2
+
+# Dependency directories
+node_modules/
+
+# Build artifacts
+*.yyz
+*.zip
+*.gmez
+*.win
+*.app
+*.dmg
+*.exe
+*.dll
+*.apk
+*.ipa
+*.xcodeproj
+
+# Compiled cache and build folders
+build/
+cache/
+output/
+temp/
+
+# User-specific GameMaker files
+*.yyp.user
+*.yyp.backup
+*.log
+*.tmp
+*.bak
+*.old
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor merge leftovers
+*.orig
+*.rej
