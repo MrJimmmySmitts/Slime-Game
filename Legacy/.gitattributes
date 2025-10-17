@@ -1,0 +1,7 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# GameMaker sources use LF endings
+*.gml text eol=lf
+*.yy  text eol=lf
+*.yyp text eol=lf
