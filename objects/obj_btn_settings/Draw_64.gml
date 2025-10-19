@@ -1,0 +1,1 @@
+draw_text(x + BTN_SETTINGS_X_PAD, y + BTN_Y_PAD, BTN_SETTINGS_TEXT)
